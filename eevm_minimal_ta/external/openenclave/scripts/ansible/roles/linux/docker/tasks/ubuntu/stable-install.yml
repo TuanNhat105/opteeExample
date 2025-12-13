@@ -1,0 +1,105 @@
+# Copyright (c) Open Enclave SDK contributors.
+# Licensed under the MIT License.
+
+---
+- name: Docker | Add the APT repository key
+  ansible.builtin.apt_key:
+    url: "https://download.docker.com/linux/ubuntu/gpg"
+    state: present
+  retries: 10
+  delay: 10
+  register: result
+  until: result is success
+
+- name: Docker | Add the APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+  retries: 10
+  delay: 10
+  register: result
+  until: result is success
+
+- name: Docker | Install Docker packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items: "{{ docker_packages }}"
+  retries: 10
+  delay: 10
+  register: result
+  until: result is success
+
+- name: Docker | Install Docker for Python
+  when: docker_ansible is defined and docker_ansible | bool
+  block:
+
+    - name: Docker | Install pip3
+      ansible.builtin.apt:
+        name: python3-pip
+        state: present
+      when:
+        - "'python3-pip' not in ansible_facts.packages"
+        - "'python3' in ansible_facts.packages"
+      register:
+        pip3_installed
+
+    - name: Docker | Install Docker Python 3 library
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        executable: pip3
+        state: present
+      with_items: "{{ docker_python_packages }}"
+      when: >
+        "'python3-pip' in ansible_facts.packages" or
+        pip3_installed.changed
+    
+    - name: Docker | List installed Python packages
+      ansible.builtin.shell: "pip3 list"
+      register: pip3_list
+    
+    - name: Docker | Show installed Python packages
+      ansible.builtin.debug:
+        var: pip3_list
+
+- name: Docker | Start and enable Docker
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: yes
+  failed_when: false
+
+- name: Docker | Check if Docker is running
+  shell: "docker version"
+  failed_when: false
+  register: result
+
+- name: Docker | Show Docker version
+  ansible.builtin.debug:
+    var: result
+
+- name: Docker | Get status of docker services
+  ansible.builtin.service_facts:
+  register: service_facts
+
+- name: Docker | Show status of docker service
+  ansible.builtin.debug:
+    var: service_facts['ansible_facts']['services']['docker.service']
+
+- name: Docker | Get info on docker host
+  community.docker.docker_host_info:
+  register: docker_result
+  failed_when: false
+
+# Bug? in community.docker 3.4.11:
+# can_talk_to_docker is not defined when Ansible can talk to Docker
+- name: Docker | Check Ansible-Docker connection
+  ansible.builtin.debug:
+    var: docker_result.can_talk_to_docker
+
+# host_info is not defined if can_talk_to_docker is false
+- name: Docker | Show host information
+  ansible.builtin.debug:
+    var: docker_result.host_info

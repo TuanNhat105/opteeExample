@@ -1,0 +1,56 @@
+# Copyright (c) Open Enclave SDK contributors.
+# Licensed under the MIT License.
+
+---
+- debug:
+    msg: "deb [{{ intel_sgx_apt_repository_config }}] {{ intel_sgx_apt_repository }} {{ ansible_distribution_release }} main"
+    
+- name: Install Intel SGX repo
+  ansible.builtin.include_role:
+    name: linux/common
+    tasks_from: apt-repo.yml
+  vars:
+    apt_key_url: "https://download.01.org/intel-sgx/sgx_repo/ubuntu/intel-sgx-deb.key"
+    apt_repository: "deb [{{ intel_sgx_apt_repository_config }}] {{ intel_sgx_apt_repository }} {{ ansible_distribution_release }} main"
+
+- name: Install the Intel libsgx package dependencies
+  ansible.builtin.apt:
+    name: "{{ intel_sgx_package_dependencies }}"
+    state: latest
+    update_cache: yes
+    install_recommends: no
+
+- name: Download SGX custom version configuration files
+  ansible.builtin.get_url:
+    url: "https://download.01.org/intel-sgx/sgx_repo/ubuntu/apt_preference_files/99sgx_{{ intel_sgx_psw_version | replace('.', '_') }}_{{ ansible_distribution_release | lower }}_custom_version.cfg"
+    dest: "/etc/apt/preferences.d/intel-sgx.pref"
+    force: yes
+  register: download_result
+  until: download_result is succeeded
+  retries: 3
+  delay: 3
+  when:
+    - intel_sgx_psw_version is defined
+    - intel_sgx_psw_version | default('') | length > 0
+
+- name: Install the Intel libsgx packages
+  ansible.builtin.apt:
+    name: "{{ intel_sgx_packages }}"
+    state: latest
+    update_cache: yes
+    install_recommends: no
+
+- name: Install the Intel DCAP packages
+  ansible.builtin.apt:
+    name: "{{ intel_dcap_packages }}"
+    state: latest
+    update_cache: yes
+    install_recommends: no
+  when: flc_enabled|bool
+
+- name: Install the Intel TDX packages
+  ansible.builtin.apt:
+    name: "{{ intel_tdx_packages }}"
+    state: latest
+    update_cache: yes
+    install_recommends: no

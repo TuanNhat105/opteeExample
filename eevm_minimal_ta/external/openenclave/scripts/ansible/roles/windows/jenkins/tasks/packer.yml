@@ -1,0 +1,47 @@
+# Copyright (c) Open Enclave SDK contributors.
+# Licensed under the MIT License.
+
+---
+
+- name: Include vars
+  ansible.builtin.include_vars: "{{ ansible_os_family | lower }}.yml"
+
+- name: Make sure that Jenkins home exists
+  ansible.windows.win_file:
+    path: "{{ jenkins_agent_root_dir }}"
+    state: directory
+
+- name: JDK - Download
+  ansible.windows.win_get_url:
+    url: "{{ jdk_url }}"
+    dest: "{{ tmp_dir }}\\jdk-windows-x64.exe"
+    checksum_algorithm: "sha256"
+    checksum: "{{ jdk_checksum }}"
+  register: jdk_download
+
+- name: JDK - Install
+  ansible.windows.win_package:
+    path: "{{ jdk_download.dest }}"
+    state: present
+    creates_path: "{{ jdk_path }}"
+    product_id: "{{ jdk_productcode }}"
+
+- name: Configure Git in target image to enable merge/rebase actions - email
+  ansible.windows.win_shell: |
+    git config --system user.email '{{ ci_team_email }}'
+  when: ci_team_name is defined and ci_team_email is defined
+
+- name: Configure Git in target image to enable merge/rebase actions - name
+  ansible.windows.win_shell: |
+    git config --system user.name '{{ ci_team_name }}'
+  when: ci_team_name is defined and ci_team_email is defined
+
+- name: Install Docker-ce
+  ansible.windows.win_powershell:
+    script: |
+        Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/microsoft/Windows-Containers/Main/helpful_tools/Install-DockerCE/install-docker-ce.ps1" -o install-docker-ce.ps1
+        .\install-docker-ce.ps1
+
+- name: Include validation
+  ansible.builtin.include_tasks: "validation.yml"
+  when: jdk_download is changed

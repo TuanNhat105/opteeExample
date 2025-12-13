@@ -1,0 +1,70 @@
+# Copyright (c) Open Enclave SDK contributors.
+# Licensed under the MIT License.
+
+---
+- name: Include distribution vars
+  ansible.builtin.include_vars:
+    file: "{{ ansible_distribution | lower }}/main.yml"
+
+- name: Include distribution release specific vars
+  ansible.builtin.include_vars:
+    file: "{{ ansible_distribution | lower }}/{{ ansible_distribution_release | lower }}.yml"
+
+- name: Check for existing required binaries
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  with_items: "{{ validation_binaries }}"
+  register: binary
+  failed_when: not binary.stat.executable
+
+- name: Check for existing required distribution-specific binaries
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  with_items: "{{ validation_distribution_binaries }}"
+  register: binary
+  failed_when: not binary.stat.executable
+  when:
+    - validation_distribution_binaries is defined
+    - validation_distribution_binaries | length > 0
+
+- name: Check for existing required directories
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  with_items: "{{ validation_directories }}"
+  register: directory
+  failed_when: not directory.stat.isdir
+
+- name: Check for existing required files
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  with_items: "{{ validation_files }}"
+  register: file
+  failed_when: not file.stat.exists
+  when:
+    - validation_files is defined
+    - validation_files | length > 0
+
+- name: Check for existing required distribution-specific files
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  with_items: "{{ validation_distribution_files }}"
+  register: distfile
+  failed_when: not distfile.stat.exists
+  when:
+    - validation_distribution_files is defined
+    - validation_distribution_files | length > 0
+
+- name: Cmake version check
+  ansible.builtin.command: "cmake --version"
+  register: cmake_check_version
+  failed_when: cmake_check_version.stdout.find(cmake_target_version) == -1
+
+- name: Clang version check
+  ansible.builtin.command: "{{ clang_binary_name }} --version"
+  register: clang_check_version
+  failed_when: clang_check_version.stdout.find(clang_target_version) == -1
+
+- name: GCC version check
+  ansible.builtin.command: "gcc --version"
+  register: gcc_check_version
+  failed_when: gcc_check_version.stdout.find(gcc_target_version) == -1

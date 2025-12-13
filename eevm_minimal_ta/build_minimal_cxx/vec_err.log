@@ -1,0 +1,1138 @@
+In file included from /home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:27,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/math.h:303,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/stdlib.h:100,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:85,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/__debug:25,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/bit:60,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/__bit_reference:14,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/vector:274,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/vector.cpp:9:
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/libc-header-start.h:74:17: error: missing binary operator before token "("
+   74 | #if __GLIBC_USE (IEC_60559_BFP_EXT) || __GLIBC_USE (ISOC23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/libc-header-start.h:80:17: error: missing binary operator before token "("
+   80 | #if __GLIBC_USE (IEC_60559_BFP_EXT) || defined __STDC_WANT_IEC_60559_EXT__
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/libc-header-start.h:97:17: error: missing binary operator before token "("
+   97 | #if __GLIBC_USE (IEC_60559_FUNCS_EXT) || __GLIBC_USE (ISOC23)
+      |                 ^
+In file included from /home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:40:
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/math-vector.h:28:67: error: missing binary operator before token "("
+   28 | #if defined __aarch64__ && defined __FAST_MATH__ && __GNUC_PREREQ (6, 0)
+      |                                                                   ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/math-vector.h:138:18: error: missing binary operator before token "("
+  138 | #if __GNUC_PREREQ(9, 0)
+      |                  ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/math-vector.h:142:27: error: missing binary operator before token "("
+  142 | #elif __glibc_clang_prereq(8, 0)
+      |                           ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/math-vector.h:148:18: error: missing binary operator before token "("
+  148 | #if __GNUC_PREREQ(10, 0) || __glibc_clang_prereq(11, 0)
+      |                  ^
+In file included from /home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:43:
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn.h:58:22: error: missing binary operator before token "("
+   58 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn.h:68:22: error: missing binary operator before token "("
+   68 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn.h:79:22: error: missing binary operator before token "("
+   79 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn.h:84:22: error: missing binary operator before token "("
+   84 | #  if !__GNUC_PREREQ (7, 0)
+      |                      ^
+In file included from /home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn.h:95:
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:69:19: error: missing binary operator before token "("
+   69 | #if __GNUC_PREREQ (7, 0) && !defined __cplusplus
+      |                   ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:90:22: error: missing binary operator before token "("
+   90 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:98:22: error: missing binary operator before token "("
+   98 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:110:22: error: missing binary operator before token "("
+  110 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:118:22: error: missing binary operator before token "("
+  118 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:148:22: error: missing binary operator before token "("
+  148 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:156:22: error: missing binary operator before token "("
+  156 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:168:22: error: missing binary operator before token "("
+  168 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:176:22: error: missing binary operator before token "("
+  176 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:213:22: error: missing binary operator before token "("
+  213 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:217:22: error: missing binary operator before token "("
+  217 | #  if !__GNUC_PREREQ (7, 0)
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:250:23: error: missing binary operator before token "("
+  250 | #   if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                       ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:254:23: error: missing binary operator before token "("
+  254 | #   if !__GNUC_PREREQ (7, 0)
+      |                       ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:267:22: error: missing binary operator before token "("
+  267 | #  if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:271:22: error: missing binary operator before token "("
+  271 | #  if !__GNUC_PREREQ (7, 0)
+      |                      ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:284:23: error: missing binary operator before token "("
+  284 | #   if !__GNUC_PREREQ (7, 0) || (defined __cplusplus && !__GNUC_PREREQ (13, 0))
+      |                       ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/floatn-common.h:288:23: error: missing binary operator before token "("
+  288 | #   if !__GNUC_PREREQ (7, 0)
+      |                       ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:47:19: error: missing binary operator before token "("
+   47 | #if __GNUC_PREREQ (3, 3)
+      |                   ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:66:35: error: missing binary operator before token "("
+   66 | #if __HAVE_FLOAT16 && __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                                   ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:69:35: error: missing binary operator before token "("
+   69 | #if __HAVE_FLOAT32 && __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                                   ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:72:35: error: missing binary operator before token "("
+   72 | #if __HAVE_FLOAT64 && __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                                   ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:75:36: error: missing binary operator before token "("
+   75 | #if __HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                                    ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:78:36: error: missing binary operator before token "("
+   78 | #if __HAVE_FLOAT32X && __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                                    ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:81:36: error: missing binary operator before token "("
+   81 | #if __HAVE_FLOAT64X && __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                                    ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:84:37: error: missing binary operator before token "("
+   84 | #if __HAVE_FLOAT128X && __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                                     ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:107:17: error: missing binary operator before token "("
+  107 | #if __GLIBC_USE (IEC_60559_BFP_EXT)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:116:21: error: missing binary operator before token "("
+  116 |      && __GLIBC_USE (IEC_60559_TYPES_EXT)               \
+      |                     ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:121:21: error: missing binary operator before token "("
+  121 |      && __GLIBC_USE (IEC_60559_TYPES_EXT)               \
+      |                     ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:126:21: error: missing binary operator before token "("
+  126 |      && __GLIBC_USE (IEC_60559_TYPES_EXT)               \
+      |                     ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:131:21: error: missing binary operator before token "("
+  131 |      && __GLIBC_USE (IEC_60559_TYPES_EXT)               \
+      |                     ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:136:21: error: missing binary operator before token "("
+  136 |      && __GLIBC_USE (IEC_60559_TYPES_EXT)               \
+      |                     ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:141:21: error: missing binary operator before token "("
+  141 |      && __GLIBC_USE (IEC_60559_TYPES_EXT)               \
+      |                     ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:146:21: error: missing binary operator before token "("
+  146 |      && __GLIBC_USE (IEC_60559_TYPES_EXT)               \
+      |                     ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:217:17: error: missing binary operator before token "("
+  217 | #if __GLIBC_USE (IEC_60559_BFP_EXT_C23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:249:17: error: missing binary operator before token "("
+  249 | #if __GLIBC_USE (IEC_60559_BFP_EXT_C23)
+      |                 ^
+In file included from /home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:313:
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:112:17: error: missing binary operator before token "("
+  112 | #if __GLIBC_USE (IEC_60559_FUNCS_EXT_C23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:301:17: error: missing binary operator before token "("
+  301 | #if __GLIBC_USE (IEC_60559_BFP_EXT_C23) || __MATH_DECLARING_FLOATN
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:358:17: error: missing binary operator before token "("
+  358 | #if __GLIBC_USE (IEC_60559_BFP_EXT_C23) || __MATH_DECLARING_FLOATN
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:388:18: error: missing binary operator before token "("
+  388 | #if (__GLIBC_USE (IEC_60559_BFP_EXT)                            \
+      |                  ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:398:17: error: missing binary operator before token "("
+  398 | #if __GLIBC_USE (ISOC23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:424:17: error: missing binary operator before token "("
+  424 | #if __GLIBC_USE (IEC_60559_EXT) || __MATH_DECLARING_FLOATN
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:449:18: error: missing binary operator before token "("
+  449 | # if __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                  ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:466:18: error: missing binary operator before token "("
+  466 | # if __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                  ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:483:18: error: missing binary operator before token "("
+  483 | # if __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                  ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:500:18: error: missing binary operator before token "("
+  500 | # if __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                  ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:517:18: error: missing binary operator before token "("
+  517 | # if __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                  ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:561:17: error: missing binary operator before token "("
+  561 | #if __GLIBC_USE (IEC_60559_BFP_EXT_C23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:631:17: error: missing binary operator before token "("
+  631 | #if __GLIBC_USE (IEC_60559_TYPES_EXT)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:1054:17: error: missing binary operator before token "("
+ 1054 | #if __GLIBC_USE (IEC_60559_BFP_EXT_C23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:1335:17: error: missing binary operator before token "("
+ 1335 | #if __GLIBC_USE (IEC_60559_BFP_EXT_C23)
+      |                 ^
+In file included from /home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:28,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/stdio.h:107,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdio:99,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/__debug:26:
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/libc-header-start.h:74:17: error: missing binary operator before token "("
+   74 | #if __GLIBC_USE (IEC_60559_BFP_EXT) || __GLIBC_USE (ISOC23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/libc-header-start.h:80:17: error: missing binary operator before token "("
+   80 | #if __GLIBC_USE (IEC_60559_BFP_EXT) || defined __STDC_WANT_IEC_60559_EXT__
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/libc-header-start.h:97:17: error: missing binary operator before token "("
+   97 | #if __GLIBC_USE (IEC_60559_FUNCS_EXT) || __GLIBC_USE (ISOC23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:142:17: error: missing binary operator before token "("
+  142 | #if __GLIBC_USE (ISOC23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:312:43: error: missing binary operator before token "("
+  312 | #if defined __USE_XOPEN2K8 || __GLIBC_USE (LIB_EXT2)
+      |                                           ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:394:41: error: missing binary operator before token "("
+  394 | #if defined (__USE_MISC) || __GLIBC_USE (LIB_EXT2)
+      |                                         ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:438:18: error: missing binary operator before token "("
+  438 | #if !__GLIBC_USE (DEPRECATED_SCANF) && !defined __LDBL_COMPAT \
+      |                  ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:657:17: error: missing binary operator before token "("
+  657 | #if __GLIBC_USE (DEPRECATED_GETS)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:683:43: error: missing binary operator before token "("
+  683 | #if defined __USE_XOPEN2K8 || __GLIBC_USE (LIB_EXT2)
+      |                                           ^
+In file included from /home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/limits.h:26,
+                 from /home/abc/arm-toolchain/lib/gcc/aarch64-none-linux-gnu/14.3.1/include/limits.h:210,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/limits.h:57,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/climits:41,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/vector:276:
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/libc-header-start.h:74:17: error: missing binary operator before token "("
+   74 | #if __GLIBC_USE (IEC_60559_BFP_EXT) || __GLIBC_USE (ISOC23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/libc-header-start.h:80:17: error: missing binary operator before token "("
+   80 | #if __GLIBC_USE (IEC_60559_BFP_EXT) || defined __STDC_WANT_IEC_60559_EXT__
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/libc-header-start.h:97:17: error: missing binary operator before token "("
+   97 | #if __GLIBC_USE (IEC_60559_FUNCS_EXT) || __GLIBC_USE (ISOC23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/limits.h:145:17: error: missing binary operator before token "("
+  145 | #if __GLIBC_USE (IEC_60559_BFP_EXT_C23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/limits.h:184:17: error: missing binary operator before token "("
+  184 | #if __GLIBC_USE (ISOC23)
+      |                 ^
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:34:1: error: ‘__BEGIN_DECLS’ does not name a type
+   34 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: error: ‘__fpclassify’ was not declared in this scope
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: error: expected primary-expression before ‘)’ token
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: error: expression list treated as compound expression in initializer [-fpermissive]
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:24:1: error: redefinition of ‘int __CONCAT’
+   24 | __MATHDECL_ALIAS (int, __signbit,, (_Mdouble_ __value), signbit)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: ‘int __CONCAT’ previously defined here
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:24:1: error: ‘__signbit’ was not declared in this scope
+   24 | __MATHDECL_ALIAS (int, __signbit,, (_Mdouble_ __value), signbit)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:24:1: error: expected primary-expression before ‘)’ token
+   24 | __MATHDECL_ALIAS (int, __signbit,, (_Mdouble_ __value), signbit)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:29:1: error: redefinition of ‘int __CONCAT’
+   29 | __MATHDECL_ALIAS (int, __isinf,, (_Mdouble_ __value), isinf)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: ‘int __CONCAT’ previously defined here
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:29:1: error: ‘__isinf’ was not declared in this scope
+   29 | __MATHDECL_ALIAS (int, __isinf,, (_Mdouble_ __value), isinf)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:29:1: error: expected primary-expression before ‘)’ token
+   29 | __MATHDECL_ALIAS (int, __isinf,, (_Mdouble_ __value), isinf)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:33:1: error: redefinition of ‘int __CONCAT’
+   33 | __MATHDECL_ALIAS (int, __finite,, (_Mdouble_ __value), finite)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: ‘int __CONCAT’ previously defined here
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:33:1: error: ‘__finite’ was not declared in this scope
+   33 | __MATHDECL_ALIAS (int, __finite,, (_Mdouble_ __value), finite)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:33:1: error: expected primary-expression before ‘)’ token
+   33 | __MATHDECL_ALIAS (int, __finite,, (_Mdouble_ __value), finite)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:37:1: error: redefinition of ‘int __CONCAT’
+   37 | __MATHDECL_ALIAS (int, __isnan,, (_Mdouble_ __value), isnan)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: ‘int __CONCAT’ previously defined here
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:37:1: error: ‘__isnan’ was not declared in this scope
+   37 | __MATHDECL_ALIAS (int, __isnan,, (_Mdouble_ __value), isnan)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:37:1: error: expected primary-expression before ‘)’ token
+   37 | __MATHDECL_ALIAS (int, __isnan,, (_Mdouble_ __value), isnan)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:41:1: error: redefinition of ‘int __CONCAT’
+   41 | __MATHDECL_ALIAS (int, __iseqsig,, (_Mdouble_ __x, _Mdouble_ __y), iseqsig);
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: ‘int __CONCAT’ previously defined here
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:41:1: error: ‘__iseqsig’ was not declared in this scope
+   41 | __MATHDECL_ALIAS (int, __iseqsig,, (_Mdouble_ __x, _Mdouble_ __y), iseqsig);
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:41:1: error: expected primary-expression before ‘)’ token
+   41 | __MATHDECL_ALIAS (int, __iseqsig,, (_Mdouble_ __x, _Mdouble_ __y), iseqsig);
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:44:1: error: redefinition of ‘int __CONCAT’
+   44 | __MATHDECL_ALIAS (int, __issignaling,, (_Mdouble_ __value), issignaling)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: ‘int __CONCAT’ previously defined here
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:44:1: error: ‘__issignaling’ was not declared in this scope
+   44 | __MATHDECL_ALIAS (int, __issignaling,, (_Mdouble_ __value), issignaling)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:44:1: error: expected primary-expression before ‘)’ token
+   44 | __MATHDECL_ALIAS (int, __issignaling,, (_Mdouble_ __value), issignaling)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:53:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   53 | __MATHCALL_VEC (acos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:53:1: error: conflicting declaration ‘double __CONCAT’
+   53 | __MATHCALL_VEC (acos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:53:1: error: ‘__’ was not declared in this scope
+   53 | __MATHCALL_VEC (acos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:53:1: error: ‘acos’ was not declared in this scope
+   53 | __MATHCALL_VEC (acos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:53:1: error: ‘__CONCAT’ cannot be used as a function
+   53 | __MATHCALL_VEC (acos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:53:1: error: expected primary-expression before ‘)’ token
+   53 | __MATHCALL_VEC (acos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:55:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   55 | __MATHCALL_VEC (asin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:55:1: error: conflicting declaration ‘double __CONCAT’
+   55 | __MATHCALL_VEC (asin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:55:1: error: ‘__’ was not declared in this scope
+   55 | __MATHCALL_VEC (asin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:55:1: error: ‘asin’ was not declared in this scope
+   55 | __MATHCALL_VEC (asin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:55:1: error: ‘__CONCAT’ cannot be used as a function
+   55 | __MATHCALL_VEC (asin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:55:1: error: expected primary-expression before ‘)’ token
+   55 | __MATHCALL_VEC (asin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:57:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   57 | __MATHCALL_VEC (atan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:57:1: error: conflicting declaration ‘double __CONCAT’
+   57 | __MATHCALL_VEC (atan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:57:1: error: ‘__’ was not declared in this scope
+   57 | __MATHCALL_VEC (atan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:57:1: error: ‘atan’ was not declared in this scope
+   57 | __MATHCALL_VEC (atan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:57:1: error: ‘__CONCAT’ cannot be used as a function
+   57 | __MATHCALL_VEC (atan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:57:1: error: expected primary-expression before ‘)’ token
+   57 | __MATHCALL_VEC (atan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:59:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   59 | __MATHCALL_VEC (atan2,, (_Mdouble_ __y, _Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:59:1: error: conflicting declaration ‘double __CONCAT’
+   59 | __MATHCALL_VEC (atan2,, (_Mdouble_ __y, _Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:59:1: error: ‘__’ was not declared in this scope
+   59 | __MATHCALL_VEC (atan2,, (_Mdouble_ __y, _Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:59:1: error: ‘atan2’ was not declared in this scope
+   59 | __MATHCALL_VEC (atan2,, (_Mdouble_ __y, _Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:59:1: error: ‘__CONCAT’ cannot be used as a function
+   59 | __MATHCALL_VEC (atan2,, (_Mdouble_ __y, _Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:59:1: error: expected primary-expression before ‘)’ token
+   59 | __MATHCALL_VEC (atan2,, (_Mdouble_ __y, _Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:62:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   62 | __MATHCALL_VEC (cos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:62:1: error: conflicting declaration ‘double __CONCAT’
+   62 | __MATHCALL_VEC (cos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:62:1: error: ‘__’ was not declared in this scope
+   62 | __MATHCALL_VEC (cos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:62:1: error: ‘cos’ was not declared in this scope; did you mean ‘const’?
+   62 | __MATHCALL_VEC (cos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:62:1: error: ‘__CONCAT’ cannot be used as a function
+   62 | __MATHCALL_VEC (cos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:62:1: error: expected primary-expression before ‘)’ token
+   62 | __MATHCALL_VEC (cos,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:64:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   64 | __MATHCALL_VEC (sin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:64:1: error: conflicting declaration ‘double __CONCAT’
+   64 | __MATHCALL_VEC (sin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:64:1: error: ‘__’ was not declared in this scope
+   64 | __MATHCALL_VEC (sin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:64:1: error: ‘sin’ was not declared in this scope
+   64 | __MATHCALL_VEC (sin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:64:1: error: ‘__CONCAT’ cannot be used as a function
+   64 | __MATHCALL_VEC (sin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:64:1: error: expected primary-expression before ‘)’ token
+   64 | __MATHCALL_VEC (sin,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:66:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   66 | __MATHCALL_VEC (tan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:66:1: error: conflicting declaration ‘double __CONCAT’
+   66 | __MATHCALL_VEC (tan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:66:1: error: ‘__’ was not declared in this scope
+   66 | __MATHCALL_VEC (tan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:66:1: error: ‘tan’ was not declared in this scope
+   66 | __MATHCALL_VEC (tan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:66:1: error: ‘__CONCAT’ cannot be used as a function
+   66 | __MATHCALL_VEC (tan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:66:1: error: expected primary-expression before ‘)’ token
+   66 | __MATHCALL_VEC (tan,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:71:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   71 | __MATHCALL_VEC (cosh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:71:1: error: conflicting declaration ‘double __CONCAT’
+   71 | __MATHCALL_VEC (cosh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:71:1: error: ‘__’ was not declared in this scope
+   71 | __MATHCALL_VEC (cosh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:71:1: error: ‘cosh’ was not declared in this scope
+   71 | __MATHCALL_VEC (cosh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:71:1: error: ‘__CONCAT’ cannot be used as a function
+   71 | __MATHCALL_VEC (cosh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:71:1: error: expected primary-expression before ‘)’ token
+   71 | __MATHCALL_VEC (cosh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:73:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   73 | __MATHCALL_VEC (sinh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:73:1: error: conflicting declaration ‘double __CONCAT’
+   73 | __MATHCALL_VEC (sinh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:73:1: error: ‘__’ was not declared in this scope
+   73 | __MATHCALL_VEC (sinh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:73:1: error: ‘sinh’ was not declared in this scope
+   73 | __MATHCALL_VEC (sinh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:73:1: error: ‘__CONCAT’ cannot be used as a function
+   73 | __MATHCALL_VEC (sinh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:73:1: error: expected primary-expression before ‘)’ token
+   73 | __MATHCALL_VEC (sinh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:75:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   75 | __MATHCALL_VEC (tanh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:75:1: error: conflicting declaration ‘double __CONCAT’
+   75 | __MATHCALL_VEC (tanh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:75:1: error: ‘__’ was not declared in this scope
+   75 | __MATHCALL_VEC (tanh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:75:1: error: ‘tanh’ was not declared in this scope
+   75 | __MATHCALL_VEC (tanh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:75:1: error: ‘__CONCAT’ cannot be used as a function
+   75 | __MATHCALL_VEC (tanh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:75:1: error: expected primary-expression before ‘)’ token
+   75 | __MATHCALL_VEC (tanh,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:95:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+   95 | __MATHCALL_VEC (exp,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:95:1: error: conflicting declaration ‘double __CONCAT’
+   95 | __MATHCALL_VEC (exp,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:95:1: error: ‘__’ was not declared in this scope
+   95 | __MATHCALL_VEC (exp,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:95:1: error: ‘exp’ was not declared in this scope
+   95 | __MATHCALL_VEC (exp,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:95:1: error: ‘__CONCAT’ cannot be used as a function
+   95 | __MATHCALL_VEC (exp,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:95:1: error: expected primary-expression before ‘)’ token
+   95 | __MATHCALL_VEC (exp,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:98:1: error: conflicting declaration ‘double __CONCAT’
+   98 | __MATHCALL (frexp,, (_Mdouble_ __x, int *__exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:98:1: error: ‘frexp’ was not declared in this scope
+   98 | __MATHCALL (frexp,, (_Mdouble_ __x, int *__exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:98:1: error: expected primary-expression before ‘)’ token
+   98 | __MATHCALL (frexp,, (_Mdouble_ __x, int *__exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:98:1: error: conflicting declaration ‘double __CONCAT’
+   98 | __MATHCALL (frexp,, (_Mdouble_ __x, int *__exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:98:1: error: ‘__’ was not declared in this scope
+   98 | __MATHCALL (frexp,, (_Mdouble_ __x, int *__exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:98:1: error: ‘frexp’ was not declared in this scope
+   98 | __MATHCALL (frexp,, (_Mdouble_ __x, int *__exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:98:1: error: ‘__CONCAT’ cannot be used as a function
+   98 | __MATHCALL (frexp,, (_Mdouble_ __x, int *__exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:98:1: error: expected primary-expression before ‘)’ token
+   98 | __MATHCALL (frexp,, (_Mdouble_ __x, int *__exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:101:1: error: conflicting declaration ‘double __CONCAT’
+  101 | __MATHCALL (ldexp,, (_Mdouble_ __x, int __exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:101:1: error: ‘ldexp’ was not declared in this scope
+  101 | __MATHCALL (ldexp,, (_Mdouble_ __x, int __exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:101:1: error: expected primary-expression before ‘)’ token
+  101 | __MATHCALL (ldexp,, (_Mdouble_ __x, int __exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:101:1: error: conflicting declaration ‘double __CONCAT’
+  101 | __MATHCALL (ldexp,, (_Mdouble_ __x, int __exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:101:1: error: ‘__’ was not declared in this scope
+  101 | __MATHCALL (ldexp,, (_Mdouble_ __x, int __exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:101:1: error: ‘ldexp’ was not declared in this scope
+  101 | __MATHCALL (ldexp,, (_Mdouble_ __x, int __exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:101:1: error: ‘__CONCAT’ cannot be used as a function
+  101 | __MATHCALL (ldexp,, (_Mdouble_ __x, int __exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:101:1: error: expected primary-expression before ‘)’ token
+  101 | __MATHCALL (ldexp,, (_Mdouble_ __x, int __exponent));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:104:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+  104 | __MATHCALL_VEC (log,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:104:1: error: conflicting declaration ‘double __CONCAT’
+  104 | __MATHCALL_VEC (log,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:104:1: error: ‘__’ was not declared in this scope
+  104 | __MATHCALL_VEC (log,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:104:1: error: ‘log’ was not declared in this scope; did you mean ‘long’?
+  104 | __MATHCALL_VEC (log,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:104:1: error: ‘__CONCAT’ cannot be used as a function
+  104 | __MATHCALL_VEC (log,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:104:1: error: expected primary-expression before ‘)’ token
+  104 | __MATHCALL_VEC (log,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:107:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+  107 | __MATHCALL_VEC (log10,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:107:1: error: conflicting declaration ‘double __CONCAT’
+  107 | __MATHCALL_VEC (log10,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:107:1: error: ‘__’ was not declared in this scope
+  107 | __MATHCALL_VEC (log10,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:107:1: error: ‘log10’ was not declared in this scope
+  107 | __MATHCALL_VEC (log10,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:107:1: error: ‘__CONCAT’ cannot be used as a function
+  107 | __MATHCALL_VEC (log10,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:107:1: error: expected primary-expression before ‘)’ token
+  107 | __MATHCALL_VEC (log10,, (_Mdouble_ __x));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:110:1: error: conflicting declaration ‘double __CONCAT’
+  110 | __MATHCALL (modf,, (_Mdouble_ __x, _Mdouble_ *__iptr)) __nonnull ((2));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:110:1: error: ‘modf’ was not declared in this scope
+  110 | __MATHCALL (modf,, (_Mdouble_ __x, _Mdouble_ *__iptr)) __nonnull ((2));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:110:1: error: expected primary-expression before ‘)’ token
+  110 | __MATHCALL (modf,, (_Mdouble_ __x, _Mdouble_ *__iptr)) __nonnull ((2));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:110:1: error: conflicting declaration ‘double __CONCAT’
+  110 | __MATHCALL (modf,, (_Mdouble_ __x, _Mdouble_ *__iptr)) __nonnull ((2));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:110:1: error: ‘__’ was not declared in this scope
+  110 | __MATHCALL (modf,, (_Mdouble_ __x, _Mdouble_ *__iptr)) __nonnull ((2));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:110:1: error: ‘modf’ was not declared in this scope
+  110 | __MATHCALL (modf,, (_Mdouble_ __x, _Mdouble_ *__iptr)) __nonnull ((2));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:110:1: error: ‘__CONCAT’ cannot be used as a function
+  110 | __MATHCALL (modf,, (_Mdouble_ __x, _Mdouble_ *__iptr)) __nonnull ((2));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:110:1: error: expected primary-expression before ‘)’ token
+  110 | __MATHCALL (modf,, (_Mdouble_ __x, _Mdouble_ *__iptr)) __nonnull ((2));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:155:1: error: expected constructor, destructor, or type conversion before ‘(’ token
+  155 | __MATHCALL_VEC (pow,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:155:1: error: conflicting declaration ‘double __CONCAT’
+  155 | __MATHCALL_VEC (pow,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:155:1: error: ‘__’ was not declared in this scope
+  155 | __MATHCALL_VEC (pow,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:155:1: error: ‘pow’ was not declared in this scope
+  155 | __MATHCALL_VEC (pow,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:155:1: error: ‘__CONCAT’ cannot be used as a function
+  155 | __MATHCALL_VEC (pow,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:155:1: error: expected primary-expression before ‘)’ token
+  155 | __MATHCALL_VEC (pow,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:158:1: error: conflicting declaration ‘double __CONCAT’
+  158 | __MATHCALL (sqrt,, (_Mdouble_ __x));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:158:1: error: ‘sqrt’ was not declared in this scope
+  158 | __MATHCALL (sqrt,, (_Mdouble_ __x));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:158:1: error: expected primary-expression before ‘)’ token
+  158 | __MATHCALL (sqrt,, (_Mdouble_ __x));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:158:1: error: conflicting declaration ‘double __CONCAT’
+  158 | __MATHCALL (sqrt,, (_Mdouble_ __x));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:158:1: error: ‘__’ was not declared in this scope
+  158 | __MATHCALL (sqrt,, (_Mdouble_ __x));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:158:1: error: ‘sqrt’ was not declared in this scope
+  158 | __MATHCALL (sqrt,, (_Mdouble_ __x));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:158:1: error: ‘__CONCAT’ cannot be used as a function
+  158 | __MATHCALL (sqrt,, (_Mdouble_ __x));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:158:1: error: expected primary-expression before ‘)’ token
+  158 | __MATHCALL (sqrt,, (_Mdouble_ __x));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:174:1: error: conflicting declaration ‘double __CONCAT’
+  174 | __MATHCALLX (ceil,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:174:1: error: ‘ceil’ was not declared in this scope
+  174 | __MATHCALLX (ceil,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:174:1: error: expected primary-expression before ‘)’ token
+  174 | __MATHCALLX (ceil,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:174:1: error: conflicting declaration ‘double __CONCAT’
+  174 | __MATHCALLX (ceil,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:174:1: error: ‘__’ was not declared in this scope
+  174 | __MATHCALLX (ceil,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:174:1: error: ‘ceil’ was not declared in this scope
+  174 | __MATHCALLX (ceil,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:174:1: error: ‘__CONCAT’ cannot be used as a function
+  174 | __MATHCALLX (ceil,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:174:1: error: expected primary-expression before ‘)’ token
+  174 | __MATHCALLX (ceil,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:177:1: error: conflicting declaration ‘double __CONCAT’
+  177 | __MATHCALLX (fabs,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:177:1: error: ‘fabs’ was not declared in this scope
+  177 | __MATHCALLX (fabs,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:177:1: error: expected primary-expression before ‘)’ token
+  177 | __MATHCALLX (fabs,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:177:1: error: conflicting declaration ‘double __CONCAT’
+  177 | __MATHCALLX (fabs,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:177:1: error: ‘__’ was not declared in this scope
+  177 | __MATHCALLX (fabs,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:177:1: error: ‘fabs’ was not declared in this scope
+  177 | __MATHCALLX (fabs,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:177:1: error: ‘__CONCAT’ cannot be used as a function
+  177 | __MATHCALLX (fabs,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:177:1: error: expected primary-expression before ‘)’ token
+  177 | __MATHCALLX (fabs,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:180:1: error: conflicting declaration ‘double __CONCAT’
+  180 | __MATHCALLX (floor,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:180:1: error: ‘floor’ was not declared in this scope
+  180 | __MATHCALLX (floor,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:180:1: error: expected primary-expression before ‘)’ token
+  180 | __MATHCALLX (floor,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:180:1: error: conflicting declaration ‘double __CONCAT’
+  180 | __MATHCALLX (floor,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:180:1: error: ‘__’ was not declared in this scope
+  180 | __MATHCALLX (floor,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:180:1: error: ‘floor’ was not declared in this scope
+  180 | __MATHCALLX (floor,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:180:1: error: ‘__CONCAT’ cannot be used as a function
+  180 | __MATHCALLX (floor,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:180:1: error: expected primary-expression before ‘)’ token
+  180 | __MATHCALLX (floor,, (_Mdouble_ __x), (__const__));
+      | ^~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:183:1: error: conflicting declaration ‘double __CONCAT’
+  183 | __MATHCALL (fmod,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:183:1: error: ‘fmod’ was not declared in this scope
+  183 | __MATHCALL (fmod,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:183:1: error: expected primary-expression before ‘)’ token
+  183 | __MATHCALL (fmod,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:183:1: error: conflicting declaration ‘double __CONCAT’
+  183 | __MATHCALL (fmod,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls-helper-functions.h:20:1: note: previous declaration as ‘int __CONCAT’
+   20 | __MATHDECL_ALIAS (int, __fpclassify,, (_Mdouble_ __value), fpclassify)
+      | ^~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:183:1: error: ‘__’ was not declared in this scope
+  183 | __MATHCALL (fmod,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:183:1: error: ‘fmod’ was not declared in this scope
+  183 | __MATHCALL (fmod,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:183:1: error: ‘__CONCAT’ cannot be used as a function
+  183 | __MATHCALL (fmod,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/bits/mathcalls.h:183:1: error: expected primary-expression before ‘)’ token
+  183 | __MATHCALL (fmod,, (_Mdouble_ __x, _Mdouble_ __y));
+      | ^~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/math.h:1472:1: error: ‘__END_DECLS’ does not name a type
+ 1472 | __END_DECLS
+      | ^~~~~~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:100:9: error: ‘div_t’ has not been declared in ‘::’
+  100 | using ::div_t;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:101:9: error: ‘ldiv_t’ has not been declared in ‘::’
+  101 | using ::ldiv_t;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:103:9: error: ‘lldiv_t’ has not been declared in ‘::’
+  103 | using ::lldiv_t;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:105:9: error: ‘atof’ has not been declared in ‘::’
+  105 | using ::atof;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:106:9: error: ‘atoi’ has not been declared in ‘::’
+  106 | using ::atoi;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:107:9: error: ‘atol’ has not been declared in ‘::’
+  107 | using ::atol;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:109:9: error: ‘atoll’ has not been declared in ‘::’
+  109 | using ::atoll;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:111:9: error: ‘strtod’ has not been declared in ‘::’
+  111 | using ::strtod;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:112:9: error: ‘strtof’ has not been declared in ‘::’
+  112 | using ::strtof;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:113:9: error: ‘strtold’ has not been declared in ‘::’
+  113 | using ::strtold;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:114:9: error: ‘strtol’ has not been declared in ‘::’
+  114 | using ::strtol;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:116:9: error: ‘strtoll’ has not been declared in ‘::’
+  116 | using ::strtoll;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:118:9: error: ‘strtoul’ has not been declared in ‘::’
+  118 | using ::strtoul;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:120:9: error: ‘strtoull’ has not been declared in ‘::’
+  120 | using ::strtoull;
+      |         ^~~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:122:9: error: ‘rand’ has not been declared in ‘::’
+  122 | using ::rand;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:123:9: error: ‘srand’ has not been declared in ‘::’
+  123 | using ::srand;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:129:9: error: ‘atexit’ has not been declared in ‘::’
+  129 | using ::atexit;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:130:9: error: ‘exit’ has not been declared in ‘::’
+  130 | using ::exit;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:131:9: error: ‘_Exit’ has not been declared in ‘::’
+  131 | using ::_Exit;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:133:9: error: ‘getenv’ has not been declared in ‘::’
+  133 | using ::getenv;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:134:9: error: ‘system’ has not been declared in ‘::’
+  134 | using ::system;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:136:9: error: ‘bsearch’ has not been declared in ‘::’
+  136 | using ::bsearch;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:137:9: error: ‘qsort’ has not been declared in ‘::’
+  137 | using ::qsort;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:138:9: error: ‘abs’ has not been declared in ‘::’
+  138 | using ::abs;
+      |         ^~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:139:9: error: ‘labs’ has not been declared in ‘::’
+  139 | using ::labs;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:141:9: error: ‘llabs’ has not been declared in ‘::’
+  141 | using ::llabs;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:143:9: error: ‘div’ has not been declared in ‘::’
+  143 | using ::div;
+      |         ^~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:144:9: error: ‘ldiv’ has not been declared in ‘::’
+  144 | using ::ldiv;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:146:9: error: ‘lldiv’ has not been declared in ‘::’
+  146 | using ::lldiv;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:148:9: error: ‘mblen’ has not been declared in ‘::’
+  148 | using ::mblen;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:149:9: error: ‘mbtowc’ has not been declared in ‘::’
+  149 | using ::mbtowc;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:150:9: error: ‘wctomb’ has not been declared in ‘::’
+  150 | using ::wctomb;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:151:9: error: ‘mbstowcs’ has not been declared in ‘::’
+  151 | using ::mbstowcs;
+      |         ^~~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstdlib:152:9: error: ‘wcstombs’ has not been declared in ‘::’
+  152 | using ::wcstombs;
+      |         ^~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:30:1: error: ‘__BEGIN_DECLS’ does not name a type
+   30 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:158:44: error: expected initializer before ‘__THROW’
+  158 | extern int remove (const char *__filename) __THROW;
+      |                                            ^~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:160:58: error: expected initializer before ‘__THROW’
+  160 | extern int rename (const char *__old, const char *__new) __THROW;
+      |                                                          ^~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:184:36: error: expected initializer before ‘__nonnull’
+  184 | extern int fclose (FILE *__stream) __nonnull ((1));
+      |                                    ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:195:3: error: expected initializer before ‘__attribute_malloc__’
+  195 |   __attribute_malloc__ __attr_dealloc_fclose __wur;
+      |   ^~~~~~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:211:38: error: expected initializer before ‘__THROW’
+  211 | extern char *tmpnam (char[L_tmpnam]) __THROW __wur;
+      |                                      ^~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:266:3: error: expected initializer before ‘__attribute_malloc__’
+  266 |   __attribute_malloc__ __attr_dealloc_fclose __wur;
+      |   ^~~~~~~~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:273:50: error: expected initializer before ‘__wur’
+  273 |                       FILE *__restrict __stream) __wur __nonnull ((3));
+      |                                                  ^~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:334:72: error: expected initializer before ‘__THROW’
+  334 | extern void setbuf (FILE *__restrict __stream, char *__restrict __buf) __THROW
+      |                                                                        ^~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:340:46: error: expected initializer before ‘__THROW’
+  340 |                     int __modes, size_t __n) __THROW __nonnull ((1));
+      |                                              ^~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:358:59: error: expected initializer before ‘__nonnull’
+  358 |                     const char *__restrict __format, ...) __nonnull ((1));
+      |                                                           ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:366:59: error: expected initializer before ‘__THROWNL’
+  366 |                     const char *__restrict __format, ...) __THROWNL;
+      |                                                           ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:373:22: error: ‘__gnuc_va_list’ has not been declared
+  373 |                      __gnuc_va_list __arg) __nonnull ((1));
+      |                      ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:373:44: error: expected initializer before ‘__nonnull’
+  373 |                      __gnuc_va_list __arg) __nonnull ((1));
+      |                                            ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:378:54: error: ‘__gnuc_va_list’ has not been declared
+  378 | extern int vprintf (const char *__restrict __format, __gnuc_va_list __arg);
+      |                                                      ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:381:22: error: ‘__gnuc_va_list’ has not been declared
+  381 |                      __gnuc_va_list __arg) __THROWNL;
+      |                      ^~~~~~~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:381:44: error: expected initializer before ‘__THROWNL’
+  381 |                      __gnuc_va_list __arg) __THROWNL;
+      |                                            ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:423:58: error: expected initializer before ‘__wur’
+  423 |                    const char *__restrict __format, ...) __wur __nonnull ((1));
+      |                                                          ^~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:428:57: error: expected initializer before ‘__wur’
+  428 | extern int scanf (const char *__restrict __format, ...) __wur;
+      |                                                         ^~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:431:58: error: expected initializer before ‘__THROW’
+  431 |                    const char *__restrict __format, ...) __THROW;
+      |                                                          ^~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:575:35: error: expected initializer before ‘__nonnull’
+  575 | extern int fgetc (FILE *__stream) __nonnull ((1));
+      |                                   ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:576:34: error: expected initializer before ‘__nonnull’
+  576 | extern int getc (FILE *__stream) __nonnull ((1));
+      |                                  ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:611:44: error: expected initializer before ‘__nonnull’
+  611 | extern int fputc (int __c, FILE *__stream) __nonnull ((2));
+      |                                            ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:612:43: error: expected initializer before ‘__nonnull’
+  612 | extern int putc (int __c, FILE *__stream) __nonnull ((2));
+      |                                           ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:655:6: error: expected initializer before ‘__wur’
+  655 |      __wur __fortified_attr_access (__write_only__, 1, 2) __nonnull ((3));
+      |      ^~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:708:3: error: expected initializer before ‘__nonnull’
+  708 |   __nonnull ((2));
+      |   ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:721:45: error: expected initializer before ‘__nonnull’
+  721 | extern int ungetc (int __c, FILE *__stream) __nonnull ((2));
+      |                                             ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:729:61: error: expected initializer before ‘__wur’
+  729 |                      size_t __n, FILE *__restrict __stream) __wur
+      |                                                             ^~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:736:57: error: expected initializer before ‘__nonnull’
+  736 |                       size_t __n, FILE *__restrict __s) __nonnull((4));
+      |                                                         ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:770:3: error: expected initializer before ‘__nonnull’
+  770 |   __nonnull ((1));
+      |   ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:775:40: error: expected initializer before ‘__wur’
+  775 | extern long int ftell (FILE *__stream) __wur __nonnull ((1));
+      |                                        ^~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:780:37: error: expected initializer before ‘__nonnull’
+  780 | extern void rewind (FILE *__stream) __nonnull ((1));
+      |                                     ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:820:3: error: expected initializer before ‘__nonnull’
+  820 |   __nonnull ((1));
+      |   ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:825:58: error: expected initializer before ‘__nonnull’
+  825 | extern int fsetpos (FILE *__stream, const fpos_t *__pos) __nonnull ((1));
+      |                                                          ^~~~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:850:39: error: expected initializer before ‘__THROW’
+  850 | extern void clearerr (FILE *__stream) __THROW __nonnull ((1));
+      |                                       ^~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:852:34: error: expected initializer before ‘__THROW’
+  852 | extern int feof (FILE *__stream) __THROW __wur __nonnull ((1));
+      |                                  ^~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:854:36: error: expected initializer before ‘__THROW’
+  854 | extern int ferror (FILE *__stream) __THROW __wur __nonnull ((1));
+      |                                    ^~~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:868:38: error: expected initializer before ‘__COLD’
+  868 | extern void perror (const char *__s) __COLD;
+      |                                      ^~~~~~
+/home/abc/arm-toolchain/aarch64-none-linux-gnu/libc/usr/include/stdio.h:973:1: error: ‘__END_DECLS’ does not name a type
+  973 | __END_DECLS
+      | ^~~~~~~~~~~
+In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/algorithm:641,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/__bit_reference:15:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:71:9: error: ‘strcpy’ has not been declared in ‘::’
+   71 | using ::strcpy;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:72:9: error: ‘strncpy’ has not been declared in ‘::’
+   72 | using ::strncpy;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:73:9: error: ‘strcat’ has not been declared in ‘::’
+   73 | using ::strcat;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:74:9: error: ‘strncat’ has not been declared in ‘::’
+   74 | using ::strncat;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:76:9: error: ‘strcmp’ has not been declared in ‘::’
+   76 | using ::strcmp;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:77:9: error: ‘strncmp’ has not been declared in ‘::’
+   77 | using ::strncmp;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:78:9: error: ‘strcoll’ has not been declared in ‘::’
+   78 | using ::strcoll;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:79:9: error: ‘strxfrm’ has not been declared in ‘::’
+   79 | using ::strxfrm;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:80:9: error: ‘memchr’ has not been declared in ‘::’
+   80 | using ::memchr;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:81:9: error: ‘strchr’ has not been declared in ‘::’
+   81 | using ::strchr;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:82:9: error: ‘strcspn’ has not been declared in ‘::’
+   82 | using ::strcspn;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:83:9: error: ‘strpbrk’ has not been declared in ‘::’
+   83 | using ::strpbrk;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:84:9: error: ‘strrchr’ has not been declared in ‘::’
+   84 | using ::strrchr;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:85:9: error: ‘strspn’ has not been declared in ‘::’
+   85 | using ::strspn;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:86:9: error: ‘strstr’ has not been declared in ‘::’
+   86 | using ::strstr;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:88:9: error: ‘strtok’ has not been declared in ‘::’
+   88 | using ::strtok;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/cstring:91:9: error: ‘strerror’ has not been declared in ‘::’
+   91 | using ::strerror;
+      |         ^~~~~~~~
