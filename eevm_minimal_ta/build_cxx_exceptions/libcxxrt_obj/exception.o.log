@@ -1,0 +1,26 @@
+In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/stddef.h:39,
+                 from /home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/stdlib.h:15,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxxrt/libcxxrt/src/exception.cc:27:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/__config:1306:50: error: missing ')' after "__has_attribute"
+ 1306 | #if __cplusplus > 201402L && __has_cpp_attribute(fallthrough)
+      |                                                  ^~~~~~~~~~~
+In file included from /home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/stdlib.h:14:
+/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/compiler.h:288:35: error: missing binary operator before token "("
+  288 | #define fallthrough __attribute__((__fallthrough__))
+      |                                   ^
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/__config:1308:34: error: missing ')' after "__has_attribute"
+ 1308 | #elif __has_cpp_attribute(clang::fallthrough)
+      |                                  ^~~~~~~~~~~
+/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/compiler.h:288:35: error: missing binary operator before token "("
+  288 | #define fallthrough __attribute__((__fallthrough__))
+      |                                   ^
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/include/__config:1310:23: error: missing ')' after "__has_attribute"
+ 1310 | #elif __has_attribute(fallthrough) || _GNUC_VER >= 700
+      |                       ^~~~~~~~~~~
+/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/compiler.h:288:35: error: missing binary operator before token "("
+  288 | #define fallthrough __attribute__((__fallthrough__))
+      |                                   ^
+/home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxxrt/libcxxrt/src/exception.cc:39:10: fatal error: openenclave/internal/sgx/td.h: No such file or directory
+   39 | #include <openenclave/internal/sgx/td.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.

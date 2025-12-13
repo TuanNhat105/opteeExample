@@ -1,4 +1,0 @@
-#ifndef _LIBCPP_CMATH
-#define _LIBCPP_CMATH
-// Empty stub to block libcxx from pulling math
-#endif
