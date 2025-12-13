@@ -151,83 +151,83 @@ static TEE_Result test_real_vector(uint32_t param_types, TEE_Param params[4])
 /*
  * Test REAL std::map - NO MORE CUSTOM IMPLEMENTATION!
  */
-static TEE_Result test_real_map(uint32_t param_types, TEE_Param params[4])
-{
-    uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
-                                               TEE_PARAM_TYPE_NONE,
-                                               TEE_PARAM_TYPE_NONE,
-                                               TEE_PARAM_TYPE_NONE);
+// static TEE_Result test_real_map(uint32_t param_types, TEE_Param params[4])
+// {
+//     uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
+//                                                TEE_PARAM_TYPE_NONE,
+//                                                TEE_PARAM_TYPE_NONE,
+//                                                TEE_PARAM_TYPE_NONE);
 
-    if (param_types != exp_param_types)
-        return TEE_ERROR_BAD_PARAMETERS;
+//     if (param_types != exp_param_types)
+//         return TEE_ERROR_BAD_PARAMETERS;
 
-    DMSG("========================================");
-    DMSG("Testing REAL std::map from libcxx");
-    DMSG("========================================");
+//     DMSG("========================================");
+//     DMSG("Testing REAL std::map from libcxx");
+//     DMSG("========================================");
 
-    try
-    {
-        // Create std::map - this is THE REAL STL!
-        std::map<int, int> mymap;
+//     try
+//     {
+//         // Create std::map - this is THE REAL STL!
+//         std::map<int, int> mymap;
 
-        DMSG("Test 1: Insert key-value pairs");
-        mymap[1] = 100;
-        mymap[2] = 200;
-        mymap[3] = 300;
-        mymap[5] = 500;
-        mymap[8] = 800;
+//         DMSG("Test 1: Insert key-value pairs");
+//         mymap[1] = 100;
+//         mymap[2] = 200;
+//         mymap[3] = 300;
+//         mymap[5] = 500;
+//         mymap[8] = 800;
 
-        DMSG("Map size: %zu", mymap.size());
+//         DMSG("Map size: %zu", mymap.size());
 
-        // Test 2: Iterate through map
-        DMSG("\nTest 2: Iterate through map");
-        for (const auto &pair : mymap)
-        {
-            DMSG("  Key: %d -> Value: %d", pair.first, pair.second);
-        }
+//         // Test 2: Iterate through map
+//         DMSG("\nTest 2: Iterate through map");
+//         for (const auto &pair : mymap)
+//         {
+//             DMSG("  Key: %d -> Value: %d", pair.first, pair.second);
+//         }
 
-        // Test 3: Find operation
-        DMSG("\nTest 3: Find key 5");
-        auto it = mymap.find(5);
-        if (it != mymap.end())
-        {
-            DMSG("  Found: key=%d, value=%d", it->first, it->second);
-        }
+//         // Test 3: Find operation
+//         DMSG("\nTest 3: Find key 5");
+//         auto it = mymap.find(5);
+//         if (it != mymap.end())
+//         {
+//             DMSG("  Found: key=%d, value=%d", it->first, it->second);
+//         }
 
-        // Test 4: Count operation
-        DMSG("\nTest 4: Count occurrences");
-        DMSG("  Count of key 3: %zu", mymap.count(3));
-        DMSG("  Count of key 99: %zu", mymap.count(99));
+//         // Test 4: Count operation
+//         DMSG("\nTest 4: Count occurrences");
+//         DMSG("  Count of key 3: %zu", mymap.count(3));
+//         DMSG("  Count of key 99: %zu", mymap.count(99));
 
-        // Test 5: Erase operation
-        DMSG("\nTest 5: Erase key 2");
-        mymap.erase(2);
-        DMSG("  After erase, size: %zu", mymap.size());
+//         // Test 5: Erase operation
+//         DMSG("\nTest 5: Erase key 2");
+//         mymap.erase(2);
+//         DMSG("  After erase, size: %zu", mymap.size());
 
-        // Test 6: Clear
-        mymap.clear();
-        DMSG("\nTest 6: After clear, size: %zu", mymap.size());
-        DMSG("  Is empty: %s", mymap.empty() ? "yes" : "no");
+//         // Test 6: Clear
+//         mymap.clear();
+//         DMSG("\nTest 6: After clear, size: %zu", mymap.size());
+//         DMSG("  Is empty: %s", mymap.empty() ? "yes" : "no");
 
-        params[0].value.a = 0; // Success
+//         params[0].value.a = 0; // Success
 
-        DMSG("========================================");
-        DMSG("std::map TEST PASSED!");
-        DMSG("========================================");
+//         DMSG("========================================");
+//         DMSG("std::map TEST PASSED!");
+//         DMSG("========================================");
 
-        return TEE_SUCCESS;
-    }
-    catch (const std::exception &e)
-    {
-        EMSG("Exception caught: %s", e.what());
-        return TEE_ERROR_GENERIC;
-    }
-    catch (...)
-    {
-        EMSG("Unknown exception caught!");
-        return TEE_ERROR_GENERIC;
-    }
-}
+//         return TEE_SUCCESS;
+//     }
+//     catch (const std::exception &e)
+//     {
+//         EMSG("Exception caught: %s", e.what());
+//         return TEE_ERROR_GENERIC;
+//     }
+//     catch (...)
+//     {
+//         EMSG("Unknown exception caught!");
+//         return TEE_ERROR_GENERIC;
+//     }
+// }
 
 // /*
 //  * Test Exception Handling

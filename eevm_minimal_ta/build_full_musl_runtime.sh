@@ -14,7 +14,7 @@ LIBCXX_SRC="$PROJECT_ROOT/external/openenclave/3rdparty/libcxx/libcxx"
 BUILD_DIR="$PROJECT_ROOT/build_full_musl"
 CROSS_COMPILE="${CROSS_COMPILE:-aarch64-none-linux-gnu-}"
 TA_DEV_KIT_DIR="${TA_DEV_KIT_DIR:-/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64}"
-
+export PATH=/home/abc/arm-toolchain/bin:$PATH
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}Build FULL musl + libcxx for OP-TEE${NC}"
 echo -e "${GREEN}========================================${NC}"
@@ -42,9 +42,12 @@ cp -r "$MUSL_SRC/include/"* include/
 mkdir -p include/bits
 cp -r "$MUSL_SRC/arch/aarch64/bits/"* include/bits/ 2>/dev/null || true
 
-# Generate minimal alltypes.h (musl normally uses configure for this)
+# Generate minimal alltypes.h with C++ compatibility
 cat > include/bits/alltypes.h <<'ALLTYPES_EOF'
-/* Minimal alltypes.h for OP-TEE */
+#ifndef _BITS_ALLTYPES_H
+#define _BITS_ALLTYPES_H
+
+/* Minimal alltypes.h for OP-TEE - C++ compatible */
 typedef unsigned long size_t;
 typedef unsigned long uintptr_t;
 typedef long ptrdiff_t;
@@ -64,14 +67,33 @@ typedef unsigned long long uint64_t;
 typedef unsigned long long uintmax_t;
 
 typedef unsigned wint_t;
+/* wchar_t is C++ builtin, don't redefine */
+#ifndef __cplusplus
 typedef unsigned wchar_t;
+#endif
 
-typedef struct { unsigned __opaque; } mbstate_t;
+typedef struct __mbstate_t { unsigned __opaque; } mbstate_t;
 
 typedef __builtin_va_list va_list;
 typedef long time_t;
 
+/* FILE type for stdio */
+struct _IO_FILE;
+typedef struct _IO_FILE FILE;
+
+typedef __builtin_va_list __isoc_va_list;
+
+typedef long long off_t;
+
+/* locale_t stub */
+typedef void* locale_t;
+
+/* wctype_t */
+typedef unsigned long wctype_t;
+
 #define NULL ((void*)0)
+
+#endif /* _BITS_ALLTYPES_H */
 ALLTYPES_EOF
 
 echo -e "${GREEN}✓ $(find include -name '*.h' | wc -l) headers copied${NC}"
@@ -164,44 +186,69 @@ else
 fi
 echo ""
 
-echo -e "${YELLOW}Step 3: Build musl string functions${NC}"
+echo -e "${YELLOW}Step 3: Build musl string functions (weak symbols)${NC}"
 cat > src/musl_string.c <<'EOF'
+// String functions with WEAK linkage - only implement what OP-TEE doesn't have
 #include <tee_internal_api.h>
 
 typedef __SIZE_TYPE__ size_t;
 
-// Use TEE native functions where possible
+// Use TEE native functions where possible - ALL WEAK to avoid conflicts
+__attribute__((weak))
 void* memcpy(void* dest, const void* src, size_t n) {
-    TEE_MemMove(dest, src, n);
+    unsigned char* d = (unsigned char*)dest;
+    const unsigned char* s = (const unsigned char*)src;
+    while (n--) *d++ = *s++;
     return dest;
 }
 
+__attribute__((weak))
 void* memmove(void* dest, const void* src, size_t n) {
-    TEE_MemMove(dest, src, n);
+    unsigned char* d = (unsigned char*)dest;
+    const unsigned char* s = (const unsigned char*)src;
+    if (d < s) {
+        while (n--) *d++ = *s++;
+    } else {
+        d += n; s += n;
+        while (n--) *--d = *--s;
+    }
     return dest;
 }
 
+__attribute__((weak))
 void* memset(void* s, int c, size_t n) {
-    TEE_MemFill(s, (uint8_t)c, n);
+    unsigned char* p = (unsigned char*)s;
+    while (n--) *p++ = (unsigned char)c;
     return s;
 }
 
+__attribute__((weak))
 int memcmp(const void* s1, const void* s2, size_t n) {
-    return TEE_MemCompare(s1, s2, n);
+    const unsigned char* p1 = (const unsigned char*)s1;
+    const unsigned char* p2 = (const unsigned char*)s2;
+    while (n--) {
+        if (*p1 != *p2) return *p1 - *p2;
+        p1++; p2++;
+    }
+    return 0;
 }
 
+__attribute__((weak))
 size_t strlen(const char* s) {
     size_t len = 0;
     while (s[len]) len++;
     return len;
 }
 
+// WEAK symbols - use OP-TEE versions if available
+__attribute__((weak))
 char* strcpy(char* dest, const char* src) {
     char* d = dest;
     while ((*d++ = *src++));
     return dest;
 }
 
+__attribute__((weak))
 char* strncpy(char* dest, const char* src, size_t n) {
     size_t i;
     for (i = 0; i < n && src[i]; i++) dest[i] = src[i];
@@ -209,6 +256,7 @@ char* strncpy(char* dest, const char* src, size_t n) {
     return dest;
 }
 
+__attribute__((weak))
 int strcmp(const char* s1, const char* s2) {
     while (*s1 && (*s1 == *s2)) {
         s1++;
@@ -217,6 +265,7 @@ int strcmp(const char* s1, const char* s2) {
     return *(unsigned char*)s1 - *(unsigned char*)s2;
 }
 
+__attribute__((weak))
 int strncmp(const char* s1, const char* s2, size_t n) {
     while (n && *s1 && (*s1 == *s2)) {
         s1++;
@@ -225,6 +274,142 @@ int strncmp(const char* s1, const char* s2, size_t n) {
     }
     if (n == 0) return 0;
     return *(unsigned char*)s1 - *(unsigned char*)s2;
+}
+
+__attribute__((weak))
+char* strcat(char* dest, const char* src) {
+    char* d = dest;
+    while (*d) d++;
+    while ((*d++ = *src++));
+    return dest;
+}
+
+__attribute__((weak))
+char* strncat(char* dest, const char* src, size_t n) {
+    char* d = dest;
+    while (*d) d++;
+    while (n-- && (*d++ = *src++));
+    *d = 0;
+    return dest;
+}
+
+__attribute__((weak))
+char* strchr(const char* s, int c) {
+    while (*s && *s != (char)c) s++;
+    return (*s == (char)c) ? (char*)s : (char*)0;
+}
+
+__attribute__((weak))
+char* strrchr(const char* s, int c) {
+    const char* last = (const char*)0;
+    while (*s) {
+        if (*s == (char)c) last = s;
+        s++;
+    }
+    return (char*)last;
+}
+
+__attribute__((weak))
+size_t strcspn(const char* s, const char* reject) {
+    size_t count = 0;
+    while (*s) {
+        const char* r = reject;
+        while (*r && *r != *s) r++;
+        if (*r) break;
+        s++;
+        count++;
+    }
+    return count;
+}
+
+__attribute__((weak))
+size_t strspn(const char* s, const char* accept) {
+    size_t count = 0;
+    while (*s) {
+        const char* a = accept;
+        while (*a && *a != *s) a++;
+        if (!*a) break;
+        s++;
+        count++;
+    }
+    return count;
+}
+
+__attribute__((weak))
+char* strpbrk(const char* s, const char* accept) {
+    while (*s) {
+        const char* a = accept;
+        while (*a && *a != *s) a++;
+        if (*a) return (char*)s;
+        s++;
+    }
+    return (char*)0;
+}
+
+__attribute__((weak))
+char* strstr(const char* haystack, const char* needle) {
+    if (!*needle) return (char*)haystack;
+    while (*haystack) {
+        const char* h = haystack;
+        const char* n = needle;
+        while (*h && *n && *h == *n) {
+            h++;
+            n++;
+        }
+        if (!*n) return (char*)haystack;
+        haystack++;
+    }
+    return (char*)0;
+}
+
+__attribute__((weak))
+char* strtok(char* s, const char* delim) {
+    static char* last = (char*)0;
+    if (s) last = s;
+    if (!last) return (char*)0;
+    
+    while (*last) {
+        const char* d = delim;
+        while (*d && *d != *last) d++;
+        if (!*d) break;
+        last++;
+    }
+    
+    if (!*last) return (char*)0;
+    
+    char* token = last;
+    while (*last) {
+        const char* d = delim;
+        while (*d && *d != *last) d++;
+        if (*d) {
+            *last++ = 0;
+            return token;
+        }
+        last++;
+    }
+    
+    return token;
+}
+
+__attribute__((weak))
+int strcoll(const char* s1, const char* s2) {
+    return strcmp(s1, s2);
+}
+
+__attribute__((weak))
+size_t strxfrm(char* dest, const char* src, size_t n) {
+    size_t len = 0;
+    while (src[len]) len++;
+    if (len < n) {
+        size_t i;
+        for (i = 0; i <= len; i++) dest[i] = src[i];
+    }
+    return len;
+}
+
+__attribute__((weak))
+char* strerror(int errnum) {
+    return (char*)"Unknown error";
 }
 EOF
 
@@ -239,27 +424,35 @@ else
 fi
 echo ""
 
-echo -e "${YELLOW}Step 4: Build musl stdlib functions${NC}"
+echo -e "${YELLOW}Step 4: Build musl stdlib functions (weak symbols)${NC}"
 cat > src/musl_stdlib.c <<'EOF'
 typedef __SIZE_TYPE__ size_t;
 typedef unsigned wchar_t;
 #define NULL ((void*)0)
 
-// dlmalloc functions
+// dlmalloc functions - ALL WEAK to use OP-TEE versions
 extern void* dlmalloc(size_t);
 extern void dlfree(void*);
 extern void* dlcalloc(size_t, size_t);
 extern void* dlrealloc(void*, size_t);
 
+__attribute__((weak))
 void* malloc(size_t size) { return dlmalloc(size); }
+
+__attribute__((weak))
 void free(void* ptr) { dlfree(ptr); }
+
+__attribute__((weak))
 void* calloc(size_t nmemb, size_t size) { return dlcalloc(nmemb, size); }
+
+__attribute__((weak))
 void* realloc(void* ptr, size_t size) { return dlrealloc(ptr, size); }
 
+__attribute__((weak))
 void abort(void) { while(1); }
-void _Exit(int status) { while(1); }
-void exit(int status) { while(1); }
 
+// Other stdlib functions with WEAK linkage
+__attribute__((weak))
 int atoi(const char* s) {
     int n = 0, neg = 0;
     while (*s == ' ' || *s == '\t' || *s == '\n') s++;
@@ -272,21 +465,42 @@ int atoi(const char* s) {
     return neg ? -n : n;
 }
 
+__attribute__((weak))
 long atol(const char* s) {
     return (long)atoi(s);
 }
 
+__attribute__((weak))
 long long atoll(const char* s) {
     return (long long)atoi(s);
 }
 
+__attribute__((weak))
+double atof(const char* s) {
+    return 0.0; // Stub
+}
+
 // Stub implementations for functions libcxx might need
+__attribute__((weak))
 int atexit(void (*func)(void)) { return 0; }
+
+__attribute__((weak))
+void exit(int status) { while(1); }
+
+__attribute__((weak))
+void _Exit(int status) { while(1); }
+
+__attribute__((weak))
 char* getenv(const char* name) { return NULL; }
+
+__attribute__((weak))
 int system(const char* command) { return -1; }
 
 // Stub qsort/bsearch
+__attribute__((weak))
 void qsort(void* base, size_t nmemb, size_t size, int (*compar)(const void*, const void*)) {}
+
+__attribute__((weak))
 void* bsearch(const void* key, const void* base, size_t nmemb, size_t size, int (*compar)(const void*, const void*)) { return NULL; }
 
 // Stubs for division
@@ -294,26 +508,75 @@ typedef struct { int quot, rem; } div_t;
 typedef struct { long quot, rem; } ldiv_t;
 typedef struct { long long quot, rem; } lldiv_t;
 
+__attribute__((weak))
 int abs(int n) { return n < 0 ? -n : n; }
+
+__attribute__((weak))
 long labs(long n) { return n < 0 ? -n : n; }
+
+__attribute__((weak))
 long long llabs(long long n) { return n < 0 ? -n : n; }
 
+__attribute__((weak))
 div_t div(int num, int den) { div_t r; r.quot = num / den; r.rem = num % den; return r; }
+
+__attribute__((weak))
 ldiv_t ldiv(long num, long den) { ldiv_t r; r.quot = num / den; r.rem = num % den; return r; }
+
+__attribute__((weak))
 lldiv_t lldiv(long long num, long long den) { lldiv_t r; r.quot = num / den; r.rem = num % den; return r; }
 
 // Stubs for multibyte/wide char (not really needed)
+__attribute__((weak))
 int mblen(const char* s, size_t n) { return -1; }
+
+__attribute__((weak))
 int mbtowc(wchar_t* pwc, const char* s, size_t n) { return -1; }
+
+__attribute__((weak))
 int wctomb(char* s, wchar_t wc) { return -1; }
+
+__attribute__((weak))
 size_t mbstowcs(wchar_t* dest, const char* src, size_t n) { return 0; }
+
+__attribute__((weak))
 size_t wcstombs(char* dest, const wchar_t* src, size_t n) { return 0; }
 
 // Stub strtol family
+__attribute__((weak))
 long strtol(const char* s, char** endptr, int base) { return atol(s); }
+
+__attribute__((weak))
 unsigned long strtoul(const char* s, char** endptr, int base) { return (unsigned long)atol(s); }
+
+__attribute__((weak))
 long long strtoll(const char* s, char** endptr, int base) { return atoll(s); }
+
+__attribute__((weak))
 unsigned long long strtoull(const char* s, char** endptr, int base) { return (unsigned long long)atoll(s); }
+
+__attribute__((weak))
+double strtod(const char* s, char** endptr) { return atof(s); }
+
+__attribute__((weak))
+float strtof(const char* s, char** endptr) { return (float)atof(s); }
+
+__attribute__((weak))
+long double strtold(const char* s, char** endptr) { return (long double)atof(s); }
+
+// rand/srand
+static unsigned int _rand_next = 1;
+
+__attribute__((weak))
+int rand(void) {
+    _rand_next = _rand_next * 1103515245 + 12345;
+    return (unsigned int)(_rand_next / 65536) % 32768;
+}
+
+__attribute__((weak))
+void srand(unsigned int seed) {
+    _rand_next = seed;
+}
 EOF
 
 echo -n "Building stdlib functions... "
@@ -540,11 +803,34 @@ else
 fi
 echo ""
 
+echo -e "${YELLOW}Step 6.5: Build libcxx weak exception stubs${NC}"
+cat > src/libcxx_weak_stubs.c <<'EOF'
+// Weak symbol stubs for libcxx - will be used only if not defined elsewhere
+__attribute__((weak)) void _ZNKSt3__120__vector_base_commonILb1EE20__throw_length_errorEv(void) {
+    while(1); // abort
+}
+
+__attribute__((weak)) void _ZNKSt3__120__vector_base_commonILb1EE20__throw_out_of_rangeEv(void) {
+    while(1); // abort
+}
+EOF
+
+echo -n "Building libcxx weak stubs... "
+if ${CROSS_COMPILE}gcc "${COMMON_FLAGS[@]}" \
+    -c src/libcxx_weak_stubs.c -o libcxx_weak_stubs.o 2>err_weak.log; then
+    echo -e "${GREEN}OK${NC}"
+else
+    echo -e "${RED}FAIL${NC}"
+    cat err_weak.log
+    exit 1
+fi
+echo ""
+
 echo -e "${YELLOW}Step 7: Create libraries${NC}"
 ${CROSS_COMPILE}ar rcs libmusl.a dlmalloc.o string.o stdlib.o math.o
-${CROSS_COMPILE}ar rcs libcxx.a cxx_operators.o
+${CROSS_COMPILE}ar rcs libcxx.a cxx_operators.o libcxx_weak_stubs.o
 echo -e "${GREEN}✓ libmusl.a (C runtime with math stubs)${NC}"
-echo -e "${GREEN}✓ libcxx.a (C++ operators)${NC}"
+echo -e "${GREEN}✓ libcxx.a (C++ operators + weak exception stubs)${NC}"
 echo ""
 
 echo -e "${GREEN}========================================${NC}"
