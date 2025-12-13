@@ -18,7 +18,7 @@ echo ""
 export TA_DEV_KIT_DIR="${TA_DEV_KIT_DIR:-/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64}"
 export CROSS_COMPILE="${CROSS_COMPILE:-aarch64-none-linux-gnu-}"
 export TEEC_EXPORT="${TEEC_EXPORT:-/home/abc/optee_client/out/export/usr}"
-
+export PATH=/home/abc/arm-toolchain/bin:$PATH
 echo "Configuration:"
 echo "  TA_DEV_KIT_DIR = $TA_DEV_KIT_DIR"
 echo "  CROSS_COMPILE  = $CROSS_COMPILE"
