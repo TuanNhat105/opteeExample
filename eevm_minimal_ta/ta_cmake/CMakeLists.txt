@@ -42,6 +42,7 @@ set(TA_COMPILE_FLAGS
     -fno-exceptions
     -fno-rtti
     -U__STDCPP_THREADS__
+    -Ufallthrough
     
     # No standard libraries
     -nostdlib

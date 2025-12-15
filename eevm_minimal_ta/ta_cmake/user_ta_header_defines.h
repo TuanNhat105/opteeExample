@@ -12,9 +12,11 @@
 
 #define TA_FLAGS			0
 
-#define TA_STACK_SIZE          (64 * 1024)
-#define TA_DATA_SIZE           (512 * 1024)
-#define TA_MALLOC_POOL_SIZE    (1024 * 1024)
+// C++ STL requires large heap for global constructors
+// TA_DATA_SIZE is the actual heap in OP-TEE (not TA_MALLOC_POOL_SIZE!)
+#define TA_STACK_SIZE          (128 * 1024)        // 128KB stack
+#define TA_DATA_SIZE           (10 * 1024 * 1024)  // 10MB heap (.bss > 8MB!)
+#define TA_MALLOC_POOL_SIZE    (10 * 1024 * 1024)  // Not used in OP-TEE
 
 #define TA_CURRENT_TA_EXT_PROPERTIES \
     { "gp.ta.description", USER_TA_PROP_TYPE_STRING, \
