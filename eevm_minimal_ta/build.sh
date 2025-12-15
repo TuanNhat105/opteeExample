@@ -25,13 +25,14 @@ echo "  CROSS_COMPILE  = $CROSS_COMPILE"
 echo "  TEEC_EXPORT    = $TEEC_EXPORT"
 echo ""
 
-# Build libcxx runtime first (if needed)
-if [ ! -f "build_full_musl/libmusl.a" ]; then
-    echo -e "${YELLOW}[0/3] Building full musl + libcxx runtime...${NC}"
-    if [ -x "./build_full_musl_runtime.sh" ]; then
-        ./build_full_musl_runtime.sh
+# Build OpenEnclave libraries first (if needed)
+if [ ! -f "build_oe_libs/combined/libcxx_runtime.a" ]; then
+    echo -e "${YELLOW}[0/3] Building OpenEnclave libcxx + musl runtime...${NC}"
+    if [ -x "./build_openenclave_libs.sh" ]; then
+        ./build_openenclave_libs.sh
     else
-        echo -e "${RED}Warning: Runtime not built. TA may fail to link.${NC}"
+        echo -e "${RED}Error: build_openenclave_libs.sh not found!${NC}"
+        exit 1
     fi
     echo ""
 fi

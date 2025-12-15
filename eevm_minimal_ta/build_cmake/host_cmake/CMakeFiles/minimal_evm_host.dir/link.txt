@@ -1,0 +1,1 @@
+aarch64-none-linux-gnu-gcc -O3 -DNDEBUG CMakeFiles/minimal_evm_host.dir/minimal_evm_host.c.o -o minimal_evm_host  -Wl,-rpath,/home/abc/optee_client/out/export/usr/lib: /home/abc/optee_client/out/export/usr/lib/libteec.so -lpthread 

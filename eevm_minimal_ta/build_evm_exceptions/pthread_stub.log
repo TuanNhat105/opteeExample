@@ -1,8 +1,0 @@
-In file included from pthread_stub.c:1:
-pthread_stub.h:27:19: error: static declaration of ‘fprintf’ follows non-static declaration
-   27 | static inline int fprintf(FILE* stream, const char* format, ...) {
-      |                   ^~~~~~~
-In file included from pthread_stub.h:6:
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_musl_libcxx/include/stdio.h:104:5: note: previous declaration of ‘fprintf’ with type ‘int(FILE * restrict,  const char * restrict, ...)’ {aka ‘int(struct _IO_FILE * restrict,  const char * restrict, ...)’}
-  104 | int fprintf(FILE *__restrict, const char *__restrict, ...);
-      |     ^~~~~~~

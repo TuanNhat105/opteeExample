@@ -1,0 +1,152 @@
+cc1plus: warning: ‘-Werror=’ argument ‘-Werror=implicit-function-declaration’ is not valid for C++
+In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/__config:9,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/vector:272,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/vector.cpp:9:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/musl/include/locale.h:11:9: warning: "NULL" redefined
+   11 | #define NULL 0L
+      |         ^~~~
+In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/__config:8:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/musl/include/bits/alltypes.h:77:9: note: this is the location of the previous definition
+   77 | #define NULL ((void*)0)
+      |         ^~~~
+In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/__debug:25,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/bit:60,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/__bit_reference:14,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/vector:274:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:100:9: error: ‘div_t’ has not been declared in ‘::’
+  100 | using ::div_t;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:101:9: error: ‘ldiv_t’ has not been declared in ‘::’
+  101 | using ::ldiv_t;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:103:9: error: ‘lldiv_t’ has not been declared in ‘::’
+  103 | using ::lldiv_t;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:105:9: error: ‘atof’ has not been declared in ‘::’
+  105 | using ::atof;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:106:9: error: ‘atoi’ has not been declared in ‘::’
+  106 | using ::atoi;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:107:9: error: ‘atol’ has not been declared in ‘::’
+  107 | using ::atol;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:109:9: error: ‘atoll’ has not been declared in ‘::’
+  109 | using ::atoll;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:111:9: error: ‘strtod’ has not been declared in ‘::’
+  111 | using ::strtod;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:112:9: error: ‘strtof’ has not been declared in ‘::’
+  112 | using ::strtof;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:113:9: error: ‘strtold’ has not been declared in ‘::’
+  113 | using ::strtold;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:114:9: error: ‘strtol’ has not been declared in ‘::’
+  114 | using ::strtol;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:116:9: error: ‘strtoll’ has not been declared in ‘::’
+  116 | using ::strtoll;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:120:9: error: ‘strtoull’ has not been declared in ‘::’
+  120 | using ::strtoull;
+      |         ^~~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:123:9: error: ‘srand’ has not been declared in ‘::’
+  123 | using ::srand;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:129:9: error: ‘atexit’ has not been declared in ‘::’
+  129 | using ::atexit;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:130:9: error: ‘exit’ has not been declared in ‘::’
+  130 | using ::exit;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:131:9: error: ‘_Exit’ has not been declared in ‘::’
+  131 | using ::_Exit;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:133:9: error: ‘getenv’ has not been declared in ‘::’
+  133 | using ::getenv;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:134:9: error: ‘system’ has not been declared in ‘::’
+  134 | using ::system;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:136:9: error: ‘bsearch’ has not been declared in ‘::’
+  136 | using ::bsearch;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:139:9: error: ‘labs’ has not been declared in ‘::’
+  139 | using ::labs;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:141:9: error: ‘llabs’ has not been declared in ‘::’
+  141 | using ::llabs;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:143:9: error: ‘div’ has not been declared in ‘::’
+  143 | using ::div;
+      |         ^~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:144:9: error: ‘ldiv’ has not been declared in ‘::’
+  144 | using ::ldiv;
+      |         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:146:9: error: ‘lldiv’ has not been declared in ‘::’
+  146 | using ::lldiv;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:148:9: error: ‘mblen’ has not been declared in ‘::’
+  148 | using ::mblen;
+      |         ^~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:149:9: error: ‘mbtowc’ has not been declared in ‘::’
+  149 | using ::mbtowc;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:150:9: error: ‘wctomb’ has not been declared in ‘::’
+  150 | using ::wctomb;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:151:9: error: ‘mbstowcs’ has not been declared in ‘::’
+  151 | using ::mbstowcs;
+      |         ^~~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdlib:152:9: error: ‘wcstombs’ has not been declared in ‘::’
+  152 | using ::wcstombs;
+      |         ^~~~~~~~
+In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:99,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/__debug:26:
+/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/stdio.h:11:22: error: conflicting declaration ‘typedef struct _FILE FILE’
+   11 | typedef struct _FILE FILE;
+      |                      ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/musl/include/bits/alltypes.h:74:25: note: previous declaration as ‘typedef struct _IO_FILE FILE’
+   74 | typedef struct _IO_FILE FILE;
+      |                         ^~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:108:9: error: ‘fpos_t’ has not been declared in ‘::’
+  108 | using ::fpos_t;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:111:9: error: ‘fclose’ has not been declared in ‘::’
+  111 | using ::fclose;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:112:9: error: ‘fflush’ has not been declared in ‘::’
+  112 | using ::fflush;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:113:9: error: ‘setbuf’ has not been declared in ‘::’
+  113 | using ::setbuf;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:114:9: error: ‘setvbuf’ has not been declared in ‘::’
+  114 | using ::setvbuf;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:115:9: error: ‘fprintf’ has not been declared in ‘::’
+  115 | using ::fprintf;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:116:9: error: ‘fscanf’ has not been declared in ‘::’
+  116 | using ::fscanf;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:119:9: error: ‘sscanf’ has not been declared in ‘::’
+  119 | using ::sscanf;
+      |         ^~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:120:9: error: ‘vfprintf’ has not been declared in ‘::’
+  120 | using ::vfprintf;
+      |         ^~~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:121:9: error: ‘vfscanf’ has not been declared in ‘::’
+  121 | using ::vfscanf;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:122:9: error: ‘vsscanf’ has not been declared in ‘::’
+  122 | using ::vsscanf;
+      |         ^~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:124:9: error: ‘vsprintf’ has not been declared in ‘::’
+  124 | using ::vsprintf;
+      |         ^~~~~~~~
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_full_cxx/libcxx/include/cstdio:125:9: error: ‘fgetc’ has not been declared in ‘::’
+  125 | using ::fgetc;
+      |         ^~~~~
