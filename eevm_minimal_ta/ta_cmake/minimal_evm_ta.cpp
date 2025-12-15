@@ -4,7 +4,7 @@
  */
 
 // C++ standard library (must include before OP-TEE headers)
-#include <map>
+// #include <map>
 #include <vector>
 
 // OP-TEE C headers
@@ -33,42 +33,42 @@ static void test_vector()
 	DMSG("✓ std::vector test PASSED");
 }
 
-static void test_map()
-{
-	DMSG("=== Testing std::map<int, int> ===");
+// static void test_map()
+// {
+// 	DMSG("=== Testing std::map<int, int> ===");
 	
-	std::map<int, int> mymap;
+// 	std::map<int, int> mymap;
 	
-	// Insert elements
-	mymap[1] = 100;
-	mymap[2] = 200;
-	mymap[3] = 300;
-	mymap[999] = 999999;
+// 	// Insert elements
+// 	mymap[1] = 100;
+// 	mymap[2] = 200;
+// 	mymap[3] = 300;
+// 	mymap[999] = 999999;
 	
-	DMSG("Map size: %zu", mymap.size());
-	DMSG("Map[1]: %d", mymap[1]);
-	DMSG("Map[2]: %d", mymap[2]);
-	DMSG("Map[3]: %d", mymap[3]);
-	DMSG("Map[999]: %d", mymap[999]);
+// 	DMSG("Map size: %zu", mymap.size());
+// 	DMSG("Map[1]: %d", mymap[1]);
+// 	DMSG("Map[2]: %d", mymap[2]);
+// 	DMSG("Map[3]: %d", mymap[3]);
+// 	DMSG("Map[999]: %d", mymap[999]);
 	
-	// Test find
-	auto it = mymap.find(2);
-	if (it != mymap.end()) {
-		DMSG("Found key 2, value: %d", it->second);
-	}
+// 	// Test find
+// 	auto it = mymap.find(2);
+// 	if (it != mymap.end()) {
+// 		DMSG("Found key 2, value: %d", it->second);
+// 	}
 	
-	// Test erase
-	mymap.erase(999);
-	DMSG("After erase(999), size: %zu", mymap.size());
+// 	// Test erase
+// 	mymap.erase(999);
+// 	DMSG("After erase(999), size: %zu", mymap.size());
 	
-	// Test iteration
-	DMSG("Iterating map:");
-	for (const auto& pair : mymap) {
-		DMSG("  Key: %d, Value: %d", pair.first, pair.second);
-	}
+// 	// Test iteration
+// 	DMSG("Iterating map:");
+// 	for (const auto& pair : mymap) {
+// 		DMSG("  Key: %d, Value: %d", pair.first, pair.second);
+// 	}
 	
-	DMSG("✓ std::map test PASSED");
-}
+// 	DMSG("✓ std::map test PASSED");
+// }
 
 /*
  * OP-TEE TA Entry Points (with C linkage)

@@ -9,10 +9,8 @@ ta_cmake/CMakeFiles/ta_cpp_objects.dir/minimal_evm_ta.cpp.o: /home/abc/nhat/opte
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__config_original \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__debug \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__functional_base \
-  /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__node_handle \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__nullptr \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__split_buffer \
-  /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__tree \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__tuple \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__undef_macros \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/algorithm \
@@ -31,11 +29,9 @@ ta_cmake/CMakeFiles/ta_cpp_objects.dir/minimal_evm_ta.cpp.o: /home/abc/nhat/opte
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/limits \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/limits.h \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/locale.h \
-  /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/map \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/math.h \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/memory \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/new \
-  /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/optional \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdbool.h \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stddef.h \
   /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdexcept \
@@ -96,12 +92,6 @@ ta_cmake/CMakeFiles/ta_cpp_objects.dir/minimal_evm_ta.cpp.o: /home/abc/nhat/opte
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/string.h:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stdlib.h:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stdint.h:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stddef.h:
-
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/limits:
 
 /home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/tee_internal_api.h:
@@ -114,37 +104,21 @@ ta_cmake/CMakeFiles/ta_cpp_objects.dir/minimal_evm_ta.cpp.o: /home/abc/nhat/opte
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stddef.h:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/bit:
-
-/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/tee_api_defines_extensions.h:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdexcept:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/cstddef:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdint.h:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/cstddef:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/locale.h:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stdio.h:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/memory:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/type_traits:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/cstring:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__tuple:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__debug:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__undef_macros:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/limits.h:
-
-/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/trace.h:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__split_buffer:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/alloca.h:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/algorithm:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/ta_cmake/libc_stubs.cpp:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__config:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/functional:
 
@@ -156,43 +130,53 @@ ta_cmake/CMakeFiles/ta_cpp_objects.dir/minimal_evm_ta.cpp.o: /home/abc/nhat/opte
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/climits:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__functional_base:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/ta_cmake/minimal_evm_ta.cpp:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__debug:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__bit_reference:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/ta_cmake/minimal_evm_ta.cpp:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__functional_base:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__node_handle:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__undef_macros:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/string.h:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/limits.h:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__nullptr:
+
+/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/trace.h:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__split_buffer:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/alloca.h:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/initializer_list:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/iterator:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdio.h:
-
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdbool.h:
-
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__config_original:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/map:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/ta_cmake/libc_stubs.cpp:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__config:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/algorithm:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/math.h:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/bits/stdint.h:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stdio.h:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/bit:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/locale.h:
+/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/tee_api_defines_extensions.h:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/memory:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdexcept:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/type_traits:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/iterator:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__nullptr:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdbool.h:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/optional:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdio.h:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/string.h:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/stdlib.h:
 
@@ -224,10 +208,14 @@ ta_cmake/CMakeFiles/ta_cpp_objects.dir/minimal_evm_ta.cpp.o: /home/abc/nhat/opte
 
 /home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/include/tee_api_compat.h:
 
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__tree:
-
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/locale.h:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stdarg.h:
 
 /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stdbool.h:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stddef.h:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stdint.h:
+
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stdlib.h:

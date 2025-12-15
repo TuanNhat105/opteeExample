@@ -8,19 +8,21 @@
 
 #include <minimal_evm_ta.h>
 
-#define TA_UUID				TA_MINIMAL_EVM_UUID
+#define TA_UUID TA_MINIMAL_EVM_UUID
 
-#define TA_FLAGS			0
+#define TA_FLAGS 0
 
 // C++ STL requires large heap for global constructors
 // TA_DATA_SIZE is the actual heap in OP-TEE (not TA_MALLOC_POOL_SIZE!)
-#define TA_STACK_SIZE          (128 * 1024)        // 128KB stack
-#define TA_DATA_SIZE           (10 * 1024 * 1024)  // 10MB heap (.bss > 8MB!)
-#define TA_MALLOC_POOL_SIZE    (10 * 1024 * 1024)  // Not used in OP-TEE
+#define TA_STACK_SIZE (1 * 1024 * 1024)        // 1MB stack
+#define TA_DATA_SIZE (64 * 1024 * 1024)        // 512 MB heap
+#define TA_MALLOC_POOL_SIZE (10 * 1024 * 1024) // Not used in OP-TEE
 
-#define TA_CURRENT_TA_EXT_PROPERTIES \
-    { "gp.ta.description", USER_TA_PROP_TYPE_STRING, \
-        "Minimal EVM TA with custom vector/map" }, \
-    { "gp.ta.version", USER_TA_PROP_TYPE_U32, &(const uint32_t){ 0x0010 } }
+#define TA_CURRENT_TA_EXT_PROPERTIES                                      \
+    {"gp.ta.description", USER_TA_PROP_TYPE_STRING,                       \
+     "Minimal EVM TA with custom vector/map"},                            \
+    {                                                                     \
+        "gp.ta.version", USER_TA_PROP_TYPE_U32, &(const uint32_t){0x0010} \
+    }
 
 #endif /* USER_TA_HEADER_DEFINES_H */
