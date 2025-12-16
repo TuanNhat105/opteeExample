@@ -1,4 +1,4 @@
-// Copyright (c) Open Enclave SDK contributors.
+_ofl_lock// Copyright (c) Open Enclave SDK contributors.
 // Licensed under the MIT License.
 
 library "OpenEnclaveJenkinsLibrary@${params.OECI_LIB_VERSION}"

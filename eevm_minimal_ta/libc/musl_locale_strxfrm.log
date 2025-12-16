@@ -1,0 +1,8 @@
+In file included from ../build_oe_libs/musl/src/src/locale/strxfrm.c:3:
+../build_oe_libs/musl/src/src/locale/strxfrm.c: In function ‘strxfrm’:
+../build_oe_libs/musl/src/src/internal/locale_impl.h:38:41: error: invalid type argument of ‘->’ (have ‘int’)
+   38 | #define CURRENT_LOCALE (__pthread_self()->locale)
+      |                                         ^~
+../build_oe_libs/musl/src/src/locale/strxfrm.c:15:42: note: in expansion of macro ‘CURRENT_LOCALE’
+   15 |         return __strxfrm_l(dest, src, n, CURRENT_LOCALE);
+      |                                          ^~~~~~~~~~~~~~

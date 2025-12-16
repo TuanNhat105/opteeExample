@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
-CROSS_COMPILE ?= aarch64-none-linux-gnu-
+CROSS_COMPILE ?= 
 CC      = $(CROSS_COMPILE)gcc
 CXX     = $(CROSS_COMPILE)g++
 LD      = $(CROSS_COMPILE)ld

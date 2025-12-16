@@ -7,6 +7,7 @@
 // C++ STL headers (from libcxx with FULL musl runtime!)
 // MUST be included BEFORE TEE headers to avoid __section macro conflicts
 // Note: NULL redefinition warning is fixed by patching musl headers
+#include <string> // Test string with object linking
 #include <vector>
 #include <algorithm> // For std::find, std::sort
 #include <map>
@@ -24,6 +25,7 @@
 #include <tuple>
 // REMOVED: functional (std::function needs RTTI for vtables)
 // REMOVED: numeric (includes cmath which conflicts with musl)
+#include <numeric>
 #include <memory>
 #include <utility>
 #include <exception>
@@ -87,6 +89,68 @@ void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
 {
     DMSG("Session closed");
     (void)&sess_ctx;
+}
+
+/*
+ * Test std::string - object linking approach
+ */
+static TEE_Result test_string(uint32_t param_types, TEE_Param params[4])
+{
+    uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
+                                               TEE_PARAM_TYPE_NONE,
+                                               TEE_PARAM_TYPE_NONE,
+                                               TEE_PARAM_TYPE_NONE);
+
+    if (param_types != exp_param_types)
+        return TEE_ERROR_BAD_PARAMETERS;
+
+    // Test basic string construction
+    std::string str1;
+    if (!str1.empty())
+    {
+        params[0].value.a = 1; // FAIL: empty string not empty
+        return TEE_ERROR_GENERIC;
+    }
+
+    // Test string from literal
+    std::string str2("Hello");
+    if (str2.size() != 5)
+    {
+        params[0].value.a = 2; // FAIL: size check
+        return TEE_ERROR_GENERIC;
+    }
+    if (str2[0] != 'H' || str2[4] != 'o')
+    {
+        params[0].value.a = 3; // FAIL: content check
+        return TEE_ERROR_GENERIC;
+    }
+
+    // Test string copy
+    std::string str3 = str2;
+    if (str3.size() != str2.size())
+    {
+        params[0].value.a = 4; // FAIL: copy size
+        return TEE_ERROR_GENERIC;
+    }
+
+    // Test string concatenation
+    str3 += " World";
+    if (str3.size() != 11)
+    {
+        params[0].value.a = 5; // FAIL: concatenation
+        return TEE_ERROR_GENERIC;
+    }
+
+    // Test clear
+    str3.clear();
+    if (!str3.empty())
+    {
+        params[0].value.a = 6; // FAIL: clear failed
+        return TEE_ERROR_GENERIC;
+    }
+
+    params[0].value.a = 0; // PASS
+    return TEE_SUCCESS;
 }
 
 /*
@@ -514,7 +578,6 @@ static TEE_Result test_algorithm(uint32_t param_types, TEE_Param params[4])
 }
 
 // Test 7: std::numeric - REMOVED (includes cmath which conflicts with musl)
-/*
 static TEE_Result test_numeric(uint32_t param_types, TEE_Param params[4])
 {
     uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
@@ -537,7 +600,7 @@ static TEE_Result test_numeric(uint32_t param_types, TEE_Param params[4])
     params[0].value.a = 0; // PASS
     return TEE_SUCCESS;
 }
-*/
+
 
 // Test 8: std::memory - REMOVED (shared_ptr needs RTTI)
 
@@ -831,6 +894,8 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
     {
     case TA_MINIMAL_EVM_CMD_EXECUTE_BYTECODE:
         return execute_bytecode(param_types, params);
+    case TA_MINIMAL_EVM_CMD_TEST_STRING:
+        return test_string(param_types, params);
     case TA_MINIMAL_EVM_CMD_TEST_VECTOR:
         return test_real_vector(param_types, params);
     case TA_MINIMAL_EVM_CMD_TEST_MAP:

@@ -1,0 +1,4 @@
+../build_oe_libs/musl/src/src/locale/uselocale.c: In function ‘__uselocale’:
+../build_oe_libs/musl/src/src/locale/uselocale.c:7:26: error: initialization of ‘pthread_t’ {aka ‘struct __pthread *’} from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+    7 |         pthread_t self = __pthread_self();
+      |                          ^~~~~~~~~~~~~~

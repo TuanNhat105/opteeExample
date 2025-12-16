@@ -183,6 +183,7 @@ echo -e "${YELLOW}Step 5: Build libcxx (following OpenEnclave list)${NC}"
 # OpenEnclave compilation flags for libcxx
 LIBCXX_CXXFLAGS=(
     "${CXXFLAGS[@]}"
+    -fno-weak
     -DLIBCXXRT
     -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
     -D_LIBCPP_BUILDING_LIBRARY

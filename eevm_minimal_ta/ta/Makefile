@@ -22,12 +22,34 @@ override libgcc_ehta_arm64 :=
 override LDADD := $(filter-out -lstdc++ -lstdc++_nonshared,$(LDADD))
 override LDFLAGS += -Wl,--exclude-libs=libstdc++,libgcc_eh
 
+# libcxx object files to link (strong symbols, not weak)
+LIBCXX_OBJS := ../build_oe_libs/libcxx/string.o \
+               ../build_oe_libs/libcxx/charconv.o \
+               ../build_oe_libs/libcxx/vector.o \
+               ../build_oe_libs/libcxx/bind.o \
+               ../build_oe_libs/libcxx/functional.o \
+               ../build_oe_libs/libcxx/memory.o \
+               ../build_oe_libs/libcxx/new.o \
+               ../build_oe_libs/libcxx/optional.o \
+               ../build_oe_libs/libcxx/stdexcept.o \
+               ../build_oe_libs/libcxx/typeinfo.o \
+               ../build_oe_libs/libcxx/utility.o \
+               ../build_oe_libs/libcxx/variant.o \
+               ../build_oe_libs/libcxx/__dso_handle.o \
+               ../build_oe_libs/libcxxrt/stdexcept.o
+
+# Complete OpenEnclave libc (musl + wrappers) - provides everything we need
+LIBOELIBC := ../libc/liboelibc.a
+
+# Compiler runtime for long double operations
+LIBGCC := $(shell $(CROSS_COMPILE)gcc -print-file-name=libgcc.a)
+
 # Override the .elf target to filter out libstdc++ and libgcc_eh from linker command
-# This is the most reliable way - we intercept the actual linker invocation
+# Link with libcxx objects + complete oelibc (musl + wrappers) + libgcc for full C++ & C runtime
 # Suppress warning about overriding recipe (we intentionally override to fix libstdc++ issue)
-$(BINARY).elf: $(objs) $(libdeps) $(libdeps-after-libgcc) $(link-script-ppta_arm64) $(dynlistdep) $(additional-link-deps)
+$(BINARY).elf: $(objs) $(LIBCXX_OBJS) $(LIBOELIBC) $(libdeps) $(libdeps-after-libgcc) $(link-script-ppta_arm64) $(dynlistdep) $(additional-link-deps)
 	@$(cmd-echo-silent) '  LD      $@'
-	$(q)$(LDta_arm64) $(filter-out %libstdc++.a %libgcc_eh.a,$(ldargs-$(BINARY).elf)) -o $@
+	$(q)$(LDta_arm64) $(filter-out %libstdc++.a %libgcc_eh.a,$(ldargs-$(BINARY).elf)) $(LIBCXX_OBJS) $(LIBOELIBC) $(LIBGCC) -o $@
 
 ifeq ($(wildcard $(TA_DEV_KIT_DIR)/mk/ta_dev_kit.mk), )
 clean:

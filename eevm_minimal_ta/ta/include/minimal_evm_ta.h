@@ -17,6 +17,7 @@
 #define TA_MINIMAL_EVM_CMD_TEST_VECTOR       0
 #define TA_MINIMAL_EVM_CMD_TEST_MAP          1
 #define TA_MINIMAL_EVM_CMD_EXECUTE_BYTECODE  3
+#define TA_MINIMAL_EVM_CMD_TEST_STRING       4  // New: test std::string with object linking
 
 /* C++17 libcxx feature tests - OpenEnclave compatibility */
 #define TA_MINIMAL_EVM_CMD_TEST_OPTIONAL     10

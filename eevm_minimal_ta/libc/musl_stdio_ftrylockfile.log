@@ -1,0 +1,12 @@
+../build_oe_libs/musl/src/src/stdio/ftrylockfile.c: In function ‘__do_orphaned_stdio_locks’:
+../build_oe_libs/musl/src/src/stdio/ftrylockfile.c:8:32: error: invalid type argument of ‘->’ (have ‘int’)
+    8 |         for (f=__pthread_self()->stdio_locks; f; f=f->next_locked)
+      |                                ^~
+../build_oe_libs/musl/src/src/stdio/ftrylockfile.c: In function ‘__unlist_locked_file’:
+../build_oe_libs/musl/src/src/stdio/ftrylockfile.c:17:38: error: invalid type argument of ‘->’ (have ‘int’)
+   17 |                 else __pthread_self()->stdio_locks = f->next_locked;
+      |                                      ^~
+../build_oe_libs/musl/src/src/stdio/ftrylockfile.c: In function ‘ftrylockfile’:
+../build_oe_libs/musl/src/src/stdio/ftrylockfile.c:32:26: error: initialization of ‘pthread_t’ {aka ‘struct __pthread *’} from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   32 |         pthread_t self = __pthread_self();
+      |                          ^~~~~~~~~~~~~~

@@ -1,0 +1,5 @@
+In file included from ../build_oe_libs/musl/src/src/stdio/fgetc.c:2:
+../build_oe_libs/musl/src/src/stdio/getc.h: In function ‘do_getc’:
+../build_oe_libs/musl/src/src/stdio/getc.h:19:67: error: invalid type argument of ‘->’ (have ‘int’)
+   19 |         if (l < 0 || l && (l & ~MAYBE_WAITERS) == __pthread_self()->tid)
+      |                                                                   ^~

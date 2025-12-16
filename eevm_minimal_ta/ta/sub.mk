@@ -45,17 +45,7 @@ LDFLAGS += -Wl,--gc-sections
 # Explicitly prevent libstdc++ and libgcc_eh
 LDFLAGS += -Wl,--exclude-libs=libstdc++,libgcc_eh
 
-# Link with OpenEnclave standalone library using whole-archive to ensure all symbols
-LDADD += -Wl,--whole-archive
-LDADD += -L../build_oe_libs/standalone -lc++_standalone
-LDADD += -Wl,--no-whole-archive
-# Force link RTTI objects (needed for std::any, shared_ptr, sort)
-LDADD += ../build_oe_libs/libcxxrt/typeinfo.o
-LDADD += ../build_oe_libs/libcxxrt/memory.o
-LDADD += ../build_oe_libs/libcxx/memory.o
-LDADD += ../build_oe_libs/libcxx/algorithm.o
-# Only link libgcc, NOT libgcc_eh (exception handling)
-# Note: -lgcc should not pull in libgcc_eh if we use -fno-exceptions
+# Only link libgcc (objects added via objs variable above)
 LDADD += -lgcc
 
 # Note: We override link-ldadd in Makefile, not here

@@ -88,6 +88,9 @@ int main(void)
     cout << "Running tests..." << endl;
     cout << "----------------------------------------" << endl;
 
+    // String test (NEW - SUCCESS! Works with object linking + musl stubs)
+    run_test(&sess, "std::string", TA_MINIMAL_EVM_CMD_TEST_STRING, &passed, &failed);
+    
     // Basic containers
     run_test(&sess, "std::vector", TA_MINIMAL_EVM_CMD_TEST_VECTOR, &passed, &failed);
     run_test(&sess, "std::map<int,int>", TA_MINIMAL_EVM_CMD_TEST_MAP, &passed, &failed);

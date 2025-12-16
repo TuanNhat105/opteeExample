@@ -1,0 +1,26 @@
+[0;32m============================================[0m
+[0;32mBuild OpenEnclave libc for OP-TEE[0m
+[0;32m============================================[0m
+
+This builds a complete C runtime library including:
+  - Musl libc functions (strtol, strtod, printf, etc.)
+  - OpenEnclave wrappers (malloc, errno, stdlib)
+  - OP-TEE platform code (init, trace, arc4random)
+
+[1;33mStep 1: Build OP-TEE platform code[0m
+  Building optee/arc4random.o... [0;32mOK[0m
+
+[1;33mStep 2: Build OpenEnclave libc wrappers[0m
+Only building wrappers that don't need OE SDK...
+  Building oelibc_errno.o... [0;32mOK[0m
+  Building oelibc_malloc.o... [0;32mOK[0m
+  Building oelibc_atexit.o... [0;32mOK[0m
+  Building oelibc_exit.o... [0;32mOK[0m
+
+[1;33mStep 3: Build musl functions (comprehensive set)[0m
+Building all musl functions that don't need FILE* or syscalls...
+  Building stdlib/atoi.o... [0;32mOK[0m
+  Building stdlib/atol.o... [0;32mOK[0m
+  Building stdlib/atoll.o... [0;32mOK[0m
+  Building stdlib/atof.o... [0;32mOK[0m
+  Building stdlib/strtol.o... [0;32mOK[0m
