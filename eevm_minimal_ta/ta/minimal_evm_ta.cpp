@@ -5,17 +5,23 @@
  */
 
 // C++ STL headers (from libcxx with FULL musl runtime!)
+// MUST be included BEFORE TEE headers to avoid __section macro conflicts
+// Note: NULL redefinition warning is fixed by patching musl headers
 #include <vector>
 #include <algorithm>  // For std::find, std::sort
-// #include <map>       // NOT working yet (needs exception support)
-// #include <iterator>   // Test later
 
-// Include TEE headers as C
+// Include compatibility header to undefine conflicting macros
+#include "libcxx_compat.h"
+
+// Include TEE headers AFTER libcxx to avoid macro conflicts
 extern "C"
 {
 #include <tee_internal_api.h>
 #include <tee_internal_api_extensions.h>
 }
+// #include <map>       // NOT working yet (needs exception support)
+// #include <iterator>   // Test later
+
 #include "minimal_evm_ta.h"
 /*
  * Called when the instance of the TA is created.

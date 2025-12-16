@@ -43,7 +43,13 @@ cd ta
 
 make clean 2>/dev/null || true
 
-if make CROSS_COMPILE="$CROSS_COMPILE" TA_DEV_KIT_DIR="$TA_DEV_KIT_DIR"; then
+# Suppress harmless warnings about overriding recipe and NULL redefinition
+# These are expected and safe to ignore
+# Build TA and filter out harmless warnings
+# - "overriding recipe": intentional override to fix libstdc++ linking
+# - "NULL redefined": harmless conflict between musl and gcc headers
+if make CROSS_COMPILE="$CROSS_COMPILE" TA_DEV_KIT_DIR="$TA_DEV_KIT_DIR" 2>&1 | \
+    grep -vE "warning: (overriding recipe|ignoring old recipe|.*NULL.*redefined|MALLOC_INITIAL_POOL_MIN_SIZE.*not defined|unrecognized command-line option)"; then
     echo -e "${GREEN}✓ TA build successful!${NC}"
     ls -lh *.ta
 else

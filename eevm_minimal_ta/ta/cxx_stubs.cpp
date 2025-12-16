@@ -1,7 +1,24 @@
 // C++ exception stubs for -fno-exceptions builds
 // These provide symbols that libcxx needs even when exceptions are disabled
 
+// Include TEE headers first (as C) - must be before any C++ headers
+extern "C" {
 #include <tee_internal_api.h>
+#include <tee_internal_api_extensions.h>
+#include <trace.h>
+}
+
+// Use basic types to avoid including libcxx headers which may conflict
+typedef unsigned long size_t;
+
+// Forward declare and define std::nothrow_t to avoid including <new>
+namespace std {
+    struct nothrow_t {
+        explicit nothrow_t() = default;
+    };
+    // Define nothrow constant (normally in <new> header)
+    const nothrow_t nothrow{};
+}
 
 namespace std {
 namespace __1 {
@@ -72,3 +89,54 @@ void __cxa_guard_abort(void* guard) {
 }
 
 } // extern "C"
+
+// C++ operator new/delete implementations using TEE_Malloc/TEE_Free
+// These are required by libcxx for std::vector and other containers
+
+void* operator new(size_t size) {
+    void* ptr = TEE_Malloc(size, 0);
+    if (!ptr) {
+        EMSG("ERROR: operator new failed to allocate %lu bytes", (unsigned long)size);
+        TEE_Panic(0xBAD00000);
+    }
+    return ptr;
+}
+
+void* operator new[](size_t size) {
+    return operator new(size);
+}
+
+void* operator new(size_t size, const std::nothrow_t&) noexcept {
+    return TEE_Malloc(size, 0);
+}
+
+void* operator new[](size_t size, const std::nothrow_t&) noexcept {
+    return operator new(size, std::nothrow);
+}
+
+void operator delete(void* ptr) noexcept {
+    if (ptr) {
+        TEE_Free(ptr);
+    }
+}
+
+void operator delete[](void* ptr) noexcept {
+    operator delete(ptr);
+}
+
+void operator delete(void* ptr, size_t size) noexcept {
+    (void)size; // Size hint, not used in TEE_Free
+    operator delete(ptr);
+}
+
+void operator delete[](void* ptr, size_t size) noexcept {
+    operator delete(ptr, size);
+}
+
+void operator delete(void* ptr, const std::nothrow_t&) noexcept {
+    operator delete(ptr);
+}
+
+void operator delete[](void* ptr, const std::nothrow_t&) noexcept {
+    operator delete(ptr);
+}

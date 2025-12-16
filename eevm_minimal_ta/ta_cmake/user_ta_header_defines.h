@@ -12,10 +12,10 @@
 
 #define TA_FLAGS 0
 
-// C++ STL requires large heap for global constructors
+// C++ STL (libcxx) requires larger heap/stack for initialization
 // TA_DATA_SIZE is the actual heap in OP-TEE (not TA_MALLOC_POOL_SIZE!)
 #define TA_STACK_SIZE (1 * 1024 * 1024)        // 1MB stack
-#define TA_DATA_SIZE (64 * 1024 * 1024)        // 512 MB heap
+#define TA_DATA_SIZE (8 * 1024 * 1024)        // 8MB heap
 #define TA_MALLOC_POOL_SIZE (10 * 1024 * 1024) // Not used in OP-TEE
 
 #define TA_CURRENT_TA_EXT_PROPERTIES                                      \
