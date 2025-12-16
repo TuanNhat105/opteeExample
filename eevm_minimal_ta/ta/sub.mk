@@ -14,9 +14,12 @@ srcs-y += cxx_stubs.cpp
 # Enable C++17
 cppflags-y += -std=c++17
 cppflags-y += -fno-exceptions
-cppflags-y += -fno-threadsafe-statics
+cppflags-y += -frtti
+cppflags-y += -funwind-tables
 cppflags-y += -nostdinc++
 cppflags-y += -nodefaultlibs
+cppflags-y += -ffreestanding
+
 
 # libcxx configuration (match OpenEnclave)
 cppflags-y += -U__STDCPP_THREADS__

@@ -113,6 +113,41 @@ if [ -f "libcxx/include/__config" ]; then
 fi
 if [ -f "$OE_ROOT/3rdparty/libcxx/__config" ]; then
     cp "$OE_ROOT/3rdparty/libcxx/__config" libcxx/include/
+    # Fix: Remove strtoll_l/strtoull_l extern declarations since xlocale.h provides static inline versions
+    # This avoids "declared extern and later static" errors
+    # Use Python to precisely remove only the function declarations
+    python3 <<'PYTHON_SCRIPT'
+import sys
+import os
+
+config_file = "libcxx/include/__config"
+if not os.path.exists(config_file):
+    sys.exit(1)
+
+with open(config_file, 'r') as f:
+    lines = f.readlines()
+
+# Remove strtoll_l and strtoull_l declarations (2 lines each)
+output_lines = []
+i = 0
+while i < len(lines):
+    line = lines[i]
+    # Check for strtoll_l declaration start
+    if 'extern "C" long long strtoll_l(' in line:
+        # Skip this line and the next line (the closing );)
+        i += 2
+        continue
+    # Check for strtoull_l declaration start
+    if 'extern "C" unsigned long long int strtoull_l(' in line:
+        # Skip this line and the next line (the closing );)
+        i += 2
+        continue
+    output_lines.append(line)
+    i += 1
+
+with open(config_file, 'w') as f:
+    f.writelines(output_lines)
+PYTHON_SCRIPT
 fi
 
 # Copy __dso_handle.cpp
@@ -143,6 +178,7 @@ CXXFLAGS=(
     -D__linux__
     -Wno-all
     -Wno-error
+    -D_LIBCPP_HAS_MUSL_LIBC
 )
 
 # Build only essential libcxxrt files

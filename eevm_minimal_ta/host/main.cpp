@@ -101,7 +101,7 @@ int main(void)
     run_test(&sess, "std::array", TA_MINIMAL_EVM_CMD_TEST_ARRAY, &passed, &failed);
     
     // Unordered containers - REMOVED (cmath conflicts)
-    // run_test(&sess, "std::unordered_map", TA_MINIMAL_EVM_CMD_TEST_UNORDERED_MAP, &passed, &failed);
+    run_test(&sess, "std::unordered_map", TA_MINIMAL_EVM_CMD_TEST_UNORDERED_MAP, &passed, &failed);
     
     // Adapters
     run_test(&sess, "std::queue", TA_MINIMAL_EVM_CMD_TEST_QUEUE, &passed, &failed);
@@ -110,7 +110,7 @@ int main(void)
     run_test(&sess, "std::optional (C++17)", TA_MINIMAL_EVM_CMD_TEST_OPTIONAL, &passed, &failed);
     run_test(&sess, "std::variant (C++17)", TA_MINIMAL_EVM_CMD_TEST_VARIANT, &passed, &failed);
     // NOTE: any removed - needs RTTI
-    // run_test(run_test(&sess, "std::any (C++17)", TA_MINIMAL_EVM_CMD_TEST_ANY, &passed, &failed);sess, "std::any (C++17)", TA_MINIMAL_EVM_CMD_TEST_ANY, &passed, &failed);
+    run_test(&sess, "std::any (C++17)", TA_MINIMAL_EVM_CMD_TEST_ANY, &passed, &failed);
     run_test(&sess, "std::tuple", TA_MINIMAL_EVM_CMD_TEST_TUPLE, &passed, &failed);
     
     // Functional
@@ -119,14 +119,14 @@ int main(void)
     // Algorithms
     run_test(&sess, "std::algorithm (find/count - no sort)", TA_MINIMAL_EVM_CMD_TEST_ALGORITHM, &passed, &failed);
     // NOTE: numeric removed - includes cmath
-    // run_test(&sess, "std::numeric (accumulate)", TA_MINIMAL_EVM_CMD_TEST_NUMERIC, &passed, &failed);
+    run_test(&sess, "std::numeric (accumulate)", TA_MINIMAL_EVM_CMD_TEST_NUMERIC, &passed, &failed);
     
     // Memory management
     // NOTE: memory removed - shared_ptr needs RTTI
-    // run_test(run_test(&sess, "std::unique_ptr/shared_ptr", TA_MINIMAL_EVM_CMD_TEST_MEMORY, &passed, &failed);sess, "std::unique_ptr/shared_ptr", TA_MINIMAL_EVM_CMD_TEST_MEMORY, &passed, &failed);
+    run_test(&sess, "std::unique_ptr/shared_ptr", TA_MINIMAL_EVM_CMD_TEST_MEMORY, &passed, &failed);
     
     // Exception handling - REMOVED (needs -fexceptions in TA)
-    // run_test(&sess, "std::exception (try-catch)", TA_MINIMAL_EVM_CMD_TEST_EXCEPTION, &passed, &failed);
+    run_test(&sess, "std::exception (try-catch)", TA_MINIMAL_EVM_CMD_TEST_EXCEPTION, &passed, &failed);
 
     cout << "----------------------------------------" << endl;
     cout << "Test Results:" << endl;

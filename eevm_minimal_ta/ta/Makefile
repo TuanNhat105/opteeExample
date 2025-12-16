@@ -35,6 +35,7 @@ LIBCXX_OBJS := ../build_oe_libs/libcxx/string.o \
                ../build_oe_libs/libcxx/typeinfo.o \
                ../build_oe_libs/libcxx/utility.o \
                ../build_oe_libs/libcxx/variant.o \
+               ../build_oe_libs/libcxx/hash.o \
                ../build_oe_libs/libcxx/__dso_handle.o \
                ../build_oe_libs/libcxxrt/stdexcept.o
 
