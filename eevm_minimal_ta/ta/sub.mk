@@ -14,7 +14,6 @@ srcs-y += cxx_stubs.cpp
 # Enable C++17
 cppflags-y += -std=c++17
 cppflags-y += -fno-exceptions
-cppflags-y += -fno-rtti
 cppflags-y += -fno-threadsafe-statics
 cppflags-y += -nostdinc++
 cppflags-y += -nodefaultlibs
@@ -22,7 +21,6 @@ cppflags-y += -nodefaultlibs
 # libcxx configuration (match OpenEnclave)
 cppflags-y += -U__STDCPP_THREADS__
 cppflags-y += -D_LIBCPP_HAS_NO_THREADS
-cppflags-y += -D_LIBCPP_HAS_NO_EXCEPTIONS
 cppflags-y += -DLIBCXXRT
 # Undefine fallthrough macro to avoid conflict with libcxx __has_attribute(fallthrough)
 # Note: __section conflict is handled by including libcxx_compat.h in source files
@@ -51,6 +49,11 @@ LDFLAGS += -Wl,--exclude-libs=libstdc++,libgcc_eh
 LDADD += -Wl,--whole-archive
 LDADD += -L../build_oe_libs/standalone -lc++_standalone
 LDADD += -Wl,--no-whole-archive
+# Force link RTTI objects (needed for std::any, shared_ptr, sort)
+LDADD += ../build_oe_libs/libcxxrt/typeinfo.o
+LDADD += ../build_oe_libs/libcxxrt/memory.o
+LDADD += ../build_oe_libs/libcxx/memory.o
+LDADD += ../build_oe_libs/libcxx/algorithm.o
 # Only link libgcc, NOT libgcc_eh (exception handling)
 # Note: -lgcc should not pull in libgcc_eh if we use -fno-exceptions
 LDADD += -lgcc

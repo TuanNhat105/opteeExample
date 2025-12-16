@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-2-Clause
 /*
- * Host Application cho Minimal EVM TA (C++ Version)
- * Test: std::vector, std::map, Exceptions, và EVM Bytecode
+ * Host Application - C++17 libcxx Feature Test Suite
+ * Tests OpenEnclave libcxx compatibility in OP-TEE TA
  */
 
 #include <iostream>
@@ -18,6 +18,11 @@ extern "C" {
 
 using namespace std;
 
+struct TestCase {
+    const char* name;
+    uint32_t cmd_id;
+};
+
 // Hàm tiện ích để báo lỗi
 void print_error(const char* func, TEEC_Result res, uint32_t origin) {
     cerr << "ERROR: " << func << " failed." << endl;
@@ -25,17 +30,40 @@ void print_error(const char* func, TEEC_Result res, uint32_t origin) {
     cerr << "  Origin: " << (origin == TEEC_ORIGIN_TEE ? "TEE" : "API/COMMS") << endl;
 }
 
+void run_test(TEEC_Session* sess, const char* name, uint32_t cmd_id, 
+              int* passed, int* failed) {
+    TEEC_Result res;
+    TEEC_Operation op;
+    uint32_t err_origin;
+
+    memset(&op, 0, sizeof(op));
+    op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, 
+                                     TEEC_NONE, TEEC_NONE);
+    op.params[0].value.a = 1; // Giá trị ban đầu (FAIL)
+
+    res = TEEC_InvokeCommand(sess, cmd_id, &op, &err_origin);
+
+    if (res == TEEC_SUCCESS && op.params[0].value.a == 0) {
+        cout << "  [PASS] " << name << endl;
+        (*passed)++;
+    } else {
+        cout << "  [FAIL] " << name << " (res=0x" << hex << res 
+             << ", ret=" << dec << op.params[0].value.a << ")" << endl;
+        (*failed)++;
+    }
+}
+
 int main(void)
 {
     TEEC_Result res;
     TEEC_Context ctx;
     TEEC_Session sess;
-    TEEC_Operation op;
     TEEC_UUID uuid = TA_MINIMAL_EVM_UUID;
     uint32_t err_origin;
 
     cout << "========================================" << endl;
-    cout << "    TEE C++ EVM / STL Container Test    " << endl;
+    cout << "  C++17 libcxx Feature Test Suite      " << endl;
+    cout << "  OpenEnclave Compatibility Check      " << endl;
     cout << "========================================" << endl << endl;
 
     /* 1. Khởi tạo Context */
@@ -54,109 +82,65 @@ int main(void)
         return 1;
     }
 
-    // ---------------------------------------------------------
-    // TEST 1: std::vector (Real C++ STL)
-    // ---------------------------------------------------------
-    cout << "[TEST 1] std::vector (libcxx)..." << endl;
-    memset(&op, 0, sizeof(op));
-    op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
-    op.params[0].value.a = 1; // Giá trị rác ban đầu
+    int passed = 0;
+    int failed = 0;
 
-    res = TEEC_InvokeCommand(&sess, TA_MINIMAL_EVM_CMD_TEST_VECTOR, &op, &err_origin);
-
-    if (res == TEEC_SUCCESS && op.params[0].value.a == 0) {
-        cout << "  -> [PASS] Vector operations (push, iter, find, pop) OK." << endl;
-    } else {
-        cout << "  -> [FAIL] Vector test failed." << endl;
-        print_error("Invoke TEST_VECTOR", res, err_origin);
-    }
+    cout << "Running tests..." << endl;
     cout << "----------------------------------------" << endl;
 
-    // ---------------------------------------------------------
-    // TEST 2: std::map (Real C++ STL)
-    // ---------------------------------------------------------
-    cout << "[TEST 2] std::map (libcxx)..." << endl;
-    memset(&op, 0, sizeof(op));
-    op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
-    op.params[0].value.a = 1; 
+    // Basic containers
+    run_test(&sess, "std::vector", TA_MINIMAL_EVM_CMD_TEST_VECTOR, &passed, &failed);
+    run_test(&sess, "std::map<int,int>", TA_MINIMAL_EVM_CMD_TEST_MAP, &passed, &failed);
+    run_test(&sess, "std::set", TA_MINIMAL_EVM_CMD_TEST_SET, &passed, &failed);
+    run_test(&sess, "std::deque", TA_MINIMAL_EVM_CMD_TEST_DEQUE, &passed, &failed);
+    run_test(&sess, "std::list", TA_MINIMAL_EVM_CMD_TEST_LIST, &passed, &failed);
+    run_test(&sess, "std::forward_list", TA_MINIMAL_EVM_CMD_TEST_FORWARD_LIST, &passed, &failed);
+    run_test(&sess, "std::array", TA_MINIMAL_EVM_CMD_TEST_ARRAY, &passed, &failed);
+    
+    // Unordered containers - REMOVED (cmath conflicts)
+    // run_test(&sess, "std::unordered_map", TA_MINIMAL_EVM_CMD_TEST_UNORDERED_MAP, &passed, &failed);
+    
+    // Adapters
+    run_test(&sess, "std::queue", TA_MINIMAL_EVM_CMD_TEST_QUEUE, &passed, &failed);
+    
+    // C++17 utilities
+    run_test(&sess, "std::optional (C++17)", TA_MINIMAL_EVM_CMD_TEST_OPTIONAL, &passed, &failed);
+    run_test(&sess, "std::variant (C++17)", TA_MINIMAL_EVM_CMD_TEST_VARIANT, &passed, &failed);
+    // NOTE: any removed - needs RTTI
+    // run_test(run_test(&sess, "std::any (C++17)", TA_MINIMAL_EVM_CMD_TEST_ANY, &passed, &failed);sess, "std::any (C++17)", TA_MINIMAL_EVM_CMD_TEST_ANY, &passed, &failed);
+    run_test(&sess, "std::tuple", TA_MINIMAL_EVM_CMD_TEST_TUPLE, &passed, &failed);
+    
+    // Functional
+    run_test(&sess, "Lambda expressions (C++11)", TA_MINIMAL_EVM_CMD_TEST_FUNCTIONAL, &passed, &failed);
+    
+    // Algorithms
+    run_test(&sess, "std::algorithm (find/count - no sort)", TA_MINIMAL_EVM_CMD_TEST_ALGORITHM, &passed, &failed);
+    // NOTE: numeric removed - includes cmath
+    // run_test(&sess, "std::numeric (accumulate)", TA_MINIMAL_EVM_CMD_TEST_NUMERIC, &passed, &failed);
+    
+    // Memory management
+    // NOTE: memory removed - shared_ptr needs RTTI
+    // run_test(run_test(&sess, "std::unique_ptr/shared_ptr", TA_MINIMAL_EVM_CMD_TEST_MEMORY, &passed, &failed);sess, "std::unique_ptr/shared_ptr", TA_MINIMAL_EVM_CMD_TEST_MEMORY, &passed, &failed);
+    
+    // Exception handling - REMOVED (needs -fexceptions in TA)
+    // run_test(&sess, "std::exception (try-catch)", TA_MINIMAL_EVM_CMD_TEST_EXCEPTION, &passed, &failed);
 
-    res = TEEC_InvokeCommand(&sess, TA_MINIMAL_EVM_CMD_TEST_MAP, &op, &err_origin);
-
-    if (res == TEEC_SUCCESS && op.params[0].value.a == 0) {
-        cout << "  -> [PASS] Map operations (insert, find, erase) OK." << endl;
-    } else {
-        cout << "  -> [FAIL] Map test failed." << endl;
-        print_error("Invoke TEST_MAP", res, err_origin);
-    }
     cout << "----------------------------------------" << endl;
-
-    // // ---------------------------------------------------------
-    // // TEST 3: C++ Exception Handling
-    // // ---------------------------------------------------------
-    // cout << "[TEST 3] C++ Exception Handling (try-catch)..." << endl;
-    // memset(&op, 0, sizeof(op));
-    // op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
-    // op.params[0].value.a = 1;
-
-    // res = TEEC_InvokeCommand(&sess, TA_MINIMAL_EVM_CMD_TEST_EXCEPTION, &op, &err_origin);
-
-    // if (res == TEEC_SUCCESS && op.params[0].value.a == 0) {
-    //     cout << "  -> [PASS] Exceptions thrown and caught correctly inside TEE." << endl;
-    // } else {
-    //     cout << "  -> [FAIL] Exception test failed (Crash or uncaught exception)." << endl;
-    //     print_error("Invoke TEST_EXCEPTION", res, err_origin);
-    // }
-    // cout << "----------------------------------------" << endl;
-
-    // // ---------------------------------------------------------
-    // // TEST 4: Bytecode Execution (Stack Machine)
-    // // ---------------------------------------------------------
-    // cout << "[TEST 4] EVM Bytecode Execution..." << endl;
-    
-    // // Logic: PUSH 10, PUSH 20, ADD, RETURN
-    // // Stack: [10] -> [10, 20] -> [30] -> Return 30
-    // uint8_t bytecode[] = { 
-    //     0x01, 10,  // PUSH 10
-    //     0x01, 20,  // PUSH 20
-    //     0x02,      // ADD
-    //     0x03       // RETURN
-    // };
-    // uint8_t result_buffer[32] = {0};
-
-    // memset(&op, 0, sizeof(op));
-    // op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_INPUT,
-    //                                  TEEC_MEMREF_TEMP_OUTPUT,
-    //                                  TEEC_NONE, TEEC_NONE);
-    
-    // op.params[0].tmpref.buffer = bytecode;
-    // op.params[0].tmpref.size = sizeof(bytecode);
-    
-    // op.params[1].tmpref.buffer = result_buffer;
-    // op.params[1].tmpref.size = sizeof(result_buffer);
-
-    // res = TEEC_InvokeCommand(&sess, TA_MINIMAL_EVM_CMD_EXECUTE_BYTECODE, &op, &err_origin);
-
-    // if (res == TEEC_SUCCESS) {
-    //     int result_val = (int)result_buffer[0];
-    //     cout << "  Input: 10 + 20" << endl;
-    //     cout << "  Output: " << dec << result_val << endl;
-        
-    //     if (result_val == 30) {
-    //         cout << "  -> [PASS] Bytecode logic correct." << endl;
-    //     } else {
-    //         cout << "  -> [FAIL] Logic incorrect. Expected 30." << endl;
-    //     }
-    // } else {
-    //     cout << "  -> [FAIL] Execution failed." << endl;
-    //     print_error("Invoke EXECUTE_BYTECODE", res, err_origin);
-    // }
-
-    cout << endl;
+    cout << "Test Results:" << endl;
+    cout << "  PASSED: " << passed << endl;
+    cout << "  FAILED: " << failed << endl;
+    cout << "  TOTAL:  " << (passed + failed) << endl;
     cout << "========================================" << endl;
-    
-    /* Đóng session và context */
+
+    if (failed == 0) {
+        cout << "ALL TESTS PASSED! ✓" << endl;
+    } else {
+        cout << "SOME TESTS FAILED! ✗" << endl;
+    }
+
+    /* 3. Đóng Session và Context */
     TEEC_CloseSession(&sess);
     TEEC_FinalizeContext(&ctx);
 
-    return 0;
+    return (failed == 0) ? 0 : 1;
 }
