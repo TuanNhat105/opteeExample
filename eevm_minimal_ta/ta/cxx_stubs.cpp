@@ -23,27 +23,27 @@ namespace std {
 // Note: vector.o provides __vector_base_common implementations
 // We only provide generic throw functions here
 
-namespace std {
-namespace __1 {
+// namespace std {
+// namespace __1 {
 
-// Generic throw functions (not in vector.o)
-void __throw_length_error(const char* msg) {
-    EMSG("ERROR: length_error: %s", msg);
-    TEE_Panic(0xBADC0DE);
-}
+// // Generic throw functions (not in vector.o)
+// void __throw_length_error(const char* msg) {
+//     EMSG("ERROR: length_error: %s", msg);
+//     TEE_Panic(0xBADC0DE);
+// }
 
-void __throw_out_of_range(const char* msg) {
-    EMSG("ERROR: out_of_range: %s", msg);
-    TEE_Panic(0xBADC0DE);
-}
+// void __throw_out_of_range(const char* msg) {
+//     EMSG("ERROR: out_of_range: %s", msg);
+//     TEE_Panic(0xBADC0DE);
+// }
 
-void __throw_bad_alloc() {
-    EMSG("ERROR: bad_alloc");
-    TEE_Panic(0xBADC0DE);
-}
+// void __throw_bad_alloc() {
+//     EMSG("ERROR: bad_alloc");
+//     TEE_Panic(0xBADC0DE);
+// }
 
-} // namespace __1
-} // namespace std
+// } // namespace __1
+// } // namespace std
 
 extern "C" {
 
@@ -115,10 +115,8 @@ int posix_memalign(void** memptr, size_t alignment, size_t size) {
 
 extern "C" {
 
-// Provide stderr variable (declared in stdio.h as extern)
-struct __sFILE { int dummy; };
-static struct __sFILE __stderr_file = {0};
-FILE* const stderr = (FILE*)&__stderr_file;
+// stderr is now provided by musl (liboelibc.a)
+// Remove our stub to avoid multiple definition
 
 // Provide fprintf stub
 int fprintf(FILE* stream, const char* format, ...) {

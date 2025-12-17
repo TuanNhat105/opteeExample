@@ -220,11 +220,11 @@ echo -e "${YELLOW}Step 5: Build libcxx (following OpenEnclave list)${NC}"
 LIBCXX_CXXFLAGS=(
     "${CXXFLAGS[@]}"
     -fno-weak
+    -frtti
     -DLIBCXXRT
     -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
     -D_LIBCPP_BUILDING_LIBRARY
     -D_LIBCPP_HAS_NO_THREADS
-    -D_LIBCPP_HAS_NO_EXCEPTIONS
     -U__STDCPP_THREADS__
     -I"$LIBCXX_SRC/src"
     -I"$LIBCXXRT_SRC/src"

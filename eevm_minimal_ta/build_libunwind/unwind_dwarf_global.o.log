@@ -1,0 +1,39 @@
+In file included from <command-line>:
+./../external/openenclave/3rdparty/libunwind/stubs.h:132:21: error: redefinition of ‘__libunwind_mincore’
+  132 | static __inline int __libunwind_mincore(
+      |                     ^~~~~~~~~~~~~~~~~~~
+In file included from <command-line>:
+././optee_syscall_stubs.h:17:19: note: previous definition of ‘__libunwind_mincore’ with type ‘int(void *, size_t,  unsigned char *)’ {aka ‘int(void *, long unsigned int,  unsigned char *)’}
+   17 | static inline int __libunwind_mincore(void* a, size_t l, unsigned char* v) {
+      |                   ^~~~~~~~~~~~~~~~~~~
+./../external/openenclave/3rdparty/libunwind/stubs.h:146:21: error: redefinition of ‘__libunwind_pipe2’
+  146 | static __inline int __libunwind_pipe2(int pipefd[2], int flags)
+      |                     ^~~~~~~~~~~~~~~~~
+././optee_syscall_stubs.h:10:19: note: previous definition of ‘__libunwind_pipe2’ with type ‘int(int *, int)’
+   10 | static inline int __libunwind_pipe2(int p[2], int f) { (void)p; (void)f; return -1; }
+      |                   ^~~~~~~~~~~~~~~~~
+./../external/openenclave/3rdparty/libunwind/stubs.h:151:22: error: redefinition of ‘__libunwind_syscall’
+  151 | static __inline long __libunwind_syscall(long number, ...)
+      |                      ^~~~~~~~~~~~~~~~~~~
+././optee_syscall_stubs.h:13:20: note: previous definition of ‘__libunwind_syscall’ with type ‘long int(long int, ...)’
+   13 | static inline long __libunwind_syscall(long n, ...) { (void)n; return -1; }
+      |                    ^~~~~~~~~~~~~~~~~~~
+In file included from ../external/openenclave/3rdparty/libunwind/libunwind/include/dwarf.h:34,
+                 from ../external/openenclave/3rdparty/libunwind/libunwind/include/dwarf_i.h:9,
+                 from ../external/openenclave/3rdparty/libunwind/libunwind/src/dwarf/global.c:26:
+./dwarf-config.h:6:9: warning: "UNW_LOCAL_ONLY" redefined
+    6 | #define UNW_LOCAL_ONLY
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+../external/openenclave/3rdparty/libunwind/libunwind/include/dwarf.h:248:16: error: ‘DWARF_NUM_PRESERVED_REGS’ undeclared here (not in a function)
+  248 |     char where[DWARF_NUM_PRESERVED_REGS + 2];        /* how is the register saved? */
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~
+../external/openenclave/3rdparty/libunwind/libunwind/include/dwarf.h:318:5: error: unknown type name ‘dwarf_loc_t’; did you mean ‘dwarf_cfa_t’?
+  318 |     dwarf_loc_t loc[DWARF_NUM_PRESERVED_REGS];
+      |     ^~~~~~~~~~~
+      |     dwarf_cfa_t
+In file included from ../external/openenclave/3rdparty/libunwind/libunwind/include/dwarf_i.h:10:
+../external/openenclave/3rdparty/libunwind/libunwind/include/libunwind_i.h:352:10: fatal error: tdep/libunwind_i.h: No such file or directory
+  352 | #include "tdep/libunwind_i.h"
+      |          ^~~~~~~~~~~~~~~~~~~~
+compilation terminated.

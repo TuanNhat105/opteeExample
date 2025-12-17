@@ -13,11 +13,12 @@ srcs-y += cxx_stubs.cpp
 
 # Enable C++17
 cppflags-y += -std=c++17
-cppflags-y += -fno-exceptions
+cppflags-y += -fexceptions
 cppflags-y += -frtti
 cppflags-y += -funwind-tables
+cppflags-y += -nostdinc
 cppflags-y += -nostdinc++
-cppflags-y += -nodefaultlibs
+# cppflags-y += -nodefaultlibs
 cppflags-y += -ffreestanding
 
 
@@ -41,12 +42,13 @@ cflags-y += -Wno-macro-redefined
 # Link flags: Don't use default C++ libs  
 LDFLAGS += -nostdlib -nodefaultlibs
 LDFLAGS += -Wl,--no-undefined
-LDFLAGS += -Wl,--exclude-libs,ALL
+# LDFLAGS += -Wl,--exclude-libs,ALL
 # Prevent linking with libstdc++ from toolchain
 LDFLAGS += -Wl,--as-needed
 LDFLAGS += -Wl,--gc-sections
 # Explicitly prevent libstdc++ and libgcc_eh
 LDFLAGS += -Wl,--exclude-libs=libstdc++,libgcc_eh
+LDFLAGS += -u __exidx_start -u __exidx_end
 
 # Only link libgcc (objects added via objs variable above)
 LDADD += -lgcc

@@ -1,0 +1,4 @@
+external/openenclave/3rdparty/libunwind/libunwind/src/mi/flush_cache.c: In function ‘_Uaarch64_flush_cache’:
+external/openenclave/3rdparty/libunwind/libunwind/src/mi/flush_cache.c:56:3: warning: #warning unw_flush_cache(): need a way to atomically increment an integer. [-Wcpp]
+   56 | # warning unw_flush_cache(): need a way to atomically increment an integer.
+      |   ^~~~~~~

@@ -37,20 +37,34 @@ LIBCXX_OBJS := ../build_oe_libs/libcxx/string.o \
                ../build_oe_libs/libcxx/variant.o \
                ../build_oe_libs/libcxx/hash.o \
                ../build_oe_libs/libcxx/__dso_handle.o \
-               ../build_oe_libs/libcxxrt/stdexcept.o
+               ../build_oe_libs/libcxx/exception.o
 
-# Complete OpenEnclave libc (musl + wrappers) - provides everything we need
+# Complete OpenEnclave libc (musl + wrappers + pthread/dl_find_object stubs)
 LIBOELIBC := ../libc/liboelibc.a
 
-# Compiler runtime for long double operations
+# libcxxrt exception runtime (guards, typeinfo, bad_cast, etc)
+# Built by build_libcxxrt_complete.sh into build_oe_libs/libcxxrt/
+LIBCXXRT := ../build_oe_libs/libcxxrt/libcxxrt.a
+
+# Compiler runtime for long double operations and math intrinsics
+# NOTE: We keep libgcc.a (NOT libgcc_eh.a) because it provides compiler intrinsics
+# that libunwind doesn't provide (__divdi3, __moddi3, soft-float, etc)
+# libunwind only replaces libgcc_eh.a (exception handling)
 LIBGCC := $(shell $(CROSS_COMPILE)gcc -print-file-name=libgcc.a)
 
-# Override the .elf target to filter out libstdc++ and libgcc_eh from linker command
-# Link with libcxx objects + complete oelibc (musl + wrappers) + libgcc for full C++ & C runtime
-# Suppress warning about overriding recipe (we intentionally override to fix libstdc++ issue)
-$(BINARY).elf: $(objs) $(LIBCXX_OBJS) $(LIBOELIBC) $(libdeps) $(libdeps-after-libgcc) $(link-script-ppta_arm64) $(dynlistdep) $(additional-link-deps)
+# libunwind for stack unwinding (replaces libgcc_eh.a ONLY, not libgcc.a)
+# Built by build_libunwind_openenclave.sh into build_libunwind/
+LIBUNWIND := ../build_libunwind/libunwind.a
+
+# Override the .elf target to link our custom libraries
+# Link order: objs → LIBCXX_OBJS → LIBCXXRT → LIBOELIBC → LIBUNWIND → LIBOELIBC → LIBGCC
+# We use libunwind instead of libgcc_eh.a for complete exception handling
+# Note: LIBOELIBC is linked twice to resolve circular dependencies (libunwind needs musl functions)
+# Note: --allow-multiple-definition needed for libunwind's _U_dyn_info_list symbol
+# Filter out both libstdc++ and libgcc_eh from default ldargs
+$(BINARY).elf: $(objs) $(LIBCXX_OBJS) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(libdeps) $(libdeps-after-libgcc) $(link-script-ppta_arm64) $(dynlistdep) $(additional-link-deps)
 	@$(cmd-echo-silent) '  LD      $@'
-	$(q)$(LDta_arm64) $(filter-out %libstdc++.a %libgcc_eh.a,$(ldargs-$(BINARY).elf)) $(LIBCXX_OBJS) $(LIBOELIBC) $(LIBGCC) -o $@
+	$(q)$(LDta_arm64) --allow-multiple-definition $(filter-out %libstdc++.a %libgcc_eh.a,$(ldargs-$(BINARY).elf)) $(LIBCXX_OBJS) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(LIBOELIBC) $(LIBGCC) -o $@
 
 ifeq ($(wildcard $(TA_DEV_KIT_DIR)/mk/ta_dev_kit.mk), )
 clean:

@@ -241,8 +241,8 @@ static TEE_Result test_real_map(uint32_t param_types, TEE_Param params[4])
     DMSG("Testing REAL std::map from libcxx");
     DMSG("========================================");
 
-    // try
-    // {
+    try
+    {
     // Create std::map - this is THE REAL STL!
     std::map<int, int> mymap;
 
@@ -297,12 +297,12 @@ static TEE_Result test_real_map(uint32_t param_types, TEE_Param params[4])
     // // {
     // //     EMSG("Exception caught: %s", e.what());
     // //     return TEE_ERROR_GENERIC;
-    // // }
-    // catch (...)
-    // {
-    //     EMSG("Unknown exception caught!");
-    //     return TEE_ERROR_GENERIC;
-    // }
+    }
+    catch (...)
+    {
+        EMSG("Unknown exception caught!");
+        return TEE_ERROR_GENERIC;
+    }
 }
 
 /*
@@ -915,7 +915,115 @@ static TEE_Result test_forward_list(uint32_t param_types, TEE_Param params[4])
     params[0].value.a = 0; // PASS
     return TEE_SUCCESS;
 }
+static TEE_Result test_exception(uint32_t param_types, TEE_Param params[4])
+{
+    uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
+                                               TEE_PARAM_TYPE_NONE,
+                                               TEE_PARAM_TYPE_NONE,
+                                               TEE_PARAM_TYPE_NONE);
 
+    if (param_types != exp_param_types)
+        return TEE_ERROR_BAD_PARAMETERS;
+
+    DMSG("========================================");
+    DMSG("Testing C++ Exceptions");
+    DMSG("========================================");
+
+    // Test 1: Simple int throw (no dependencies)
+    DMSG("Test 1: Throwing primitive int...");
+    bool caught_int = false;
+    try
+    {
+        DMSG("  About to throw int 42...");
+        throw 42;
+    }
+    catch (int e)
+    {
+        DMSG("  [SUCCESS] Caught int exception: %d", e);
+        if (e == 42) {
+            caught_int = true;
+        } else {
+            DMSG("  [FAIL] Wrong value: %d (expected 42)", e);
+        }
+    }
+    catch (...)
+    {
+        DMSG("  [FAIL] Caught unknown exception instead of int");
+    }
+
+    if (!caught_int)
+    {
+        DMSG("  [FAIL] Did not catch int exception!");
+        params[0].value.a = 1;
+        return TEE_ERROR_GENERIC;
+    }
+
+    // // Test 2: Throw and Catch std::runtime_error
+    // DMSG("\nTest 2: Throwing std::runtime_error...");
+    // bool caught_std = false;
+    // try
+    // {
+    //     DMSG("  About to throw std::runtime_error...");
+    //     throw std::runtime_error("This is a forced C++ exception!");
+    // }
+    // catch (const std::runtime_error &e)
+    // {
+    //     DMSG("  [SUCCESS] Caught std::runtime_error: %s", e.what());
+    //     caught_std = true;
+    // }
+    // catch (const std::exception &e)
+    // {
+    //     DMSG("  [FAIL] Caught generic std::exception instead of runtime_error");
+    //     DMSG("  Message: %s", e.what());
+    //     return TEE_ERROR_GENERIC;
+    // }
+    // catch (...)
+    // {
+    //     DMSG("  [FAIL] Caught unknown exception");
+    //     return TEE_ERROR_GENERIC;
+    // }
+
+    // if (!caught_std)
+    // {
+    //     DMSG("  [FAIL] Did not catch std::runtime_error!");
+    //     params[0].value.a = 2;
+    //     return TEE_ERROR_GENERIC;
+    // }
+
+    // // Test 3: Standard vector out_of_range (auto throw from STL)
+    // DMSG("\nTest 3: Testing std::vector::at() out_of_range...");
+    // std::vector<int> v = {1, 2, 3};
+    // bool caught_range = false;
+    // try
+    // {
+    //     DMSG("  Accessing v.at(10)...");
+    //     int val = v.at(10);
+    //     (void)val;
+    //     DMSG("  [FAIL] v.at(10) did not throw!");
+    // }
+    // catch (const std::out_of_range &e)
+    // {
+    //     DMSG("  [SUCCESS] Caught std::out_of_range: %s", e.what());
+    //     caught_range = true;
+    // }
+    // catch (...)
+    // {
+    //     DMSG("  [FAIL] Caught unknown exception type for vector::at");
+    // }
+
+    // if (!caught_range)
+    // {
+    //     params[0].value.a = 3;
+    //     return TEE_ERROR_GENERIC;
+    // }
+
+    params[0].value.a = 0; // PASS
+    DMSG("========================================");
+    DMSG("Exception Tests PASSED!");
+    DMSG("========================================");
+    
+    return TEE_SUCCESS;
+}
 /*
  * Called when a TA is invoked.
  */
@@ -972,7 +1080,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
         return test_array(param_types, params);
     case TA_MINIMAL_EVM_CMD_TEST_FORWARD_LIST:
         return test_forward_list(param_types, params);
-
+    case TA_MINIMAL_EVM_CMD_TEST_EXCEPTION:
+        return test_exception(param_types, params);
+    
     default:
         EMSG("Unknown command ID: %u", cmd_id);
         return TEE_ERROR_BAD_PARAMETERS;

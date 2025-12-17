@@ -128,6 +128,7 @@ __ISREL_DEF(greaterequall, >=, long double)
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /* Undefine macros first to avoid conflicts, then define functions */
 #ifdef signbit
 #undef signbit
