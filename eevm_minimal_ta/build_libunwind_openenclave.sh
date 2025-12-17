@@ -9,7 +9,7 @@ MUSL_INC=build_oe_libs/musl/include
 OE_STUB=build_oe_libs/openenclave_stub
 OUTPUT_DIR=build_libunwind
 OUTPUT_LIB=build_libunwind/libunwind.a  # Keep in build_libunwind directory
-
+export PATH=/home/abc/arm-toolchain/bin:$PATH
 echo "===== Building libunwind for OP-TEE TA (aarch64) ====="
 echo "Following OpenEnclave's CMakeLists.txt specification"
 

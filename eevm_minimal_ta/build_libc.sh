@@ -14,7 +14,7 @@ NC='\033[0m'
 if [ -d "/home/abc/arm-toolchain/bin" ]; then
     export PATH="/home/abc/arm-toolchain/bin:$PATH"
 fi
-
+export PATH=/home/abc/arm-toolchain/bin:$PATH
 CROSS_COMPILE="${CROSS_COMPILE:-aarch64-none-linux-gnu-}"
 BUILD_DIR="libc"
 MUSLSRC="build_oe_libs/musl/src/src"

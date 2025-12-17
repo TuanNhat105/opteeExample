@@ -1,0 +1,13 @@
+build_libunwind/fix_aarch64_uc_addr.c:16:9: warning: "UNW_LOCAL_ONLY" redefined
+   16 | #define UNW_LOCAL_ONLY
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+In file included from external/openenclave/3rdparty/libunwind/libunwind/src/aarch64/unwind_i.h:31,
+                 from build_libunwind/fix_aarch64_uc_addr.c:17:
+external/openenclave/3rdparty/libunwind/libunwind/include/libunwind-aarch64.h:178:9: warning: "unw_tdep_getcontext" redefined
+  178 | #define unw_tdep_getcontext(uc) (({                                     \
+      |         ^~~~~~~~~~~~~~~~~~~
+In file included from <command-line>:
+./build_libunwind/libunwind-optee-fix.h:8:9: note: this is the location of the previous definition
+    8 | #define unw_tdep_getcontext(uc) (({                                     \
+      |         ^~~~~~~~~~~~~~~~~~~

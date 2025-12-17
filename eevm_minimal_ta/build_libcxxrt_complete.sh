@@ -9,7 +9,7 @@ MUSL_INC=build_oe_libs/musl/include
 OE_STUB=build_oe_libs/openenclave_stub
 OUTPUT_DIR=build_oe_libs/libcxxrt
 OUTPUT_LIB=build_oe_libs/libcxxrt/libcxxrt.a  # Keep in libcxxrt directory
-
+export PATH=/home/abc/arm-toolchain/bin:$PATH
 echo "===== Building Complete libcxxrt for OP-TEE TA ====="
 echo "Following OpenEnclave's CMakeLists.txt specification"
 
