@@ -1,8 +1,0 @@
-In file included from ../build_oe_libs/musl/src/src/time/strftime.c:8:
-../build_oe_libs/musl/src/src/time/strftime.c: In function ‘strftime’:
-../build_oe_libs/musl/src/src/internal/locale_impl.h:38:41: error: invalid type argument of ‘->’ (have ‘int’)
-   38 | #define CURRENT_LOCALE (__pthread_self()->locale)
-      |                                         ^~
-../build_oe_libs/musl/src/src/time/strftime.c:278:42: note: in expansion of macro ‘CURRENT_LOCALE’
-  278 |         return __strftime_l(s, n, f, tm, CURRENT_LOCALE);
-      |                                          ^~~~~~~~~~~~~~

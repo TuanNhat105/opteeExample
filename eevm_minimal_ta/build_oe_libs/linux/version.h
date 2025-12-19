@@ -1,0 +1,6 @@
+/* Dummy linux/version.h for OP-TEE build */
+#ifndef _LINUX_VERSION_H
+#define _LINUX_VERSION_H
+#define LINUX_VERSION_CODE 0x050000
+#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
+#endif

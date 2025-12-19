@@ -302,6 +302,8 @@ long double    truncl(long double x);
 
 #include <__config>
 #include <math.h>
+// PATCH: Added for numeric_limits
+#include <limits>
 #include <version>
 #include <type_traits>
 
@@ -332,7 +334,8 @@ using ::float_t;
 using ::double_t;
 
 #ifndef _AIX
-using ::abs;
+// PATCH: abs not in musl math.h
+// using ::abs;
 #endif
 
 using ::acos;

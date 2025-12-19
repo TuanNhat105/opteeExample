@@ -59,6 +59,105 @@ COMMON_FLAGS=(
 
 echo -e "${YELLOW}Building musl functions from OpenEnclave CMakeLists.txt...${NC}"
 
+# Step 1: Create pthread_optee.c if not exists
+if [ ! -f "../pthread_optee.c" ]; then
+    echo "  Creating pthread_optee.c..."
+    cat > ../pthread_optee.c << 'PTHREAD_EOF'
+// pthread.c for OP-TEE - Simplified version from OpenEnclave
+// Single-threaded implementation for OP-TEE Trusted Applications
+
+#include <stdint.h>
+#include <stddef.h>
+
+// Include musl's pthread_impl.h to get struct pthread definition
+#define hidden
+#define weak
+#define weak_alias(old, new)
+
+// Paths are relative to this file (project root)
+#include "build_oe_libs/musl/src/src/internal/pthread_impl.h"
+#include "build_oe_libs/musl/src/src/internal/locale_impl.h"
+
+// Thread-local storage for main thread
+static __thread struct pthread _pthread_self;
+static __thread int _pthread_initialized = 0;
+
+// Initialize pthread on first use
+static void _pthread_init_once(void) {
+    if (!_pthread_initialized) {
+        _pthread_self.self = &_pthread_self;
+        _pthread_self.tid = 1;
+        _pthread_self.locale = C_LOCALE;
+        _pthread_self.canceldisable = 0;
+        _pthread_self.cancelasync = 0;
+        _pthread_initialized = 1;
+    }
+}
+
+// Get thread pointer - THIS is what musl's CURRENT_LOCALE macro calls
+struct pthread *__pthread_self(void) {
+    _pthread_init_once();
+    return &_pthread_self;
+}
+
+pthread_t pthread_self(void) {
+    _pthread_init_once();
+    return &_pthread_self;
+}
+
+// Stub implementations for OP-TEE single-threaded environment
+int pthread_create(
+    pthread_t *thread,
+    const pthread_attr_t *attr,
+    void *(*start_routine)(void *),
+    void *arg)
+{
+    return -1;  // OP-TEE TAs are single-threaded
+}
+
+int pthread_join(pthread_t thread, void **retval) {
+    return -1;
+}
+
+int pthread_detach(pthread_t thread) {
+    return -1;
+}
+PTHREAD_EOF
+    echo "  ✓ Created pthread_optee.c"
+fi
+
+# Step 2: Patch musl's pthread_impl.h to add __pthread_self() declaration
+PTHREAD_IMPL_H="../$MUSLSRC/internal/pthread_impl.h"
+if ! grep -q "__pthread_self" "$PTHREAD_IMPL_H" 2>/dev/null; then
+    echo "  Patching pthread_impl.h to add __pthread_self() declaration..."
+    # Backup original
+    cp "$PTHREAD_IMPL_H" "$PTHREAD_IMPL_H.backup"
+    
+    # Add declaration before #endif
+    sed -i '/#endif[[:space:]]*$/i \
+\
+// OP-TEE single-threaded pthread implementation\
+// Declaration for __pthread_self() provided by pthread_optee.c\
+hidden struct pthread *__pthread_self(void);\
+' "$PTHREAD_IMPL_H"
+    
+    echo "  ✓ Patched pthread_impl.h"
+else
+    echo "  pthread_impl.h already patched"
+fi
+
+# Step 3: Build pthread_optee.c - provides __pthread_self() for musl
+echo -n "  Building pthread_optee.o... "
+if ${CROSS_COMPILE}gcc "${COMMON_FLAGS[@]}" \
+    -c ../pthread_optee.c -o pthread_optee.o 2>pthread_optee.log; then
+    echo -e "${GREEN}OK${NC}"
+else
+    echo -e "${RED}FAIL - pthread is critical!${NC}"
+    cat pthread_optee.log
+    exit 1
+fi
+echo ""
+
 # Complete list from CMakeLists.txt (OP-TEE/TrustZone section)
 MUSL_SRCS=(
     # Platform (skip init.c and trace.c - need OE SDK)
@@ -758,11 +857,13 @@ MUSL_OBJS=()
 SKIP_COUNT=0
 FAIL_COUNT=0
 SUCCESS_COUNT=0
+declare -a SKIP_FILES
 
 for SRC in "${MUSL_SRCS[@]}"; do
     SRC_PATH="../$MUSLSRC/$SRC"
     if [ ! -f "$SRC_PATH" ]; then
         SKIP_COUNT=$((SKIP_COUNT + 1))
+        SKIP_FILES+=("$SRC")
         continue
     fi
     
@@ -791,6 +892,16 @@ echo "  Failed:             $FAIL_COUNT"
 echo "  Not found:          $SKIP_COUNT"
 echo "  Total objects:      ${#MUSL_OBJS[@]}"
 echo ""
+
+if [ $SKIP_COUNT -gt 0 ]; then
+    echo -e "${YELLOW}Files not found (skipped - OK, these are optional):${NC}"
+    echo "  (These files are listed in OpenEnclave's CMakeLists.txt but don't exist"
+    echo "   in this musl version. They are optional optimization files.)"
+    for file in "${SKIP_FILES[@]}"; do
+        echo "    - $file"
+    done
+    echo ""
+fi
 
 if [ ${#MUSL_OBJS[@]} -gt 0 ]; then
     echo -e "${YELLOW}Creating libmusl_complete.a...${NC}"
@@ -970,6 +1081,11 @@ long oe_SYS_writev_impl(int fd, const void* iov, int iovcnt) {
     return -1;
 }
 
+long oe_SYS_futex_impl(int* uaddr, int futex_op, int val, void* timeout, int* uaddr2, int val3) {
+    // OP-TEE is single-threaded, futex always succeeds immediately
+    return 0;
+}
+
 long __syscall_ret(unsigned long r) {
     if (r > -4096UL) {
         __thread_errno = -(long)r;
@@ -996,10 +1112,10 @@ else
 fi
 
 echo ""
-echo -e "${YELLOW}Creating complete liboelibc.a (musl + stubs)...${NC}"
+echo -e "${YELLOW}Creating complete liboelibc.a (musl + pthread + stubs)...${NC}"
 
-# Combine all musl objects + minimal stubs into liboelibc.a
-ALL_OBJS=("${MUSL_OBJS[@]}" "minimal_stubs.o")
+# Combine all musl objects + pthread + minimal stubs into liboelibc.a
+ALL_OBJS=("pthread_optee.o" "${MUSL_OBJS[@]}" "minimal_stubs.o")
 ${CROSS_COMPILE}ar rcs liboelibc.a "${ALL_OBJS[@]}"
 ${CROSS_COMPILE}ranlib liboelibc.a
 
@@ -1007,9 +1123,9 @@ SIZE=$(ls -lh liboelibc.a | awk '{print $5}')
 echo -e "${GREEN}✓ liboelibc.a created (${#ALL_OBJS[@]} objects, $SIZE)${NC}"
 echo ""
 
-# Verify key symbols
+# Verify key symbols including pthread
 echo "Key symbols verification:"
-${CROSS_COMPILE}nm liboelibc.a 2>/dev/null | grep -E " T (strtol|strtod|malloc|free|__lockfile|___errno_location)$" | sed 's/^/  /'
+${CROSS_COMPILE}nm liboelibc.a 2>/dev/null | grep -E " T (strtol|strtod|malloc|free|__lockfile|___errno_location|__pthread_self|pthread_self)$" | sed 's/^/  /'
 
 echo ""
 echo "Library files:"

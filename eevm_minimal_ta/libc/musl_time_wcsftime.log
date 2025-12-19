@@ -1,8 +1,0 @@
-In file included from ../build_oe_libs/musl/src/src/time/wcsftime.c:4:
-../build_oe_libs/musl/src/src/time/wcsftime.c: In function ‘wcsftime’:
-../build_oe_libs/musl/src/src/internal/locale_impl.h:38:41: error: invalid type argument of ‘->’ (have ‘int’)
-   38 | #define CURRENT_LOCALE (__pthread_self()->locale)
-      |                                         ^~
-../build_oe_libs/musl/src/src/time/wcsftime.c:68:44: note: in expansion of macro ‘CURRENT_LOCALE’
-   68 |         return __wcsftime_l(wcs, n, f, tm, CURRENT_LOCALE);
-      |                                            ^~~~~~~~~~~~~~

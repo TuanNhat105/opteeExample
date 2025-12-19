@@ -1,8 +1,0 @@
-In file included from ../build_oe_libs/musl/src/src/locale/strfmon.c:6:
-../build_oe_libs/musl/src/src/locale/strfmon.c: In function ‘strfmon’:
-../build_oe_libs/musl/src/src/internal/locale_impl.h:38:41: error: invalid type argument of ‘->’ (have ‘int’)
-   38 | #define CURRENT_LOCALE (__pthread_self()->locale)
-      |                                         ^~
-../build_oe_libs/musl/src/src/locale/strfmon.c:97:32: note: in expansion of macro ‘CURRENT_LOCALE’
-   97 |         ret = vstrfmon_l(s, n, CURRENT_LOCALE, fmt, ap);
-      |                                ^~~~~~~~~~~~~~

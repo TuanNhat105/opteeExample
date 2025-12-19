@@ -22,22 +22,8 @@ override libgcc_ehta_arm64 :=
 override LDADD := $(filter-out -lstdc++ -lstdc++_nonshared,$(LDADD))
 override LDFLAGS += -Wl,--exclude-libs=libstdc++,libgcc_eh
 
-# libcxx object files to link (strong symbols, not weak)
-LIBCXX_OBJS := ../build_oe_libs/libcxx/string.o \
-               ../build_oe_libs/libcxx/charconv.o \
-               ../build_oe_libs/libcxx/vector.o \
-               ../build_oe_libs/libcxx/bind.o \
-               ../build_oe_libs/libcxx/functional.o \
-               ../build_oe_libs/libcxx/memory.o \
-               ../build_oe_libs/libcxx/new.o \
-               ../build_oe_libs/libcxx/optional.o \
-               ../build_oe_libs/libcxx/stdexcept.o \
-               ../build_oe_libs/libcxx/typeinfo.o \
-               ../build_oe_libs/libcxx/utility.o \
-               ../build_oe_libs/libcxx/variant.o \
-               ../build_oe_libs/libcxx/hash.o \
-               ../build_oe_libs/libcxx/__dso_handle.o \
-               ../build_oe_libs/libcxx/exception.o
+# libcxx archive (all C++ standard library objects)
+LIBCXX := ../build_oe_libs/libcxx/libc++.a
 
 # Complete OpenEnclave libc (musl + wrappers + pthread/dl_find_object stubs)
 LIBOELIBC := ../libc/liboelibc.a
@@ -57,14 +43,14 @@ LIBGCC := $(shell $(CROSS_COMPILE)gcc -print-file-name=libgcc.a)
 LIBUNWIND := ../build_libunwind/libunwind.a
 
 # Override the .elf target to link our custom libraries
-# Link order: objs → LIBCXX_OBJS → LIBCXXRT → LIBOELIBC → LIBUNWIND → LIBOELIBC → LIBGCC
+# Link order: objs → LIBCXX → LIBCXXRT → LIBOELIBC → LIBUNWIND → LIBOELIBC → LIBGCC
 # We use libunwind instead of libgcc_eh.a for complete exception handling
 # Note: LIBOELIBC is linked twice to resolve circular dependencies (libunwind needs musl functions)
 # Note: --allow-multiple-definition needed for libunwind's _U_dyn_info_list symbol
 # Filter out both libstdc++ and libgcc_eh from default ldargs
-$(BINARY).elf: $(objs) $(LIBCXX_OBJS) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(libdeps) $(libdeps-after-libgcc) $(link-script-ppta_arm64) $(dynlistdep) $(additional-link-deps)
+$(BINARY).elf: $(objs) $(LIBCXX) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(libdeps) $(libdeps-after-libgcc) $(link-script-ppta_arm64) $(dynlistdep) $(additional-link-deps)
 	@$(cmd-echo-silent) '  LD      $@'
-	$(q)$(LDta_arm64) --allow-multiple-definition $(filter-out %libstdc++.a %libgcc_eh.a,$(ldargs-$(BINARY).elf)) $(LIBCXX_OBJS) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(LIBOELIBC) $(LIBGCC) -o $@
+	$(q)$(LDta_arm64) --allow-multiple-definition $(filter-out %libstdc++.a %libgcc_eh.a,$(ldargs-$(BINARY).elf)) $(LIBCXX) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(LIBOELIBC) $(LIBGCC) -o $@
 
 ifeq ($(wildcard $(TA_DEV_KIT_DIR)/mk/ta_dev_kit.mk), )
 clean:

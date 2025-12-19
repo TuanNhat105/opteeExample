@@ -13,7 +13,8 @@ add_enclave_library(libcxxrt OBJECT
   libcxxrt/src/typeinfo.cc
   libcxxrt/src/memory.cc
   libcxxrt/src/auxhelper.cc
-  libcxxrt/src/libelftc_dem_gnu3.c)
+  libcxxrt/src/libelftc_dem_gnu3.c
+  )
 
 maybe_build_using_clangw(libcxxrt)
 

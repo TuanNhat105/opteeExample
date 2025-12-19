@@ -20,7 +20,7 @@ CFLAGS_NOSSP = -fno-stack-protector
 CPPFLAGS = 
 LDFLAGS = 
 LDFLAGS_AUTO = -Wl,--sort-section,alignment -Wl,--sort-common -Wl,--gc-sections -Wl,--hash-style=both -Wl,--no-undefined -Wl,--exclude-libs=ALL -Wl,--dynamic-list=./dynamic.list
-CROSS_COMPILE = 
+CROSS_COMPILE = aarch64-none-linux-gnu-
 LIBCC = -lgcc -lgcc_eh
 OPTIMIZE_GLOBS = internal/*.c malloc/*.c string/*.c
 ALL_TOOLS =  obj/musl-gcc

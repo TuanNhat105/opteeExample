@@ -1,0 +1,11 @@
+In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/cstdlib:85,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/filesystem:234,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/filesystem/directory_iterator.cpp:9:
+/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/stdlib.h:11:9: warning: "NULL" redefined
+   11 | #define NULL 0L
+      |         ^~~~
+In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/cstddef:44,
+                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/filesystem:233:
+/home/abc/arm-toolchain/lib/gcc/aarch64-none-linux-gnu/14.3.1/include/stddef.h:416:9: note: this is the location of the previous definition
+  416 | #define NULL __null
+      |         ^~~~

@@ -1,4 +1,0 @@
-../build_oe_libs/musl/src/src/stdio/__lockfile.c: In function ‘__lockfile’:
-../build_oe_libs/musl/src/src/stdio/__lockfile.c:6:52: error: invalid type argument of ‘->’ (have ‘int’)
-    6 |         int owner = f->lock, tid = __pthread_self()->tid;
-      |                                                    ^~

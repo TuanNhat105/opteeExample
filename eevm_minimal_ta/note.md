@@ -1,4 +1,5 @@
-libcxx-10.0.1 được thiết kế cho hosted environment (Linux/macOS/Windows)
-Mọi STL header đều cascade qua cstdlib → stdlib.h → math.h → hàng trăm hàm toán học
-OP-TEE là freestanding environment, không có math library
-
+build_libcxx.sh → libcxx.a"
+  - cần bổ sung ./fix_libcxx_issue.sh (version linux hỗ trợ ramdome các kiểu)
+build_libc.sh → libc.a"
+build_libcxxrt_complete.sh → libcxxrt.a"
+build_libunwind_openenclave.sh → libunwind.a

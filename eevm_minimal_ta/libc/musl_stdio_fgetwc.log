@@ -1,8 +1,0 @@
-In file included from ../build_oe_libs/musl/src/src/stdio/fgetwc.c:2:
-../build_oe_libs/musl/src/src/stdio/fgetwc.c: In function ‘__fgetwc_unlocked’:
-../build_oe_libs/musl/src/src/internal/locale_impl.h:38:41: error: invalid type argument of ‘->’ (have ‘int’)
-   38 | #define CURRENT_LOCALE (__pthread_self()->locale)
-      |                                         ^~
-../build_oe_libs/musl/src/src/stdio/fgetwc.c:44:27: note: in expansion of macro ‘CURRENT_LOCALE’
-   44 |         locale_t *ploc = &CURRENT_LOCALE, loc = *ploc;
-      |                           ^~~~~~~~~~~~~~

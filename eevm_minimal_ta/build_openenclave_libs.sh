@@ -115,45 +115,42 @@ if [ -f "$OE_ROOT/3rdparty/libcxx/__config" ]; then
     cp "$OE_ROOT/3rdparty/libcxx/__config" libcxx/include/
     # Fix: Remove strtoll_l/strtoull_l extern declarations since xlocale.h provides static inline versions
     # This avoids "declared extern and later static" errors
-    # Use Python to precisely remove only the function declarations
-    python3 <<'PYTHON_SCRIPT'
-import sys
-import os
-
-config_file = "libcxx/include/__config"
-if not os.path.exists(config_file):
-    sys.exit(1)
-
-with open(config_file, 'r') as f:
-    lines = f.readlines()
-
-# Remove strtoll_l and strtoull_l declarations (2 lines each)
-output_lines = []
-i = 0
-while i < len(lines):
-    line = lines[i]
-    # Check for strtoll_l declaration start
-    if 'extern "C" long long strtoll_l(' in line:
-        # Skip this line and the next line (the closing );)
-        i += 2
-        continue
-    # Check for strtoull_l declaration start
-    if 'extern "C" unsigned long long int strtoull_l(' in line:
-        # Skip this line and the next line (the closing );)
-        i += 2
-        continue
-    output_lines.append(line)
-    i += 1
-
-with open(config_file, 'w') as f:
-    f.writelines(output_lines)
-PYTHON_SCRIPT
+    sed -i '/extern "C" long long strtoll_l(/,/const char \*__restrict, char \*\*__restrict, int, locale_t loc);/d' libcxx/include/__config
+    sed -i '/extern "C" unsigned long long int strtoull_l(/,/const char \*nptr, char \*\*endptr, int base, locale_t loc);/d' libcxx/include/__config
 fi
 
 # Copy __dso_handle.cpp
 cp "$OE_ROOT/3rdparty/libcxx/__dso_handle.cpp" libcxx/
 
-echo -e "${GREEN}✓ libcxx headers ready${NC}"
+# Apply fixes for complete build (36/36 sources)
+echo -e "${YELLOW}Applying fixes for complete libcxx build...${NC}"
+
+# Fix 1: Add #include <limits> to cmath for numeric_limits (fixes random.cpp, valarray.cpp)
+if [ -f "libcxx/include/cmath" ]; then
+    if ! grep -q "// PATCH: Added for numeric_limits" "libcxx/include/cmath"; then
+        sed -i '/#include <math\.h>/a // PATCH: Added for numeric_limits\n#include <limits>' "libcxx/include/cmath"
+        echo "  ✓ Fixed cmath header (added #include <limits>)"
+    fi
+    # Fix abs issue - musl doesn't have abs in math.h
+    if grep -q "^using ::abs;$" "libcxx/include/cmath"; then
+        sed -i 's|^using ::abs;$|// PATCH: abs not in musl math.h\n// using ::abs;|' "libcxx/include/cmath"
+        echo "  ✓ Fixed cmath header (commented out abs)"
+    fi
+fi
+
+# Fix 2: Create dummy linux/version.h for operations.cpp
+mkdir -p linux
+cat > linux/version.h << 'LINUX_VERSION_EOF'
+/* Dummy linux/version.h for OP-TEE build */
+#ifndef _LINUX_VERSION_H
+#define _LINUX_VERSION_H
+#define LINUX_VERSION_CODE 0x050000
+#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
+#endif
+LINUX_VERSION_EOF
+echo "  ✓ Created dummy linux/version.h"
+
+echo -e "${GREEN}✓ libcxx headers ready with fixes${NC}"
 echo ""
 
 echo -e "${YELLOW}Step 4: Build libcxxrt (minimal for OP-TEE)${NC}"
@@ -228,27 +225,48 @@ LIBCXX_CXXFLAGS=(
     -U__STDCPP_THREADS__
     -I"$LIBCXX_SRC/src"
     -I"$LIBCXXRT_SRC/src"
+    -I.
 )
 
-# Key libcxx sources from OpenEnclave CMakeLists.txt
+# Complete libcxx sources from OpenEnclave CMakeLists.txt
 LIBCXX_SRCS=(
     "$LIBCXX_SRC/src/algorithm.cpp"
     "$LIBCXX_SRC/src/any.cpp"
     "$LIBCXX_SRC/src/bind.cpp"
     "$LIBCXX_SRC/src/charconv.cpp"
+    "$LIBCXX_SRC/src/chrono.cpp"
+    "$LIBCXX_SRC/src/condition_variable.cpp"
+    "$LIBCXX_SRC/src/condition_variable_destructor.cpp"
     "$LIBCXX_SRC/src/debug.cpp"
     "$LIBCXX_SRC/src/exception.cpp"
     "$LIBCXX_SRC/src/functional.cpp"
+    "$LIBCXX_SRC/src/future.cpp"
     "$LIBCXX_SRC/src/hash.cpp"
+    "$LIBCXX_SRC/src/ios.cpp"
+    "$LIBCXX_SRC/src/iostream.cpp"
+    "$LIBCXX_SRC/src/locale.cpp"
     "$LIBCXX_SRC/src/memory.cpp"
+    "$LIBCXX_SRC/src/mutex.cpp"
+    "$LIBCXX_SRC/src/mutex_destructor.cpp"
     "$LIBCXX_SRC/src/new.cpp"
     "$LIBCXX_SRC/src/optional.cpp"
+    "$LIBCXX_SRC/src/random.cpp"
+    "$LIBCXX_SRC/src/regex.cpp"
+    "$LIBCXX_SRC/src/shared_mutex.cpp"
     "$LIBCXX_SRC/src/stdexcept.cpp"
     "$LIBCXX_SRC/src/string.cpp"
+    "$LIBCXX_SRC/src/strstream.cpp"
+    "$LIBCXX_SRC/src/system_error.cpp"
+    "$LIBCXX_SRC/src/thread.cpp"
     "$LIBCXX_SRC/src/typeinfo.cpp"
     "$LIBCXX_SRC/src/utility.cpp"
+    "$LIBCXX_SRC/src/valarray.cpp"
     "$LIBCXX_SRC/src/variant.cpp"
     "$LIBCXX_SRC/src/vector.cpp"
+    # Filesystem sources
+    "$LIBCXX_SRC/src/filesystem/operations.cpp"
+    "$LIBCXX_SRC/src/filesystem/int128_builtins.cpp"
+    "$LIBCXX_SRC/src/filesystem/directory_iterator.cpp"
 )
 
 LIBCXX_OBJS=()
@@ -258,7 +276,14 @@ for SRC in "${LIBCXX_SRCS[@]}"; do
     OBJ="libcxx/${BASE}.o"
     
     echo -n "  Building $BASE.o... "
-    if ${CROSS_COMPILE}g++ "${LIBCXX_CXXFLAGS[@]}" \
+    
+    # Special handling for future.cpp (disable optimization as per OpenEnclave)
+    COMPILE_FLAGS=("${LIBCXX_CXXFLAGS[@]}")
+    if [ "$BASE" == "future" ]; then
+        COMPILE_FLAGS+=(-O0)
+    fi
+    
+    if ${CROSS_COMPILE}g++ "${COMPILE_FLAGS[@]}" \
         -c "$SRC" -o "$OBJ" 2>libcxx/${BASE}.log; then
         echo -e "${GREEN}OK${NC}"
         LIBCXX_OBJS+=("$OBJ")
@@ -279,26 +304,13 @@ fi
 
 if [ ${#LIBCXX_OBJS[@]} -gt 0 ]; then
     ${CROSS_COMPILE}ar rcs libcxx/libc++.a "${LIBCXX_OBJS[@]}"
-    echo -e "${GREEN}✓ libc++.a (${#LIBCXX_OBJS[@]} objects)${NC}"
+    ${CROSS_COMPILE}ranlib libcxx/libc++.a
+    echo -e "${GREEN}✓ libc++.a created (${#LIBCXX_OBJS[@]} objects)${NC}"
 else
     echo -e "${RED}✗ No libcxx objects built!${NC}"
     echo "Check log files in $BUILD_DIR/libcxx/*.log"
     exit 1
 fi
-echo ""
-
-echo -e "${YELLOW}Step 6: Create combined library${NC}"
-
-# Combine everything
-mkdir -p combined/obj
-cd combined/obj
-[ -f ../../libcxxrt/libcxxrt.a ] && ${CROSS_COMPILE}ar x ../../libcxxrt/libcxxrt.a 2>/dev/null || true
-[ -f ../../libcxx/libc++.a ] && ${CROSS_COMPILE}ar x ../../libcxx/libc++.a
-cd ..
-${CROSS_COMPILE}ar rcs libcxx_runtime.a obj/*.o
-${CROSS_COMPILE}ranlib libcxx_runtime.a
-
-echo -e "${GREEN}✓ libcxx_runtime.a created${NC}"
 echo ""
 
 echo -e "${GREEN}============================================${NC}"
@@ -312,11 +324,11 @@ echo "    - Libcxx:  $BUILD_DIR/libcxx/include/"
 echo "    - Libcxxrt: $BUILD_DIR/libcxxrt/include/"
 echo ""
 echo "  Libraries:"
-echo "    - Combined: $BUILD_DIR/combined/libcxx_runtime.a"
-echo "    - Libcxx:   $BUILD_DIR/libcxx/libc++.a"
+echo "    - Libcxx:   $BUILD_DIR/libcxx/libc++.a ($(${CROSS_COMPILE}size -t $BUILD_DIR/libcxx/libc++.a 2>/dev/null | tail -1 | awk '{print $1}' || echo '?') bytes)"
 echo "    - Libcxxrt: $BUILD_DIR/libcxxrt/libcxxrt.a"
 echo ""
 echo "To use in TA sub.mk:"
 echo "  global-incdirs-y += ../build_oe_libs/musl/include"
 echo "  global-incdirs-y += ../build_oe_libs/libcxx/include"  
-echo "  libdeps += ../build_oe_libs/combined/libcxx_runtime.a"
+echo "  libdeps += ../build_oe_libs/libcxx/libc++.a"
+echo "  libdeps += ../build_oe_libs/libcxxrt/libcxxrt.a"

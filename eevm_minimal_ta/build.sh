@@ -25,17 +25,17 @@ echo "  CROSS_COMPILE  = $CROSS_COMPILE"
 echo "  TEEC_EXPORT    = $TEEC_EXPORT"
 echo ""
 
-# Build OpenEnclave libraries first (if needed)
-if [ ! -f "build_oe_libs/combined/libcxx_runtime.a" ]; then
-    echo -e "${YELLOW}[0/3] Building OpenEnclave libcxx + musl runtime...${NC}"
-    if [ -x "./build_openenclave_libs.sh" ]; then
-        ./build_openenclave_libs.sh
-    else
-        echo -e "${RED}Error: build_openenclave_libs.sh not found!${NC}"
-        exit 1
-    fi
-    echo ""
-fi
+# # Build OpenEnclave libraries first (if needed)
+# if [ ! -f "build_oe_libs/combined/libcxx_runtime.a" ]; then
+#     echo -e "${YELLOW}[0/3] Building OpenEnclave libcxx + musl runtime...${NC}"
+#     if [ -x "./build_openenclave_libs.sh" ]; then
+#         ./build_openenclave_libs.sh
+#     else
+#         echo -e "${RED}Error: build_openenclave_libs.sh not found!${NC}"
+#         exit 1
+#     fi
+#     echo ""
+# fieevm_minimal_ta/build_oe_libs/openenclave_stub
 
 # Build TA
 echo -e "${YELLOW}[1/3] Building Trusted Application...${NC}"

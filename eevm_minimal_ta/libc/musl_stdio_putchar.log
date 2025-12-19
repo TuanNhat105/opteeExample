@@ -1,5 +1,0 @@
-In file included from ../build_oe_libs/musl/src/src/stdio/putchar.c:2:
-../build_oe_libs/musl/src/src/stdio/putc.h: In function ‘do_putc’:
-../build_oe_libs/musl/src/src/stdio/putc.h:19:67: error: invalid type argument of ‘->’ (have ‘int’)
-   19 |         if (l < 0 || l && (l & ~MAYBE_WAITERS) == __pthread_self()->tid)
-      |                                                                   ^~

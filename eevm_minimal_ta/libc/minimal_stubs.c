@@ -157,6 +157,11 @@ long oe_SYS_writev_impl(int fd, const void* iov, int iovcnt) {
     return -1;
 }
 
+long oe_SYS_futex_impl(int* uaddr, int futex_op, int val, void* timeout, int* uaddr2, int val3) {
+    // OP-TEE is single-threaded, futex always succeeds immediately
+    return 0;
+}
+
 long __syscall_ret(unsigned long r) {
     if (r > -4096UL) {
         __thread_errno = -(long)r;

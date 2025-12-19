@@ -958,64 +958,64 @@ static TEE_Result test_exception(uint32_t param_types, TEE_Param params[4])
         return TEE_ERROR_GENERIC;
     }
 
-    // // Test 2: Throw and Catch std::runtime_error
-    // DMSG("\nTest 2: Throwing std::runtime_error...");
-    // bool caught_std = false;
-    // try
-    // {
-    //     DMSG("  About to throw std::runtime_error...");
-    //     throw std::runtime_error("This is a forced C++ exception!");
-    // }
-    // catch (const std::runtime_error &e)
-    // {
-    //     DMSG("  [SUCCESS] Caught std::runtime_error: %s", e.what());
-    //     caught_std = true;
-    // }
-    // catch (const std::exception &e)
-    // {
-    //     DMSG("  [FAIL] Caught generic std::exception instead of runtime_error");
-    //     DMSG("  Message: %s", e.what());
-    //     return TEE_ERROR_GENERIC;
-    // }
-    // catch (...)
-    // {
-    //     DMSG("  [FAIL] Caught unknown exception");
-    //     return TEE_ERROR_GENERIC;
-    // }
+    // Test 2: Throw and Catch std::runtime_error
+    DMSG("\nTest 2: Throwing std::runtime_error...");
+    bool caught_std = false;
+    try
+    {
+        DMSG("  About to throw std::runtime_error...");
+        throw std::runtime_error("This is a forced C++ exception!");
+    }
+    catch (const std::runtime_error &e)
+    {
+        DMSG("  [SUCCESS] Caught std::runtime_error: %s", e.what());
+        caught_std = true;
+    }
+    catch (const std::exception &e)
+    {
+        DMSG("  [FAIL] Caught generic std::exception instead of runtime_error");
+        DMSG("  Message: %s", e.what());
+        return TEE_ERROR_GENERIC;
+    }
+    catch (...)
+    {
+        DMSG("  [FAIL] Caught unknown exception");
+        return TEE_ERROR_GENERIC;
+    }
 
-    // if (!caught_std)
-    // {
-    //     DMSG("  [FAIL] Did not catch std::runtime_error!");
-    //     params[0].value.a = 2;
-    //     return TEE_ERROR_GENERIC;
-    // }
+    if (!caught_std)
+    {
+        DMSG("  [FAIL] Did not catch std::runtime_error!");
+        params[0].value.a = 2;
+        return TEE_ERROR_GENERIC;
+    }
 
-    // // Test 3: Standard vector out_of_range (auto throw from STL)
-    // DMSG("\nTest 3: Testing std::vector::at() out_of_range...");
-    // std::vector<int> v = {1, 2, 3};
-    // bool caught_range = false;
-    // try
-    // {
-    //     DMSG("  Accessing v.at(10)...");
-    //     int val = v.at(10);
-    //     (void)val;
-    //     DMSG("  [FAIL] v.at(10) did not throw!");
-    // }
-    // catch (const std::out_of_range &e)
-    // {
-    //     DMSG("  [SUCCESS] Caught std::out_of_range: %s", e.what());
-    //     caught_range = true;
-    // }
-    // catch (...)
-    // {
-    //     DMSG("  [FAIL] Caught unknown exception type for vector::at");
-    // }
+    // Test 3: Standard vector out_of_range (auto throw from STL)
+    DMSG("\nTest 3: Testing std::vector::at() out_of_range...");
+    std::vector<int> v = {1, 2, 3};
+    bool caught_range = false;
+    try
+    {
+        DMSG("  Accessing v.at(10)...");
+        int val = v.at(10);
+        (void)val;
+        DMSG("  [FAIL] v.at(10) did not throw!");
+    }
+    catch (const std::out_of_range &e)
+    {
+        DMSG("  [SUCCESS] Caught std::out_of_range: %s", e.what());
+        caught_range = true;
+    }
+    catch (...)
+    {
+        DMSG("  [FAIL] Caught unknown exception type for vector::at");
+    }
 
-    // if (!caught_range)
-    // {
-    //     params[0].value.a = 3;
-    //     return TEE_ERROR_GENERIC;
-    // }
+    if (!caught_range)
+    {
+        params[0].value.a = 3;
+        return TEE_ERROR_GENERIC;
+    }
 
     params[0].value.a = 0; // PASS
     DMSG("========================================");
