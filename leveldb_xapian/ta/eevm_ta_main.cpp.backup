@@ -1,0 +1,217 @@
+// SPDX-License-Identifier: BSD-2-Clause
+/*
+ * eEVM Hello World TA - Running eEVM in OP-TEE secure world
+ */
+
+// Include C++ headers BEFORE TEE headers to avoid macro conflicts
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cstdlib>
+
+// eEVM headers
+#include "eEVM/opcode.h"
+#include "eEVM/processor.h"
+#include "eEVM/simple/simpleglobalstate.h"
+
+// TEE headers
+extern "C" {
+    #include <tee_internal_api.h>
+    #include <tee_internal_api_extensions.h>
+}
+
+#include "eevm_ta.h"
+
+// Create EVM bytecode that stores and returns a string
+// std::vector<uint8_t> create_bytecode(const std::string& s)
+// {
+//     std::vector<uint8_t> code;
+//     constexpr uint8_t mdest = 0x0;
+//     const uint8_t rsize = s.size() + 1;
+
+//     // Store each byte in evm memory
+//     uint8_t mcurrent = mdest;
+//     for (const char& c : s)
+//     {
+//         code.push_back(eevm::Opcode::PUSH1);
+//         code.push_back(c);
+//         code.push_back(eevm::Opcode::PUSH1);
+//         code.push_back(mcurrent++);
+//         code.push_back(eevm::Opcode::MSTORE8);
+//     }
+
+//     // Return
+//     code.push_back(eevm::Opcode::PUSH1);
+//     code.push_back(rsize);
+//     code.push_back(eevm::Opcode::PUSH1);
+//     code.push_back(mdest);
+//     code.push_back(eevm::Opcode::RETURN);
+
+//     return code;
+// }
+
+// // Execute eEVM hello world
+// static TEE_Result eevm_hello_world(uint32_t param_types, TEE_Param params[4])
+// {
+//     uint32_t exp_param_types = TEE_PARAM_TYPES(
+//         TEE_PARAM_TYPE_MEMREF_OUTPUT,  // Output buffer for result
+//         TEE_PARAM_TYPE_VALUE_OUTPUT,    // Output size
+//         TEE_PARAM_TYPE_NONE,
+//         TEE_PARAM_TYPE_NONE);
+
+//     if (param_types != exp_param_types)
+//         return TEE_ERROR_BAD_PARAMETERS;
+
+//     DMSG("===== Starting eEVM Hello World execution =====");
+
+//     try {
+//         DMSG("Step 1: Creating addresses");
+        
+//         // Create random addresses for sender and contract
+//         std::vector<uint8_t> raw_address(20);
+        
+//         // Use simple pseudo-random generation for OP-TEE
+//         for (size_t i = 0; i < raw_address.size(); i++) {
+//             raw_address[i] = (uint8_t)(i * 17 + 42);
+//         }
+        
+//         const eevm::Address sender = 
+//             eevm::from_big_endian(raw_address.data(), raw_address.size());
+
+//         for (size_t i = 0; i < raw_address.size(); i++) {
+//             raw_address[i] = (uint8_t)(i * 23 + 13);
+//         }
+        
+//         const eevm::Address to = 
+//             eevm::from_big_endian(raw_address.data(), raw_address.size());
+
+//         DMSG("Created addresses");
+
+//         // Create global state
+//         eevm::SimpleGlobalState gs;
+//         DMSG("Created global state");
+
+//         // Create code
+//         std::string hello_world("Hello from eEVM in OP-TEE!");
+//         const eevm::Code code = create_bytecode(hello_world);
+//         DMSG("Created bytecode, size=%zu", code.size());
+
+//         // Deploy contract to global state
+//         const eevm::AccountState contract = gs.create(to, 0, code);
+//         DMSG("Deployed contract");
+
+//         // Create transaction
+//         eevm::NullLogHandler ignore;
+//         eevm::Transaction tx(sender, ignore);
+//         DMSG("Created transaction");
+
+//         // Create processor
+//         eevm::Processor p(gs);
+//         DMSG("Created processor");
+
+//         // Execute code
+//         const eevm::ExecResult e = p.run(tx, sender, contract, {}, 0, nullptr);
+//         DMSG("Execution completed, exit reason=%d", (int)e.er);
+
+//         // Check the response
+//         if (e.er != eevm::ExitReason::returned) {
+//             EMSG("Unexpected return code: %d", (int)e.er);
+//             params[1].value.a = (uint32_t)e.er;
+//             return TEE_ERROR_GENERIC;
+//         }
+
+//         // Copy result to output buffer
+//         const std::string response(reinterpret_cast<const char*>(e.output.data()));
+        
+//         if (response != hello_world) {
+//             EMSG("Result mismatch!");
+//             EMSG("Expected: %s", hello_world.c_str());
+//             EMSG("Got: %s", response.c_str());
+//             return TEE_ERROR_GENERIC;
+//         }
+
+//         DMSG("eEVM execution successful: %s", response.c_str());
+
+//         // Copy to output
+//         size_t out_size = response.size() + 1;
+//         if (out_size > params[0].memref.size) {
+//             params[0].memref.size = out_size;
+//             return TEE_ERROR_SHORT_BUFFER;
+//         }
+
+//         memcpy(params[0].memref.buffer, response.c_str(), out_size);
+//         params[0].memref.size = out_size;
+//         params[1].value.a = out_size;
+
+//         return TEE_SUCCESS;
+
+//     } catch (const std::exception& ex) {
+//         EMSG("C++ exception: %s", ex.what());
+//         return TEE_ERROR_GENERIC;
+//     } catch (...) {
+//         EMSG("Unknown C++ exception");
+//         return TEE_ERROR_GENERIC;
+//     }
+// }
+
+/*
+ * TA Entry Points
+ */
+extern "C" {
+
+TEE_Result TA_CreateEntryPoint(void)
+{
+    DMSG("TA_CreateEntryPoint - eEVM TA");
+    return TEE_SUCCESS;
+}
+
+void TA_DestroyEntryPoint(void)
+{
+    DMSG("TA_DestroyEntryPoint");
+}
+
+TEE_Result TA_OpenSessionEntryPoint(uint32_t param_types,
+                                    TEE_Param params[4],
+                                    void **sess_ctx)
+{
+    uint32_t exp_param_types = TEE_PARAM_TYPES(
+        TEE_PARAM_TYPE_NONE,
+        TEE_PARAM_TYPE_NONE,
+        TEE_PARAM_TYPE_NONE,
+        TEE_PARAM_TYPE_NONE);
+
+    DMSG("========================================");
+    DMSG("eEVM TA - Session opened");
+    DMSG("========================================");
+
+    if (param_types != exp_param_types)
+        return TEE_ERROR_BAD_PARAMETERS;
+
+    (void)&params;
+    (void)&sess_ctx;
+
+    return TEE_SUCCESS;
+}
+
+void TA_CloseSessionEntryPoint(void *sess_ctx)
+{
+    DMSG("Session closed");
+    (void)&sess_ctx;
+}
+
+TEE_Result TA_InvokeCommandEntryPoint(void *sess_ctx,
+                                      uint32_t cmd_id,
+                                      uint32_t param_types,
+                                      TEE_Param params[4])
+{
+    (void)&sess_ctx;
+
+    switch (cmd_id) {
+    // case TA_EEVM_CMD_HELLO_WORLD:
+    //     return eevm_hello_world(param_types, params);
+    default:
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+}
+
+} // extern "C"
