@@ -10,6 +10,7 @@ global-incdirs-y += ../build_oe_libs/libcxxrt/include
 # Source selection
 srcs-y += minimal_evm_ta.cpp
 srcs-y += cxx_stubs.cpp
+srcs-y += ocall_logger.cpp
 
 # Enable C++17
 cppflags-y += -std=c++17

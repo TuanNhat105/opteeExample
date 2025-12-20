@@ -42,12 +42,6 @@ LIBGCC := $(shell $(CROSS_COMPILE)gcc -print-file-name=libgcc.a)
 # Built by build_libunwind_openenclave.sh into build_libunwind/
 LIBUNWIND := ../build_libunwind/libunwind.a
 
-# Override the .elf target to link our custom libraries
-# Link order: objs → LIBCXX → LIBCXXRT → LIBOELIBC → LIBUNWIND → LIBOELIBC → LIBGCC
-# We use libunwind instead of libgcc_eh.a for complete exception handling
-# Note: LIBOELIBC is linked twice to resolve circular dependencies (libunwind needs musl functions)
-# Note: --allow-multiple-definition needed for libunwind's _U_dyn_info_list symbol
-# Filter out both libstdc++ and libgcc_eh from default ldargs
 $(BINARY).elf: $(objs) $(LIBCXX) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(libdeps) $(libdeps-after-libgcc) $(link-script-ppta_arm64) $(dynlistdep) $(additional-link-deps)
 	@$(cmd-echo-silent) '  LD      $@'
 	$(q)$(LDta_arm64) --allow-multiple-definition $(filter-out %libstdc++.a %libgcc_eh.a,$(ldargs-$(BINARY).elf)) $(LIBCXX) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(LIBOELIBC) $(LIBGCC) -o $@

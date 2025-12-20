@@ -21,8 +21,8 @@
 // C++ STL (libcxx) requires larger heap/stack for initialization
 // TA_DATA_SIZE is the actual heap in OP-TEE
 /* user_ta_header_defines.h */
-#define TA_STACK_SIZE (32 * 1024)  // Tăng lên 32KB cho an toàn với C++
-#define TA_DATA_SIZE  (32 * 1024)  // Tăng Heap nếu dùng nhiều new/malloc
+#define TA_STACK_SIZE (64 * 1024)  // 64KB stack for OCALL + std::string
+#define TA_DATA_SIZE  (64 * 1024)  // 64KB heap
 
 #define TA_CURRENT_TA_EXT_PROPERTIES \
     { "gp.ta.description", USER_TA_PROP_TYPE_STRING, \

@@ -14,27 +14,19 @@
 /*
  * Commands
  */
+
 #define TA_MINIMAL_EVM_CMD_TEST_VECTOR       0
 #define TA_MINIMAL_EVM_CMD_TEST_MAP          1
 #define TA_MINIMAL_EVM_CMD_EXECUTE_BYTECODE  3
-#define TA_MINIMAL_EVM_CMD_TEST_STRING       4  // New: test std::string with object linking
+#define TA_MINIMAL_EVM_CMD_TEST_STRING       4  // Test std::string
 
-/* C++17 libcxx feature tests - OpenEnclave compatibility */
-#define TA_MINIMAL_EVM_CMD_TEST_OPTIONAL     10
-#define TA_MINIMAL_EVM_CMD_TEST_VARIANT      11
-#define TA_MINIMAL_EVM_CMD_TEST_ANY          12
-#define TA_MINIMAL_EVM_CMD_TEST_TUPLE        13
-#define TA_MINIMAL_EVM_CMD_TEST_FUNCTIONAL   14
-#define TA_MINIMAL_EVM_CMD_TEST_ALGORITHM    15
-#define TA_MINIMAL_EVM_CMD_TEST_NUMERIC      16
-#define TA_MINIMAL_EVM_CMD_TEST_MEMORY       17
-#define TA_MINIMAL_EVM_CMD_TEST_DEQUE        18
-#define TA_MINIMAL_EVM_CMD_TEST_LIST         19
-#define TA_MINIMAL_EVM_CMD_TEST_SET          20
-#define TA_MINIMAL_EVM_CMD_TEST_UNORDERED_MAP 21
-#define TA_MINIMAL_EVM_CMD_TEST_QUEUE        22
-#define TA_MINIMAL_EVM_CMD_TEST_EXCEPTION    23
-#define TA_MINIMAL_EVM_CMD_TEST_ARRAY        24
-#define TA_MINIMAL_EVM_CMD_TEST_FORWARD_LIST 25
+/* OCALL support - RPC logging */
+#define TA_MINIMAL_EVM_CMD_TEST_STRING_OCALL 6
+
+/* Host callback UUID for OCALL - same as main TA for simplicity */
+#define HOST_CALLBACK_UUID TA_MINIMAL_EVM_UUID
+
+/* Host callback commands */
+#define HOST_CMD_OCALL_PRINT    100  // Print string to host console
 
 #endif /* __MINIMAL_EVM_TA_H */
