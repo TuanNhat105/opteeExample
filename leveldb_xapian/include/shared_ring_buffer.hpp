@@ -19,16 +19,17 @@ struct RingBufferPacket {
     // Dữ liệu sẽ bắt đầu ngay sau header này
 };
 
+// Use std::atomic with proper memory ordering for thread safety
 struct alignas(64) RingBufferControl {
     // Đặt head và tail trên các Cache Line khác nhau (64 bytes)
-    alignas(64) std::atomic<uint32_t> head{0}; 
-    alignas(64) std::atomic<uint32_t> tail{0};
+    alignas(64) std::atomic<uint32_t> head;
+    alignas(64) std::atomic<uint32_t> tail;
     
     // CA sẽ cập nhật giá trị này sau khi gọi fsync() trên Linux thành công
-    alignas(64) std::atomic<uint32_t> last_flushed_id{0};
+    alignas(64) std::atomic<uint32_t> last_flushed_id;
     
     // Biến đếm để định danh các yêu cầu Flush
-    std::atomic<uint32_t> sync_counter{0};
+    std::atomic<uint32_t> sync_counter;
 
     uint32_t buffer_size;
 
@@ -42,4 +43,4 @@ static_assert(std::is_standard_layout_v<RingBufferControl>, "RingBufferControl m
 static_assert(sizeof(RingBufferPacket) == 9, "RingBufferPacket size must be 9 bytes");
 
 // Định nghĩa kích thước mặc định của Ring Buffer (4MB)
-constexpr size_t DEFAULT_RING_BUFFER_SIZE = 4 * 1024 * 1024;
+constexpr size_t DEFAULT_RING_BUFFER_SIZE = 4 * 1024 * 1024; // 4MB - keep within TEE memory limits

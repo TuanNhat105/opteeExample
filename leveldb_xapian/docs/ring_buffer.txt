@@ -1,0 +1,274 @@
+// shared_defs.hpp
+#pragma once
+#include <atomic>
+#include <cstdint>
+
+// Kích thước Ring Buffer (ví dụ 4MB)
+constexpr uint32_t RING_BUFFER_SIZE = 4 * 1024 * 1024;
+
+// Các loại lệnh mà SW sai bảo NW
+enum class OpCode : uint8_t {
+    OPEN_FILE  = 1, // Mở file mới
+    APPEND     = 2, // Ghi dữ liệu
+    CLOSE_FILE = 3, // Đóng file
+    SYNC_FILE  = 4, // Flush xuống đĩa (Quan trọng cho LevelDB)
+    WRAP_AROUND= 5  // Báo hiệu hết chỗ ở cuối buffer, quay lại đầu
+};
+
+// Cấu trúc gói tin (Header)
+#pragma pack(push, 1)
+struct PacketHeader {
+    OpCode op;
+    uint32_t file_id;   // ID định danh file (LevelDB quản lý nhiều file)
+    uint32_t payload_size; // Kích thước dữ liệu đi kèm
+};
+#pragma pack(pop)
+
+// Cấu trúc điều khiển Ring Buffer (Nằm ở đầu Shared Memory)
+struct alignas(64) SharedRingControl {
+    std::atomic<uint32_t> head{0}; // SW ghi, NW đọc (Vị trí bắt đầu dữ liệu mới)
+    std::atomic<uint32_t> tail{0}; // NW ghi, SW đọc (Vị trí dữ liệu đã xử lý xong)
+    
+    // Biến để SW biết lệnh Sync đã xong chưa
+    std::atomic<uint32_t> last_synced_id{0}; 
+    
+    uint8_t padding[64]; // Chống False Sharing
+};
+
+// tee_leveldb_env.cpp (Chạy trong TEE)
+#include "leveldb/env.h"
+#include "shared_defs.hpp"
+#include <cstring>
+#include <thread> // Dùng cho yield()
+
+class RingBufferProducer {
+    SharedRingControl* ctrl;
+    uint8_t* buffer_base;
+    uint32_t buffer_cap;
+
+public:
+    RingBufferProducer(void* shared_mem) {
+        ctrl = (SharedRingControl*)shared_mem;
+        buffer_base = (uint8_t*)shared_mem + sizeof(SharedRingControl);
+        buffer_cap = RING_BUFFER_SIZE - sizeof(SharedRingControl);
+    }
+
+    // Hàm đẩy dữ liệu vào Ring Buffer
+    bool Enqueue(OpCode op, uint32_t fid, const void* data, uint32_t size) {
+        uint32_t packet_len = sizeof(PacketHeader) + size;
+        
+        while (true) {
+            uint32_t h = ctrl->head.load(std::memory_order_acquire);
+            uint32_t t = ctrl->tail.load(std::memory_order_acquire);
+            
+            // 1. Tính toán khoảng trống
+            // (Logic kiểm tra full/empty và wrap-around được giản lược để dễ hiểu)
+            // Nếu không đủ chỗ -> return false hoặc busy-wait (yield)
+            if (h + packet_len > buffer_cap) {
+                // Xử lý Wrap-around: Ghi marker và quay về 0
+                // (Code chi tiết giống phần trước đã gửi)
+                continue; 
+            }
+            
+            // 2. Ghi Header
+            PacketHeader* hdr = (PacketHeader*)(buffer_base + h);
+            hdr->op = op;
+            hdr->file_id = fid;
+            hdr->payload_size = size;
+
+            // 3. Ghi Dữ liệu (MÃ HÓA NÊN ĐƯỢC THỰC HIỆN TRƯỚC BƯỚC NÀY)
+            if (size > 0 && data != nullptr) {
+                memcpy(buffer_base + h + sizeof(PacketHeader), data, size);
+            }
+
+            // 4. Commit (Đẩy head lên) - Dùng memory_order_release để đảm bảo dữ liệu ghi xong mới đẩy head
+            ctrl->head.store(h + packet_len, std::memory_order_release);
+            return true;
+        }
+    }
+    
+    void WaitForSync(uint32_t sync_id) {
+        // Chờ NW báo đã sync xong
+        while(ctrl->last_synced_id.load(std::memory_order_acquire) < sync_id) {
+             // TEE Yield: Nhường CPU cho NW chạy
+             std::this_thread::yield(); 
+        }
+    }
+};
+
+// --- IMPLEMENT LEVELDB INTERFACE ---
+
+class TEEWritableFile : public leveldb::WritableFile {
+    RingBufferProducer* producer;
+    uint32_t file_id; // Mỗi file có 1 ID riêng
+    
+public:
+    TEEWritableFile(RingBufferProducer* p, uint32_t id) : producer(p), file_id(id) {
+        // Gửi lệnh mở file
+        producer->Enqueue(OpCode::OPEN_FILE, file_id, nullptr, 0);
+    }
+
+    // LevelDB gọi hàm này khi muốn ghi data
+    leveldb::Status Append(const leveldb::Slice& data) override {
+        // ENCRYPT DATA HERE (Mã hóa ở đây trước khi gửi)
+        // std::string encrypted = AES_Encrypt(data); 
+
+        // Gửi xuống Ring Buffer
+        producer->Enqueue(OpCode::APPEND, file_id, data.data(), data.size());
+        return leveldb::Status::OK();
+    }
+
+    leveldb::Status Close() override {
+        producer->Enqueue(OpCode::CLOSE_FILE, file_id, nullptr, 0);
+        return leveldb::Status::OK();
+    }
+
+    leveldb::Status Flush() override {
+        // Ring buffer tự động flush khi consumer chạy, nên hàm này có thể no-op
+        return leveldb::Status::OK();
+    }
+
+    // Quan trọng: Đảm bảo dữ liệu bền vững
+    leveldb::Status Sync() override {
+        static std::atomic<uint32_t> global_sync_counter{0};
+        uint32_t current_sync = ++global_sync_counter;
+        
+        // Gửi lệnh SYNC và BLOCK chờ NW xác nhận
+        producer->Enqueue(OpCode::SYNC_FILE, file_id, &current_sync, sizeof(uint32_t));
+        producer->WaitForSync(current_sync);
+        
+        return leveldb::Status::OK();
+    }
+};
+// ree_storage_daemon.cpp (Chạy trên Linux)
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <map>
+#include <iostream>
+#include "shared_defs.hpp"
+
+// Map ánh xạ từ file_id (của TEE) sang file descriptor (của Linux)
+std::map<uint32_t, int> fd_map;
+
+void process_ring_buffer(void* shared_mem) {
+    SharedRingControl* ctrl = (SharedRingControl*)shared_mem;
+    uint8_t* buffer_base = (uint8_t*)shared_mem + sizeof(SharedRingControl);
+    
+    while (true) {
+        uint32_t h = ctrl->head.load(std::memory_order_acquire);
+        uint32_t t = ctrl->tail.load(std::memory_order_relaxed);
+
+        if (h == t) {
+            usleep(100); // Buffer rỗng, ngủ tí cho đỡ tốn CPU
+            continue;
+        }
+
+        // Đọc Header
+        PacketHeader* hdr = (PacketHeader*)(buffer_base + t);
+        void* payload = buffer_base + t + sizeof(PacketHeader);
+        uint32_t packet_len = sizeof(PacketHeader) + hdr->payload_size;
+
+        // Xử lý lệnh
+        switch (hdr->op) {
+            case OpCode::OPEN_FILE: {
+                std::string fname = "tee_db_" + std::to_string(hdr->file_id) + ".sst";
+                int fd = open(fname.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644);
+                fd_map[hdr->file_id] = fd;
+                break;
+            }
+            case OpCode::APPEND: {
+                if (fd_map.count(hdr->file_id)) {
+                    // Ghi thẳng dữ liệu (đã mã hóa) từ Shared Memory xuống Đĩa
+                    // Zero-copy từ userspace -> kernel space
+                    write(fd_map[hdr->file_id], payload, hdr->payload_size);
+                }
+                break;
+            }
+            case OpCode::SYNC_FILE: {
+                if (fd_map.count(hdr->file_id)) {
+                    // Bắt buộc Linux đẩy dữ liệu từ RAM xuống Disk vật lý
+                    fdatasync(fd_map[hdr->file_id]);
+                    
+                    // Báo lại cho TEE là tao sync xong rồi
+                    uint32_t sync_id = *(uint32_t*)payload;
+                    ctrl->last_synced_id.store(sync_id, std::memory_order_release);
+                }
+                break;
+            }
+            case OpCode::CLOSE_FILE: {
+                if (fd_map.count(hdr->file_id)) {
+                    close(fd_map[hdr->file_id]);
+                    fd_map.erase(hdr->file_id);
+                }
+                break;
+            }
+            case OpCode::WRAP_AROUND:
+                // Xử lý logic quay vòng tail về 0 (đã lược bỏ cho gọn)
+                t = 0; 
+                ctrl->tail.store(0, std::memory_order_release);
+                continue; // Bỏ qua việc update tail cộng dồn bên dưới
+        }
+
+        // Cập nhật Tail (Báo cho TEE biết đã xử lý xong)
+        ctrl->tail.store(t + packet_len, std::memory_order_release);
+    }
+}
+
+int main() {
+    // 1. Cấp phát Shared Memory (Trong thực tế dùng thư viện TEE Client API)
+    void* shm = mmap(NULL, RING_BUFFER_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    
+    // 2. Khởi tạo Control structure
+    new (shm) SharedRingControl();
+    
+    std::cout << "Daemon started. Listening for TEE commands..." << std::endl;
+    process_ring_buffer(shm);
+    
+    return 0;
+}
+
+tee-leveldb-project/
+├── CMakeLists.txt              # Build system gốc (tùy chọn)
+├── README.md
+│
+├── shared/                     # QUAN TRỌNG: Nơi chứa định nghĩa dùng chung cho cả 2 thế giới
+│   └── shared_protocol.hpp     # Định nghĩa struct RingBuffer, OpCode, PacketHeader
+│
+├── ta/                         # TRUSTED APPLICATION (Secure World - Chạy LevelDB)
+│   ├── Makefile                # Makefile biên dịch TA (dạng .ta)
+│   ├── sub.mk                  # Khai báo source file cho build system OP-TEE
+│   ├── user_ta_header_defines.h # Cấu hình UUID, Stack size, Heap size cho TA
+│   │
+│   ├── include/
+│   │   ├── tee_leveldb_env.hpp    # Class kế thừa leveldb::Env & WritableFile
+│   │   ├── secure_producer.hpp    # Class đẩy dữ liệu vào Ring Buffer
+│   │   └── crypto_engine.hpp      # (Tùy chọn) Class mã hóa dữ liệu trước khi đẩy đi
+│   │
+│   ├── src/
+│   │   ├── ta_entry.cpp           # Điểm vào (Entry Point): TA_CreateEntryPoint, TA_InvokeCommandEntryPoint
+│   │   ├── tee_leveldb_env.cpp    # Triển khai logic ghi vào Ring Buffer
+│   │   ├── secure_producer.cpp    # Triển khai logic thao tác bộ nhớ Shared Memory
+│   │   └── crypto_engine.cpp      # Triển khai AES-GCM/Chacha20 dùng Hardware Key
+│   │
+│   └── lib/
+│       └── leveldb/            # SOURCE CODE GỐC CỦA LEVELDB
+│           ├── include/
+│           ├── db/
+│           ├── table/
+│           ├── util/
+│           └── ... (Lưu ý: Cần loại bỏ port/port_posix.cc và thay bằng port_tee.cc nếu cần)
+│
+├── host/                       # HOST APPLICATION (Normal World - Linux Daemon)
+│   ├── Makefile                # Makefile biên dịch ra file thực thi Linux
+│   │
+│   ├── include/
+│   │   └── linux_consumer.hpp     # Class đọc Ring Buffer và ghi File
+│   │
+│   └── src/
+│       ├── main.cpp               # Hàm main: Khởi tạo TEEC context, mmap shared memory
+│       └── linux_consumer.cpp     # Vòng lặp vô tận (Daemon) xử lý I/O và fsync()
+│
+└── scripts/                    # Các script hỗ trợ deploy
+    ├── deploy_optee.sh         # Copy TA vào /lib/optee_armtz/ và Host app vào /usr/bin/
+    └── benchmark.sh            # Script đo tốc độ đọc ghi

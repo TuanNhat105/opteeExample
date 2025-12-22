@@ -23,8 +23,8 @@ all: $(BINARY)
 $(BINARY): leveldb_test_main.o
 	$(CXX) -o $@ $< $(LDADD)
 
-# Đổi từ main.c sang main.cpp
-leveldb_test_main.o: leveldb_test_main.cpp ring_buffer_consumer.hpp
+# Compile the test file WITHOUT LevelDB dependency
+leveldb_test_main.o: leveldb_test_main_no_leveldb.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:

@@ -37,7 +37,7 @@ if [ -z "$CROSS_COMPILE" ]; then
 fi
 
 # Check if required libraries exist
-EEVM_MINIMAL_TA="../../eevm_minimal_ta"
+EEVM_MINIMAL_TA="../eevm_minimal_ta"
 
 echo -e "\n${YELLOW}Checking required libraries...${NC}"
 
@@ -88,23 +88,27 @@ make clean
 make
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Host application built successfully!${NC}"
-    ls -lh eevm_host
+    ls -lh leveldb_host
 else
     echo -e "${RED}Host build failed!${NC}"
     exit 1
 fi
 cd ..
-scp -O ta/*.ta root@192.168.1.74:/lib/optee_armtz/
-scp -O host/eevm_host root@192.168.1.74:/usr/bin/
+# scp -O ta/*.ta root@192.168.1.74:/lib/optee_armtz/
+# scp -O host/leveldb_host root@192.168.1.74:/usr/bin/
 
 echo -e "\n${GREEN}========================================${NC}"
 echo -e "${GREEN}Build completed successfully!${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 echo "TA binary: ta/8aaaf200-2450-11e4-abe2-0002a5d5c53d.ta"
-echo "Host binary: host/eevm_host"
+echo "Host binary: host/leveldb_host"
 echo ""
 echo "To deploy and run:"
 echo "1. Copy the TA to your device: /lib/optee_armtz/"
-echo "2. Run the host application: ./host/eevm_host"
+scp -O ta/*.ta root@192.168.1.182:/lib/optee_armtz/
+echo "2. Run the host application: ./host/leveldb_host"
+scp -O host/leveldb_host root@192.168.1.182:/usr/bin/
+echo "3. Test"
+ssh root@192.168.1.182 "leveldb_host"
 echo ""

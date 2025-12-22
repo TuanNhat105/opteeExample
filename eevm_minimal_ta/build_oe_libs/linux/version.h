@@ -1,4 +1,3 @@
-/* Dummy linux/version.h for OP-TEE build */
 #ifndef _LINUX_VERSION_H
 #define _LINUX_VERSION_H
 #define LINUX_VERSION_CODE 0x050000

@@ -20,8 +20,8 @@
 #define TA_FLAGS            0
 
 /* Stack and heap sizes for eEVM execution */
-#define TA_STACK_SIZE       (2 * 1024 * 1024)  // 2MB stack 
-#define TA_DATA_SIZE        (8 * 1024 * 1024)  // 8MB heap
+#define TA_STACK_SIZE       (2 * 1024 * 1024)  // 2MB stack
+#define TA_DATA_SIZE        (6 * 1024 * 1024)  // 6MB heap (reduced for shared memory)
 
 /* Minimum malloc pool size */
 #ifndef MALLOC_INITIAL_POOL_MIN_SIZE
