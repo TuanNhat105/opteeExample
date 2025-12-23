@@ -1,0 +1,866 @@
+// SPDX-License-Identifier: BSD-2-Clause
+/*
+ * LevelDB with Ring Buffer - OP-TEE Trusted Application
+ */
+
+// Include C++ headers BEFORE TEE headers
+#include <algorithm>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include <memory>
+
+// LevelDB headers
+#include <leveldb/db.h>
+#include <leveldb/write_batch.h>
+#include <leveldb/options.h>
+
+// TEE headers
+extern "C"
+{
+#include <tee_internal_api.h>
+#include <tee_internal_api_extensions.h>
+}
+
+#include "eevm_ta.h"
+#include "ocall_logger.h"
+#include "secure_ring_buffer_producer.hpp"
+#include "leveldb_ring_buffer_env_complete.hpp"
+#include "debug_config.h"
+
+// Global variables
+static std::unique_ptr<leveldb::DB> g_db;
+static std::unique_ptr<SecureRingBufferProducer> g_producer;
+static std::unique_ptr<RingBufferEnv> g_env;
+static void* g_shared_mem = nullptr;
+
+// static TEE_Result leveldb_init(uint32_t param_types, TEE_Param params[4])
+// {   
+//     ocall_log_init();
+//     // CRITICAL: Check params[2] before using it
+//     if (!params[2].memref.buffer || params[2].memref.size == 0) {
+//         DMSG("WARNING: params[2] (log buffer) is invalid!");
+//     } else {
+//         OCALL_LOG("=== TA ENTRY POINT: leveldb_init CALLED ===");
+//         ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+//         DMSG("Logs flushed to params[2]");
+//     }
+    
+//     INFO_LOG("=== Initializing LevelDB with Ring Buffer ===");
+
+//     // Check each parameter individually (flexible for OP-TEE parameter type conversion)
+//     uint32_t p0 = TEE_PARAM_TYPE_GET(param_types, 0);
+//     uint32_t p1 = TEE_PARAM_TYPE_GET(param_types, 1);
+//     uint32_t p2 = TEE_PARAM_TYPE_GET(param_types, 2);
+//     uint32_t p3 = TEE_PARAM_TYPE_GET(param_types, 3);
+    
+//     DBG_PARAM("Param types: p0=%d, p1=%d, p2=%d, p3=%d", p0, p1, p2, p3);
+//     DBG_PARAM("Expected: p0=MEMREF(4/5/6), p1=VALUE_INPUT(1), p2=MEMREF(4/5/6), p3=NONE(0)");
+
+//     FLUSH_LOGS_IF_AVAILABLE(params);
+
+//     if (p0 != TEE_PARAM_TYPE_MEMREF_INOUT && 
+//         p0 != TEE_PARAM_TYPE_MEMREF_INPUT &&
+//         p0 != TEE_PARAM_TYPE_MEMREF_OUTPUT) {
+//         ERROR_LOG("Param 0 type mismatch! Got %d, expected MEMREF type (4, 5, or 6)", p0);
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         return TEE_ERROR_BAD_PARAMETERS;
+//     }
+
+//     if (p1 != TEE_PARAM_TYPE_VALUE_INPUT) {
+//         ERROR_LOG("Param 1 type mismatch! Got %d, expected VALUE_INPUT", p1);
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         return TEE_ERROR_BAD_PARAMETERS;
+//     }
+
+//     // Accept MEMREF types for param 2 (logs)
+//     // TEMP buffers map to MEMREF_OUTPUT or MEMREF_INPUT
+//     if (p2 != TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+//         p2 != TEE_PARAM_TYPE_MEMREF_INPUT &&
+//         p2 != TEE_PARAM_TYPE_MEMREF_INOUT) {
+//         ERROR_LOG("Param 2 type mismatch! Got %d, expected MEMREF type", p2);
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         return TEE_ERROR_BAD_PARAMETERS;
+//     }
+
+//     if (p3 != TEE_PARAM_TYPE_NONE) {
+//         ERROR_LOG("Param 3 type mismatch! Got %d, expected NONE", p3);
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         return TEE_ERROR_BAD_PARAMETERS;
+//     }
+
+//     try {
+//         DMSG("Entering try block...");
+        
+//         // Get shared memory pointer - CRITICAL: Check validity first
+//         DMSG("Getting shared memory pointer...");
+//         if (!params[0].memref.buffer) {
+//             DMSG("ERROR: params[0].memref.buffer is NULL!");
+//             ERROR_LOG("Invalid shared memory pointer (NULL)");
+//             FLUSH_LOGS_IF_AVAILABLE(params);
+//             return TEE_ERROR_BAD_PARAMETERS;
+//         }
+        
+//         g_shared_mem = params[0].memref.buffer;
+//         uint32_t buffer_size = params[1].value.a;
+        
+//         DMSG("Shared memory pointer: %p, buffer_size: %u, memref.size: %u", 
+//              g_shared_mem, buffer_size, params[0].memref.size);
+
+//         if (buffer_size == 0) {
+//             DMSG("ERROR: buffer_size is 0!");
+//             ERROR_LOG("Invalid buffer size (0)");
+//             FLUSH_LOGS_IF_AVAILABLE(params);
+//             return TEE_ERROR_BAD_PARAMETERS;
+//         }
+
+//         // Bounds check: ensure shared memory is large enough for control structure
+//         DMSG("Checking shared memory size...");
+//         size_t control_size = sizeof(RingBufferControl);
+//         DMSG("RingBufferControl size: %zu bytes", control_size);
+        
+//         if (params[0].memref.size < control_size) {
+//             DMSG("ERROR: Shared memory too small! Got %u, need %zu", 
+//                  params[0].memref.size, control_size);
+//             ERROR_LOG("Shared memory too small! Got %u bytes, need at least %zu bytes",
+//                       params[0].memref.size, control_size);
+//             FLUSH_LOGS_IF_AVAILABLE(params);
+//             return TEE_ERROR_BAD_PARAMETERS;
+//         }
+        
+//         DMSG("Shared memory size check passed");
+
+//         INFO_LOG("Shared memory: %p, Buffer size: %u, Memref size: %u", 
+//                  g_shared_mem, buffer_size, params[0].memref.size);
+        
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         DBG_STEP(1, "Starting Ring Buffer initialization");
+
+//         // Initialize Ring Buffer Control (OP-TEE safe: plain writes + barriers)
+//         // Validate pointer alignment (64-byte alignment for cache line optimization)
+//         if (reinterpret_cast<uintptr_t>(g_shared_mem) % 64 != 0) {
+//             WARN_LOG("Shared memory not 64-byte aligned: %p", g_shared_mem);
+//         }
+        
+//         DBG_STEP(2, "Casting shared memory pointer to RingBufferControl");
+//         DMSG("About to cast shared memory to RingBufferControl...");
+//         try {
+//             // CRITICAL: Don't test read - it might cause crash if memory not ready
+//             // Just cast directly - OP-TEE kernel ensures memory is valid when passed
+//             auto* ctrl = static_cast<RingBufferControl*>(g_shared_mem);
+//             DMSG("Control pointer cast successful: %p", ctrl);
+//             DBG_LOG("Control pointer: %p", ctrl);
+            
+//             // ====================================================================
+//             // TEST CODE: Verify shared memory access (only in DEBUG_TEST_CODE mode)
+//             // ====================================================================
+//             DBG_TEST_CODE({
+//                 DBG_TEST("Testing shared memory read access...");
+//                 volatile uint32_t test_read = ctrl->head;
+//                 DBG_TEST("Test read successful, current head value: 0x%08X", test_read);
+//                 FLUSH_LOGS_IF_AVAILABLE(params);
+                
+//                 DBG_TEST("Testing shared memory write access...");
+//                 volatile uint32_t* test_ptr = &ctrl->head;
+//                 uint32_t original_value = *test_ptr;
+//                 *test_ptr = 0xDEADBEEF;
+//                 DBG_TEST("Test write successful, wrote: 0x%08X", *test_ptr);
+                
+//                 // Restore original value
+//                 *test_ptr = original_value;
+//                 DBG_TEST("Restored original value: 0x%08X", *test_ptr);
+//                 FLUSH_LOGS_IF_AVAILABLE(params);
+//             });
+            
+//             DBG_STEP(3, "Initializing control structure fields");
+//             // Initialize control structure (OP-TEE safe: plain writes, NO std::atomic!)
+//             ctrl->head = 0;
+//             ctrl->tail = 0;
+//             ctrl->last_flushed_id = 0;
+//             ctrl->sync_counter = 0;
+//             ctrl->buffer_size = buffer_size - sizeof(RingBufferControl);
+            
+//             DBG_LOG("Control structure initialized: head=0, tail=0, buffer_size=%u", 
+//                     ctrl->buffer_size);
+            
+//             DBG_STEP(4, "Applying memory barrier");
+//             // Memory barrier: ensure all writes are visible before cache flush
+//             __asm__ volatile("dmb ish" ::: "memory");
+            
+//             DBG_STEP(5, "Flushing cache for shared memory coherence");
+//             // Cache flush: ensure CA can see the initialization
+//             // This is CRITICAL for OP-TEE shared memory coherence
+//             {
+//                 void* addr = g_shared_mem;
+//                 size_t len = sizeof(RingBufferControl);
+//                 #if defined(__aarch64__)
+//                     char* ptr = static_cast<char*>(addr);
+//                     char* end = ptr + len;
+//                     for (; ptr < end; ptr += 64) {
+//                         __asm__ volatile("dc cvac, %0" : : "r"(ptr) : "memory");
+//                     }
+//                     __asm__ volatile("dsb ish" ::: "memory");
+//                 #elif defined(__arm__)
+//                     char* ptr = static_cast<char*>(addr);
+//                     char* end = ptr + len;
+//                     for (; ptr < end; ptr += 32) {
+//                         __asm__ volatile("mcr p15, 0, %0, c7, c10, 1" : : "r"(ptr) : "memory");
+//                     }
+//                     __asm__ volatile("dsb" ::: "memory");
+//                 #endif
+//             }
+            
+//             INFO_LOG("Ring Buffer initialized - Data buffer size: %u", ctrl->buffer_size);
+//             FLUSH_LOGS_IF_AVAILABLE(params);
+            
+//         } catch (...) {
+//             ERROR_LOG("Exception while initializing Ring Buffer Control!");
+//             FLUSH_LOGS_IF_AVAILABLE(params);
+//             return TEE_ERROR_GENERIC;
+//         }
+
+//         DBG_STEP(6, "Creating SecureRingBufferProducer");
+//         DMSG("Step 6: About to create SecureRingBufferProducer");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         // CRITICAL: Use new directly instead of std::make_unique to avoid potential issues
+//         // Then wrap in unique_ptr manually
+//         DMSG("Step 6: Allocating SecureRingBufferProducer with operator new...");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         SecureRingBufferProducer* raw_producer = nullptr;
+//         try {
+//             raw_producer = new SecureRingBufferProducer(g_shared_mem, buffer_size);
+//             DMSG("Step 6: SecureRingBufferProducer allocated successfully");
+//         } catch (const std::bad_alloc& e) {
+//             DMSG("Step 6: std::bad_alloc: %s", e.what());
+//             ERROR_LOG("Out of memory creating SecureRingBufferProducer");
+//             FLUSH_LOGS_IF_AVAILABLE(params);
+//             return TEE_ERROR_OUT_OF_MEMORY;
+//         } catch (const std::exception& e) {
+//             DMSG("Step 6: Exception: %s", e.what());
+//             ERROR_LOG("Exception creating SecureRingBufferProducer: %s", e.what());
+//             FLUSH_LOGS_IF_AVAILABLE(params);
+//             return TEE_ERROR_GENERIC;
+//         } catch (...) {
+//             DMSG("Step 6: Unknown exception");
+//             ERROR_LOG("Unknown exception creating SecureRingBufferProducer");
+//             FLUSH_LOGS_IF_AVAILABLE(params);
+//             return TEE_ERROR_GENERIC;
+//         }
+        
+//         DMSG("Step 6: Wrapping in unique_ptr...");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         g_producer.reset(raw_producer);
+//         DMSG("Step 6: SecureRingBufferProducer created and wrapped");
+//         INFO_LOG("Ring Buffer Producer created");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+
+//         DBG_STEP(7, "Creating RingBufferEnv");
+//         DMSG("Step 7: About to create RingBufferEnv");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         // TEST: Skip RingBufferEnv creation to see if std::map is the problem
+//         DMSG("TEST: Skipping RingBufferEnv creation (std::map may cause hang)");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         g_env = nullptr;  // Don't create it for now
+//         DMSG("TEST: RingBufferEnv creation skipped");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+
+//         DBG_STEP(8, "Setting up LevelDB options");
+//         DMSG("Step 8: About to set up LevelDB options");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         // TEST: Skip LevelDB options setup since g_env is nullptr
+//         DMSG("TEST: Skipping LevelDB options setup (g_env is nullptr)");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         /*
+//         // ORIGINAL CODE - DISABLED FOR TESTING
+//         // Open LevelDB with custom environment
+//         leveldb::Options options;
+//         options.env = g_env.get();
+//         options.create_if_missing = true;
+//         options.write_buffer_size = 512 * 1024; // 512KB write buffer
+//         options.max_open_files = 50;            // Limit open files
+//         options.block_cache = nullptr;          // Disable block cache to save memory
+//         options.compression = leveldb::kNoCompression; // Disable compression to reduce complexity
+        
+//         DBG_LOG("LevelDB options: write_buffer_size=%u, max_open_files=%d", 
+//                 options.write_buffer_size, options.max_open_files);
+        
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         */
+        
+//         DBG_STEP(9, "Opening LevelDB database (this may take time)");
+//         DMSG("Step 9: About to open LevelDB");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         DBG_LOG("About to call leveldb::DB::Open() - this may take time...");
+//         DMSG("About to call DB::Open()");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         // Performance timing: measure DB::Open duration
+//         TEE_Time perf_start_time, perf_end_time;
+//         TEE_GetSystemTime(&perf_start_time);
+        
+//         DBG_LOG("Calling leveldb::DB::Open() now...");
+//         DMSG("DB::Open() call starting...");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         // CRITICAL: Wrap DB::Open in try-catch to catch any exceptions
+//         leveldb::DB* db_ptr = nullptr;
+//         leveldb::Status status;
+        
+//         // TEST: Skip DB::Open() temporarily to see if RingBufferEnv creation is the issue
+//         DMSG("TEST: Skipping DB::Open() to test if RingBufferEnv is the problem");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         // Create a dummy status to test if we can return successfully
+//         status = leveldb::Status::OK();
+//         db_ptr = nullptr;  // Don't actually open DB
+        
+//         DMSG("TEST: Skipped DB::Open(), returning success");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         DMSG("DB::Open() call completed!");
+//         DBG_LOG("leveldb::DB::Open() returned!");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         TEE_GetSystemTime(&perf_end_time);
+//         DBG_PERF_LOG("DB::Open", &perf_start_time, &perf_end_time);
+        
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         // TEST: Skip DB initialization for now
+//         DMSG("TEST: Skipping DB initialization (db_ptr is nullptr for testing)");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+//         // Don't set g_db - this is just a test to see if we can return successfully
+//         // g_db will be nullptr, but at least we'll know if RingBufferEnv creation works
+        
+//         DMSG("TEST: Returning TEE_SUCCESS without initializing DB");
+//         INFO_LOG("TEST: LevelDB initialization skipped (testing RingBufferEnv)");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+        
+
+//         return TEE_SUCCESS;
+
+//     } catch (const std::bad_alloc& e) {
+//         ERROR_LOG("Out of memory: %s", e.what());
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         return TEE_ERROR_OUT_OF_MEMORY;
+//     } catch (const std::exception& e) {
+//         ERROR_LOG("Exception: %s", e.what());
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         return TEE_ERROR_GENERIC;
+//     } catch (...) {
+//         ERROR_LOG("Unknown exception during init!");
+//         FLUSH_LOGS_IF_AVAILABLE(params);
+//         return TEE_ERROR_GENERIC;
+//     }
+// }
+static TEE_Result leveldb_init(uint32_t param_types, TEE_Param params[4])
+{
+    ocall_log_init();
+    OCALL_LOG("=== Initializing LevelDB with Ring Buffer ===");
+
+    uint32_t exp_param_types = TEE_PARAM_TYPES(
+        TEE_PARAM_TYPE_MEMREF_INOUT,    // Shared memory
+        TEE_PARAM_TYPE_VALUE_INPUT,     // Buffer size
+        TEE_PARAM_TYPE_MEMREF_OUTPUT,   // OCALL logs
+        TEE_PARAM_TYPE_NONE);
+
+    if (param_types != exp_param_types)
+    {
+        OCALL_LOG("[ERROR] Bad parameter types!");
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    try {
+        // Get shared memory pointer
+        g_shared_mem = params[0].memref.buffer;
+        uint32_t buffer_size = params[1].value.a;
+
+        if (!g_shared_mem || buffer_size == 0) {
+            OCALL_LOG("[ERROR] Invalid shared memory or buffer size");
+            return TEE_ERROR_BAD_PARAMETERS;
+        }
+
+        OCALL_LOG("[INFO] Shared memory: %p, Buffer size: %u", g_shared_mem, buffer_size);
+
+        // Initialize Ring Buffer Control
+        OCALL_LOG("[DEBUG] About to initialize Ring Buffer Control...");
+        auto* ctrl = static_cast<RingBufferControl*>(g_shared_mem);
+        ctrl->head = 0;
+        ctrl->tail = 0;
+        ctrl->last_flushed_id = 0;
+        ctrl->sync_counter = 0;
+        ctrl->buffer_size = buffer_size - sizeof(RingBufferControl);
+
+        OCALL_LOG("[INFO] Ring Buffer initialized - Data buffer size: %u", ctrl->buffer_size);
+
+        // Create Ring Buffer Producer
+        OCALL_LOG("[DEBUG] About to create SecureRingBufferProducer...");
+        g_producer = std::make_unique<SecureRingBufferProducer>(g_shared_mem);
+        OCALL_LOG("[INFO] Ring Buffer Producer created");
+
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+
+        // Create custom LevelDB environment (NO POSIX dependencies)
+        OCALL_LOG("[DEBUG] About to create RingBufferEnv...");
+        g_env = std::make_unique<RingBufferEnv>(g_producer.get());
+        OCALL_LOG("[INFO] LevelDB Ring Buffer Env created (in-memory + ring buffer)");
+
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+
+        // Open LevelDB with custom environment
+        OCALL_LOG("[DEBUG] Setting up LevelDB options...");
+        leveldb::Options options;
+        options.env = g_env.get();
+        options.create_if_missing = true;
+        options.write_buffer_size = 512 * 1024; // Reduce to 512KB
+        options.max_open_files = 50;            // Reduce to 50
+        options.block_cache = nullptr;          // Disable block cache to save memory
+        
+        OCALL_LOG("[DEBUG] About to call leveldb::DB::Open()...");
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+
+        leveldb::DB* db_ptr = nullptr;
+        leveldb::Status status = leveldb::DB::Open(options, "/tmp/leveldb_secure", &db_ptr);
+        OCALL_LOG("[DEBUG] leveldb::DB::Open() returned");
+        
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] Failed to open LevelDB: %s", status.ToString().c_str());
+            
+            if (params[2].memref.buffer && params[2].memref.size > 0) {
+                ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+            }
+            return TEE_ERROR_GENERIC;
+        }
+
+        g_db.reset(db_ptr);
+        OCALL_LOG("[INFO] LevelDB opened successfully!");
+
+        // Flush logs
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+
+        return TEE_SUCCESS;
+
+    } catch (const std::bad_alloc& e) {
+        OCALL_LOG("[EXCEPTION] Out of memory: %s", e.what());
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+        return TEE_ERROR_OUT_OF_MEMORY;
+    } catch (const std::exception& e) {
+        OCALL_LOG("[EXCEPTION] %s", e.what());
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+        return TEE_ERROR_GENERIC;
+    } catch (...) {
+        OCALL_LOG("[EXCEPTION] Unknown exception during init!");
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+        return TEE_ERROR_GENERIC;
+    }
+}
+/*
+ * Put a key-value pair into LevelDB
+ * 
+ * params[0] = MEMREF_INPUT  - Key
+ * params[1] = MEMREF_INPUT  - Value
+ * params[2] = VALUE_OUTPUT  - Status code
+ * params[3] = MEMREF_OUTPUT - OCALL logs
+ */
+static TEE_Result leveldb_put(uint32_t param_types, TEE_Param params[4])
+{
+    INFO_LOG("=== LevelDB PUT Operation ===");
+
+    // Check critical parameters only
+    uint32_t p0 = TEE_PARAM_TYPE_GET(param_types, 0);
+    uint32_t p1 = TEE_PARAM_TYPE_GET(param_types, 1);
+    uint32_t p2 = TEE_PARAM_TYPE_GET(param_types, 2);
+    uint32_t p3 = TEE_PARAM_TYPE_GET(param_types, 3);
+    
+    if (p0 != TEE_PARAM_TYPE_MEMREF_INPUT || 
+        p1 != TEE_PARAM_TYPE_MEMREF_INPUT ||
+        p2 != TEE_PARAM_TYPE_VALUE_OUTPUT) {
+        ERROR_LOG("Bad parameter types! Got: %d, %d, %d", p0, p1, p2);
+        // Only flush if p3 is actually a MEMREF_OUTPUT
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    if (!g_db) {
+        ERROR_LOG("LevelDB not initialized! g_db is nullptr");
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_BAD_STATE;
+    }
+    
+    DBG_LOG("g_db is valid, proceeding with PUT");
+
+    // Validate buffers
+    if (!params[0].memref.buffer || params[0].memref.size == 0) {
+        ERROR_LOG("Invalid key buffer!");
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    if (!params[1].memref.buffer || params[1].memref.size == 0) {
+        ERROR_LOG("Invalid value buffer!");
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    try {
+        // Create strings from memref buffers
+        std::string key(static_cast<const char*>(params[0].memref.buffer), 
+                        params[0].memref.size);
+        std::string value(static_cast<const char*>(params[1].memref.buffer), 
+                          params[1].memref.size);
+
+        INFO_LOG("Putting key='%s', value size=%zu", key.c_str(), value.size());
+        DBG_LOG("About to call g_db->Put()");
+
+        leveldb::WriteOptions write_options;
+        write_options.sync = true;
+        
+        leveldb::Status status = g_db->Put(write_options, key, value);
+        
+        DBG_LOG("g_db->Put() returned, status.ok()=%d", status.ok());
+        
+        if (status.ok()) {
+            INFO_LOG("PUT successful!");
+            params[2].value.a = 0;
+        } else {
+            ERROR_LOG("PUT failed: %s", status.ToString().c_str());
+            params[2].value.a = 1;
+        }
+
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+
+        return TEE_SUCCESS;
+
+    } catch (const std::exception& e) {
+        ERROR_LOG("Exception: %s", e.what());
+        params[2].value.a = 2;
+        
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_GENERIC;
+    } catch (...) {
+        OCALL_LOG("[EXCEPTION] Unknown exception!");
+        params[2].value.a = 3;
+        
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_GENERIC;
+    }
+}
+
+/*
+ * Get a value from LevelDB by key
+ * 
+ * params[0] = MEMREF_INPUT  - Key
+ * params[1] = MEMREF_OUTPUT - Value
+ * params[2] = VALUE_OUTPUT  - Status code (0=found, 1=not found, 2=error)
+ * params[3] = MEMREF_OUTPUT - OCALL logs
+ */
+static TEE_Result leveldb_get(uint32_t param_types, TEE_Param params[4])
+{
+    INFO_LOG("=== LevelDB GET Operation ===");
+
+    // Check critical parameters
+    uint32_t p0 = TEE_PARAM_TYPE_GET(param_types, 0);
+    uint32_t p1 = TEE_PARAM_TYPE_GET(param_types, 1);
+    uint32_t p2 = TEE_PARAM_TYPE_GET(param_types, 2);
+    uint32_t p3 = TEE_PARAM_TYPE_GET(param_types, 3);
+    
+    if (p0 != TEE_PARAM_TYPE_MEMREF_INPUT || 
+        p1 != TEE_PARAM_TYPE_MEMREF_OUTPUT ||
+        p2 != TEE_PARAM_TYPE_VALUE_OUTPUT) {
+        ERROR_LOG("Bad parameter types! Got: %d, %d, %d", p0, p1, p2);
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    if (!g_db) {
+        ERROR_LOG("LevelDB not initialized! g_db is nullptr");
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_BAD_STATE;
+    }
+    
+    DBG_LOG("g_db is valid, proceeding with GET");
+
+    // Validate buffers
+    if (!params[0].memref.buffer || params[0].memref.size == 0) {
+        ERROR_LOG("Invalid key buffer!");
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    if (!params[1].memref.buffer || params[1].memref.size == 0) {
+        ERROR_LOG("Invalid value buffer!");
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    try {
+        std::string key(static_cast<char*>(params[0].memref.buffer), params[0].memref.size);
+        std::string value;
+
+        INFO_LOG("Getting key='%s'", key.c_str());
+        DBG_LOG("About to call g_db->Get()");
+
+        leveldb::Status status = g_db->Get(leveldb::ReadOptions(), key, &value);
+        
+        DBG_LOG("g_db->Get() returned, status.ok()=%d, value.size()=%zu", 
+                status.ok(), value.size());
+        
+        if (status.ok()) {
+            INFO_LOG("GET successful! Value size=%zu", value.size());
+            
+            // Copy value to output buffer
+            size_t copy_size = std::min(value.size(), static_cast<size_t>(params[1].memref.size));
+            if (copy_size > 0) {
+                memcpy(params[1].memref.buffer, value.data(), copy_size);
+            }
+            // Set actual size written (not buffer size)
+            params[1].memref.size = static_cast<uint32_t>(copy_size);
+            params[2].value.a = 0;
+            
+        } else if (status.IsNotFound()) {
+            INFO_LOG("Key not found");
+            params[1].memref.size = 0;
+            params[2].value.a = 1;
+            
+        } else {
+            ERROR_LOG("GET failed: %s", status.ToString().c_str());
+            params[2].value.a = 2;
+        }
+
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+
+        return TEE_SUCCESS;
+
+    } catch (const std::exception& e) {
+        ERROR_LOG("Exception: %s", e.what());
+        params[2].value.a = 2;
+        
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_GENERIC;
+    } catch (...) {
+        OCALL_LOG("[EXCEPTION] Unknown exception in GET!");
+        params[2].value.a = 3;
+        
+        if (p3 == TEE_PARAM_TYPE_MEMREF_OUTPUT && 
+            params[3].memref.buffer && params[3].memref.size > 0) {
+            ocall_log_flush_to_params(params[3].memref.buffer, &params[3].memref.size);
+        }
+        return TEE_ERROR_GENERIC;
+    }
+}
+
+/*
+ * Delete a key from LevelDB
+ */
+static TEE_Result leveldb_delete(uint32_t param_types, TEE_Param params[4])
+{
+    OCALL_LOG("=== LevelDB DELETE Operation ===");
+
+    uint32_t exp_param_types = TEE_PARAM_TYPES(
+        TEE_PARAM_TYPE_MEMREF_INPUT,    // Key
+        TEE_PARAM_TYPE_VALUE_OUTPUT,    // Status
+        TEE_PARAM_TYPE_MEMREF_OUTPUT,   // OCALL logs
+        TEE_PARAM_TYPE_NONE);
+
+    if (param_types != exp_param_types) {
+        OCALL_LOG("[ERROR] Bad parameter types!");
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+
+    if (!g_db) {
+        ERROR_LOG("LevelDB not initialized!");
+        return TEE_ERROR_BAD_STATE;
+    }
+
+    try {
+        std::string key(static_cast<char*>(params[0].memref.buffer), params[0].memref.size);
+
+        OCALL_LOG("[INFO] Deleting key='%s'", key.c_str());
+
+        leveldb::WriteOptions write_options;
+        write_options.sync = true;
+
+        leveldb::Status status = g_db->Delete(write_options, key);
+        
+        if (status.ok()) {
+            OCALL_LOG("[INFO] DELETE successful!");
+            params[1].value.a = 0;
+        } else {
+            OCALL_LOG("[ERROR] DELETE failed: %s", status.ToString().c_str());
+            params[1].value.a = 1;
+        }
+
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+
+        return TEE_SUCCESS;
+
+    } catch (const std::exception& e) {
+        ERROR_LOG("Exception: %s", e.what());
+        params[1].value.a = 2;
+        
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+        return TEE_ERROR_GENERIC;
+    }
+}
+
+/*
+ * Called when the instance of the TA is created
+ */
+TEE_Result TA_CreateEntryPoint(void)
+{
+    DMSG("=== TA_CreateEntryPoint CALLED ===");
+    
+    // Initialize OCALL logging system
+    ocall_log_init();
+    
+    DMSG("TA_CreateEntryPoint: OCALL logging initialized");
+    return TEE_SUCCESS;
+}
+
+/*
+ * Called when the instance of the TA is destroyed
+ */
+void TA_DestroyEntryPoint(void)
+{
+    
+    // Cleanup LevelDB
+    if (g_db) {
+        DMSG("Closing LevelDB");
+        g_db.reset();
+    }
+    
+    g_env.reset();
+    g_producer.reset();
+}
+
+/*
+ * Called when a new session is opened to the TA
+ */
+TEE_Result TA_OpenSessionEntryPoint(uint32_t param_types,
+                                     TEE_Param __maybe_unused params[4],
+                                     void __maybe_unused **sess_ctx)
+{
+    uint32_t exp_param_types = TEE_PARAM_TYPES(
+        TEE_PARAM_TYPE_NONE,
+        TEE_PARAM_TYPE_NONE,
+        TEE_PARAM_TYPE_NONE,
+        TEE_PARAM_TYPE_NONE);
+
+    if (param_types != exp_param_types)
+        return TEE_ERROR_BAD_PARAMETERS;
+
+    IMSG("Session opened!");
+    return TEE_SUCCESS;
+}
+
+/*
+ * Called when a session is closed
+ */
+void TA_CloseSessionEntryPoint(void __maybe_unused *sess_ctx)
+{
+    IMSG("Session closed");
+}
+
+/*
+ * Called when a TA is invoked
+ */
+TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
+                                       uint32_t cmd_id,
+                                       uint32_t param_types,
+                                       TEE_Param params[4])
+{
+    // CRITICAL: Log immediately with DMSG (always works)
+    // Use multiple DMSG calls to ensure at least one gets through
+    DMSG("=== TA_InvokeCommandEntryPoint CALLED ===");
+    DMSG("cmd_id=%u (0x%08X)", cmd_id, cmd_id);
+    DMSG("param_types=0x%08X", param_types);
+    
+    // Force flush DMSG (if supported)
+    // Some OP-TEE implementations buffer DMSG, so we log multiple times
+    
+    switch (cmd_id)
+    {
+    case TA_EEVM_CMD_INIT_LEVELDB:
+        DMSG("Dispatching to leveldb_init");
+        DMSG("About to call leveldb_init");
+        return leveldb_init(param_types, params);
+        
+    case TA_EEVM_CMD_LEVELDB_PUT:
+        return leveldb_put(param_types, params);
+        
+    case TA_EEVM_CMD_LEVELDB_GET:
+        return leveldb_get(param_types, params);
+        
+    case TA_EEVM_CMD_LEVELDB_DELETE:
+        return leveldb_delete(param_types, params);
+
+    default:
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+}

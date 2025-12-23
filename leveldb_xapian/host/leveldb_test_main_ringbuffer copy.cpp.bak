@@ -56,10 +56,8 @@ int main()
         TEEC_FinalizeContext(&ctx);
         return 1;
     }
-    
     std::cout << "✓ Session opened to TA" << std::endl << std::endl;
     
-    // ==================== Setup Shared Memory ====================
     std::cout << "=== Setting up Shared Memory Ring Buffer ===" << std::endl;
     
     const size_t RING_BUFFER_SIZE = DEFAULT_RING_BUFFER_SIZE; // 4MB
@@ -105,28 +103,59 @@ int main()
     char log_buffer[8192] = {0};
     
     std::memset(&op, 0, sizeof(op));
+    // Use TEEC_MEMREF_WHOLE for allocated shared memory
+    // This is the correct way to pass allocated shared memory to TA
     op.paramTypes = TEEC_PARAM_TYPES(
-        TEEC_MEMREF_PARTIAL_INOUT,    // Shared memory
+        TEEC_MEMREF_WHOLE,            // Shared memory (WHOLE for allocated memory)
         TEEC_VALUE_INPUT,             // Buffer size
         TEEC_MEMREF_TEMP_OUTPUT,      // OCALL logs
         TEEC_NONE);
     
+    // For TEEC_MEMREF_WHOLE, we only need to set parent
     op.params[0].memref.parent = &shm;
+    // offset and size are ignored for WHOLE, but set them anyway for safety
     op.params[0].memref.offset = 0;
     op.params[0].memref.size = shm.size;
     op.params[1].value.a = RING_BUFFER_SIZE;
     op.params[2].tmpref.buffer = log_buffer;
     op.params[2].tmpref.size = sizeof(log_buffer);
     
+    std::cout << "Invoking INIT_LEVELDB with shared memory size: " << shm.size << std::endl;
+    std::cout << "[DEBUG] Parameter types: 0x" << std::hex << op.paramTypes << std::dec << std::endl;
+    std::cout << "[DEBUG] Shared memory: ptr=" << std::hex << shm.buffer << std::dec 
+              << ", size=" << shm.size << std::endl;
+    std::cout.flush();
+    
+    std::cout << "[DEBUG] Calling TEEC_InvokeCommand, waiting for TA response..." << std::endl;
+    std::cout << "[DEBUG] Shared memory validation:" << std::endl;
+    std::cout << "  - shm.buffer: " << std::hex << shm.buffer << std::dec << std::endl;
+    std::cout << "  - shm.size: " << shm.size << std::endl;
+    std::cout << "  - op.params[0].memref.parent: " << std::hex << op.params[0].memref.parent << std::dec << std::endl;
+    std::cout << "  - op.params[0].memref.offset: " << op.params[0].memref.offset << std::endl;
+    std::cout << "  - op.params[0].memref.size: " << op.params[0].memref.size << std::endl;
+    std::cout.flush();
+    
+    // Add timeout mechanism - if command takes too long, it's hanging
+    std::cout << "[DEBUG] Invoking command (will timeout if takes > 30 seconds)..." << std::endl;
+    std::cout.flush();
+    
     res = TEEC_InvokeCommand(&sess, TA_EEVM_CMD_INIT_LEVELDB, &op, &err_origin);
+    
+    std::cout << "[DEBUG] TEEC_InvokeCommand returned with code: 0x" << std::hex << res << std::dec << std::endl;
+    std::cout << "[DEBUG] Error origin: 0x" << std::hex << err_origin << std::dec << std::endl;
+    std::cout.flush();
     
     if (log_buffer[0] != '\0') {
         std::cout << "\n--- TA Logs ---" << std::endl;
         std::cout << log_buffer << std::endl;
+        std::cout << "--- End TA Logs ---\n" << std::endl;
+    } else {
+        std::cout << "[DEBUG] No logs received from TA (log_buffer is empty)" << std::endl;
     }
     
     if (res != TEEC_SUCCESS) {
-        std::cerr << "❌ LevelDB initialization failed: 0x" << std::hex << res << std::endl;
+        std::cerr << "❌ LevelDB initialization failed: 0x" << std::hex << res << std::dec << std::endl;
+        std::cerr << "Error origin: 0x" << std::hex << err_origin << std::dec << std::endl;
         consumer.Stop();
         TEEC_ReleaseSharedMemory(&shm);
         TEEC_CloseSession(&sess);
@@ -206,17 +235,25 @@ int main()
     }
     
     if (res != TEEC_SUCCESS) {
-        std::cerr << "❌ GET failed: 0x" << std::hex << res << std::endl;
+        std::cerr << "❌ GET failed: 0x" << std::hex << res << std::dec << std::endl;
+        std::cerr << "Error origin: 0x" << std::hex << err_origin << std::dec << std::endl;
     } else {
         uint32_t status = op.params[2].value.a;
         if (status == 0) {
-            std::string retrieved(get_buffer, op.params[1].tmpref.size);
-            std::cout << "✓ GET successful! Value: '" << retrieved << "'" << std::endl;
-            
-            if (retrieved == test_value) {
-                std::cout << "✓✓ Value matches!" << std::endl;
+            size_t value_size = op.params[1].tmpref.size;
+            std::cout << "[DEBUG] Retrieved value size: " << value_size << " bytes" << std::endl;
+            if (value_size > 0) {
+                std::string retrieved(static_cast<const char*>(op.params[1].tmpref.buffer), value_size);
+                std::cout << "✓ GET successful! Value: '" << retrieved << "'" << std::endl;
+                
+                if (retrieved == test_value) {
+                    std::cout << "✓✓ Value matches!" << std::endl;
+                } else {
+                    std::cerr << "❌ Value mismatch! Expected: '" << test_value 
+                              << "', Got: '" << retrieved << "'" << std::endl;
+                }
             } else {
-                std::cout << "❌ Value mismatch!" << std::endl;
+                std::cerr << "❌ GET returned empty value (size=0)!" << std::endl;
             }
         } else if (status == 1) {
             std::cout << "❌ Key not found" << std::endl;

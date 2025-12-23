@@ -11,10 +11,14 @@
 #define TA_EEVM_CMD_HELLO_WORLD     0
 #define TA_EEVM_CMD_OCALL_PRINT     1  // OCALL for printing from TA
 #define TA_EEVM_CMD_TEST_STACK      2  // Test eEVM Stack operations
+#define TA_EEVM_CMD_TEST_SIMPLE_SHM 7  // Simple test with shared memory (no LevelDB)
 #define TA_EEVM_CMD_INIT_LEVELDB    3  // Initialize LevelDB with Ring Buffer
 #define TA_EEVM_CMD_LEVELDB_PUT     4  // Put key-value to LevelDB
 #define TA_EEVM_CMD_LEVELDB_GET     5  // Get value from LevelDB
 #define TA_EEVM_CMD_LEVELDB_DELETE  6  // Delete key from LevelDB
+#define TA_EEVM_CMD_TEST_SHM_STRING 8  // Test string return via shared memory
+#define TA_EEVM_CMD_INIT_LOG_RING_BUFFER 9  // Initialize log ring buffer in shared memory
+#define TA_EEVM_CMD_TEST_SHM_RING_BUFFER 10  // Test with ring buffer logging
 
 
 #endif /* EEVM_TA_H */

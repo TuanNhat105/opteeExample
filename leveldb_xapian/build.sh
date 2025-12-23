@@ -67,13 +67,15 @@ fi
 
 echo -e "${GREEN}All required libraries found!${NC}"
 
-# Build TA
-echo -e "\n${YELLOW}Building Trusted Application (TA)...${NC}"
+# Build TA with DEBUG flags enabled for testing
+echo -e "\n${YELLOW}Building Trusted Application (TA) with DEBUG enabled...${NC}"
+echo -e "${YELLOW}Debug flags: DEBUG_ENABLED=1, DEBUG_PARAMS=1, DEBUG_STEPS=1, DEBUG_TEST_CODE=1${NC}"
 cd ta
 make clean
-make
+# Build with all debug flags enabled for testing
+make DEBUG_ENABLED=1 DEBUG_PARAMS=1 DEBUG_STEPS=1 DEBUG_TEST_CODE=1 DEBUG_PERF=1
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}TA built successfully!${NC}"
+    echo -e "${GREEN}TA built successfully with DEBUG enabled!${NC}"
     ls -lh *.ta
 else
     echo -e "${RED}TA build failed!${NC}"
@@ -85,10 +87,13 @@ cd ..
 echo -e "\n${YELLOW}Building Host Application...${NC}"
 cd host
 make clean
-make
+make -j$(nproc)
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Host application built successfully!${NC}"
-    ls -lh leveldb_host
+    echo -e "${GREEN}Binaries:" 
+    echo -e "  - leveldb_host (main application)"
+    echo -e "  - test_simple_shm (simple shared memory test - NO LevelDB)${NC}"
+    ls -lh leveldb_host test_simple_shm 2>/dev/null || true
 else
     echo -e "${RED}Host build failed!${NC}"
     exit 1
@@ -102,13 +107,35 @@ echo -e "${GREEN}Build completed successfully!${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 echo "TA binary: ta/8aaaf200-2450-11e4-abe2-0002a5d5c53d.ta"
-echo "Host binary: host/leveldb_host"
+echo "Host binaries:"
+# echo "  - host/leveldb_host (main application)"
+echo "  - host/test_simple_shm (simple shared memory test - NO LevelDB)"
 echo ""
-echo "To deploy and run:"
+echo -e "${YELLOW}========================================${NC}"
+echo -e "${YELLOW}Testing Options${NC}"
+echo -e "${YELLOW}========================================${NC}"
+echo ""
+echo "To deploy and run tests:"
 echo "1. Copy the TA to your device: /lib/optee_armtz/"
 scp -O ta/*.ta root@192.168.1.182:/lib/optee_armtz/
-echo "2. Run the host application: ./host/leveldb_host"
-scp -O host/leveldb_host root@192.168.1.182:/usr/bin/
-echo "3. Test"
-ssh root@192.168.1.182 "leveldb_host"
+echo ""
+echo "2. Choose a test:"
+echo "   a) Simple Shared Memory Test (NO LevelDB):"
+echo "      scp -O host/test_simple_shm root@192.168.1.182:/usr/bin/"
+echo "      ssh root@192.168.1.182 \"test_simple_shm\""
+echo ""
+echo "   b) Full LevelDB Test:"
+echo "      scp -O host/leveldb_host root@192.168.1.182:/usr/bin/"
+echo "      ssh root@192.168.1.182 \"leveldb_host\""
+echo ""
+echo -e "${GREEN}Running Simple Shared Memory Test (recommended first)...${NC}"
+scp -O host/test_simple_shm root@192.168.1.182:/usr/bin/
+ssh root@192.168.1.182 "test_simple_shm"
+echo ""
+echo -e "${YELLOW}Test completed! Check output above for:${NC}"
+echo "  - [DEBUG] Parameter types and values"
+echo "  - [STEP] Step-by-step execution"
+echo "  - [TEST] Memory access tests"
+echo "  - [PERF] Performance timing"
+echo "  - [INFO] Operation results"
 echo ""

@@ -1,5 +1,4 @@
 #pragma once
-#include <atomic>
 #include <cstdint>
 #include <cstddef>
 #include <type_traits>
@@ -19,17 +18,19 @@ struct RingBufferPacket {
     // Dữ liệu sẽ bắt đầu ngay sau header này
 };
 
-// Use std::atomic with proper memory ordering for thread safety
+// OP-TEE Safe Ring Buffer Control Structure
+// ⚠️ KHÔNG dùng std::atomic trên shared memory trong OP-TEE!
+// OP-TEE cấm exclusive instructions (LDXR/STXR) trên non-secure memory
+// Sử dụng plain uint32_t với manual memory barriers và cache management
 struct alignas(64) RingBufferControl {
-    // Đặt head và tail trên các Cache Line khác nhau (64 bytes)
-    alignas(64) std::atomic<uint32_t> head;
-    alignas(64) std::atomic<uint32_t> tail;
+    alignas(64) uint32_t head;   // TA ghi, CA đọc
+    alignas(64) uint32_t tail;   // CA ghi, TA đọc
     
     // CA sẽ cập nhật giá trị này sau khi gọi fsync() trên Linux thành công
-    alignas(64) std::atomic<uint32_t> last_flushed_id;
+    alignas(64) uint32_t last_flushed_id;
     
     // Biến đếm để định danh các yêu cầu Flush
-    std::atomic<uint32_t> sync_counter;
+    uint32_t sync_counter;
 
     uint32_t buffer_size;
 

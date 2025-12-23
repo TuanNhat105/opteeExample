@@ -66,15 +66,21 @@ public:
 private:
     void WorkerLoop() {
         while (running.load(std::memory_order_acquire)) {
-            uint32_t h = ctrl->head.load(std::memory_order_acquire);
-            uint32_t t = ctrl->tail.load(std::memory_order_relaxed);
+            // Read head/tail from shared memory (plain reads with memory barriers)
+            // On Linux side, we need to ensure cache coherence
+            __sync_synchronize();  // Memory barrier
+            uint32_t h = ctrl->head;
+            __sync_synchronize();
+            uint32_t t = ctrl->tail;
 
             if (h != t) {
                 auto* pkt = reinterpret_cast<RingBufferPacket*>(data_ptr + t);
 
                 if (pkt->type == PacketType::WRAP_MARKER) {
                     // Quay về đầu buffer
-                    ctrl->tail.store(0, std::memory_order_release);
+                    __sync_synchronize();  // Memory barrier before write
+                    ctrl->tail = 0;
+                    __sync_synchronize();  // Memory barrier after write
                     continue;
                 }
 
@@ -88,11 +94,14 @@ private:
                         }
                     }
 
-                    // Xác nhận với TA
-                    ctrl->last_flushed_id.store(sync_id_to_confirm, std::memory_order_release);
+                    // Xác nhận với TA (plain write with barriers)
+                    __sync_synchronize();  // Memory barrier before write
+                    ctrl->last_flushed_id = sync_id_to_confirm;
+                    __sync_synchronize();  // Memory barrier after write
                     
                     // Cập nhật tail
-                    ctrl->tail.store(t + sizeof(RingBufferPacket), std::memory_order_release);
+                    ctrl->tail = t + sizeof(RingBufferPacket);
+                    __sync_synchronize();  // Memory barrier after write
                     continue;
                 }
 
@@ -104,12 +113,18 @@ private:
                         ssize_t written = write(it->second, payload, pkt->payload_sz);
                         
                         if (written < 0) {
-                            // TODO: Xử lý lỗi ghi
+                            std::cerr << "[ERROR] Failed to write to file descriptor " 
+                                      << it->second << ": " << strerror(errno) << std::endl;
+                        } else if (static_cast<size_t>(written) != pkt->payload_sz) {
+                            std::cerr << "[WARN] Partial write: " << written 
+                                      << " bytes written, expected " << pkt->payload_sz << std::endl;
                         }
                     }
                     
                     uint32_t processed_sz = sizeof(RingBufferPacket) + pkt->payload_sz;
-                    ctrl->tail.store(t + processed_sz, std::memory_order_release);
+                    __sync_synchronize();  // Memory barrier before write
+                    ctrl->tail = t + processed_sz;
+                    __sync_synchronize();  // Memory barrier after write
                 }
             } else {
                 // Không có dữ liệu: Yield CPU

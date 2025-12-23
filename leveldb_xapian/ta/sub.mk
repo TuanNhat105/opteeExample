@@ -1,8 +1,30 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
+# ============================================================================
+# Debug Configuration
+# ============================================================================
+# Set these flags to control debug output:
+#   DEBUG_ENABLED=1      - Enable all debug logs (default: 1)
+#   DEBUG_PARAMS=1       - Enable parameter logging (default: 1)
+#   DEBUG_STEPS=1        - Enable step-by-step logging (default: 1)
+#   DEBUG_TEST_CODE=1    - Enable test code (memory access tests) (default: 1)
+#   DEBUG_PERF=0         - Enable performance timing (default: 0)
+#
+# Example: To disable all debug logs, add to build command:
+#   make DEBUG_ENABLED=0
+# ============================================================================
+
 # TA source files
 global-incdirs-y += include
 global-incdirs-y += ../include
+
+# Debug flags (can be overridden from command line)
+cppflags-y += -DDEBUG_ENABLED=$(or $(DEBUG_ENABLED),1)
+cppflags-y += -DDEBUG_PARAMS=$(or $(DEBUG_PARAMS),1)
+cppflags-y += -DDEBUG_STEPS=$(or $(DEBUG_STEPS),1)
+cppflags-y += -DDEBUG_TEST_CODE=$(or $(DEBUG_TEST_CODE),1)
+cppflags-y += -DDEBUG_PERF=$(or $(DEBUG_PERF),0)
+# Use simple buffer version (no LevelDB ring buffer for now)
 srcs-y += leveldb_ta_main.cpp
 srcs-y += ocall_logger.cpp
 

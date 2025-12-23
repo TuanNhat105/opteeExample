@@ -29,6 +29,107 @@ extern "C"
 
 #include "eevm_ta.h"
 #include "ocall_logger.h"
+// =====================================================================
+// RING BUFFER LOGGING INITIALIZATION
+// =====================================================================
+
+/*
+ * Initialize log ring buffer in shared memory
+ * 
+ * params[0] = MEMREF_INOUT - Shared memory for ring buffer
+ * params[1] = VALUE_INPUT  - Total size of shared memory
+ * params[2] = MEMREF_OUTPUT - OCALL logs (optional)
+ * params[3] = NONE
+ */
+
+
+// =====================================================================
+// SIMPLE TEST: Test TEEC_InvokeCommand with Shared Memory (NO LevelDB)
+// =====================================================================
+
+/*
+ * Simple test command with shared memory
+ * Just validates shared memory access and returns success
+ * 
+ * params[0] = MEMREF_INOUT - Shared memory (TEEC_MEMREF_WHOLE)
+ * params[1] = VALUE_INPUT  - Test value
+ * params[2] = MEMREF_OUTPUT - OCALL logs
+ * params[3] = NONE
+ */
+static TEE_Result test_simple_shm(uint32_t param_types, TEE_Param params[4])
+{
+    DMSG("=== test_simple_shm CALLED ===");
+    DMSG("param_types=0x%08X", param_types);
+    
+    // Initialize logging
+    ocall_log_init();
+    
+    // Check parameter types
+    uint32_t p0 = TEE_PARAM_TYPE_GET(param_types, 0);
+    uint32_t p1 = TEE_PARAM_TYPE_GET(param_types, 1);
+    uint32_t p2 = TEE_PARAM_TYPE_GET(param_types, 2);
+    
+    DMSG("p0=0x%X, p1=0x%X, p2=0x%X", p0, p1, p2);
+    
+    // Accept MEMREF_INOUT, MEMREF_INPUT, or MEMREF_OUTPUT for param 0
+    if (p0 != TEE_PARAM_TYPE_MEMREF_INOUT && 
+        p0 != TEE_PARAM_TYPE_MEMREF_INPUT && 
+        p0 != TEE_PARAM_TYPE_MEMREF_OUTPUT) {
+        DMSG("ERROR: Invalid param 0 type: 0x%X", p0);
+        OCALL_LOG("ERROR: Invalid param 0 type: 0x%X", p0);
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+    
+    if (p1 != TEE_PARAM_TYPE_VALUE_INPUT) {
+        DMSG("ERROR: Invalid param 1 type: 0x%X", p1);
+        OCALL_LOG("ERROR: Invalid param 1 type: 0x%X", p1);
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+    
+    // Validate shared memory
+    if (!params[0].memref.buffer || params[0].memref.size == 0) {
+        DMSG("ERROR: Invalid shared memory: buffer=%p, size=%u", 
+             params[0].memref.buffer, params[0].memref.size);
+        OCALL_LOG("ERROR: Invalid shared memory");
+        if (params[2].memref.buffer && params[2].memref.size > 0) {
+            ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+    
+    DMSG("Shared memory: buffer=%p, size=%u", 
+         params[0].memref.buffer, params[0].memref.size);
+    DMSG("Test value: %u", params[1].value.a);
+    
+    // Simple test: Write a pattern to shared memory
+    uint32_t test_pattern = 0xDEADBEEF;
+    uint32_t* shm_ptr = static_cast<uint32_t*>(params[0].memref.buffer);
+    
+    if (params[0].memref.size >= sizeof(uint32_t)) {
+        *shm_ptr = test_pattern;
+        DMSG("Wrote test pattern 0x%X to shared memory", test_pattern);
+        OCALL_LOG("Wrote test pattern 0x%X to shared memory", test_pattern);
+    }
+    
+    
+    OCALL_LOG("=== test_simple_shm SUCCESS ===");
+    OCALL_LOG("Shared memory size: %u bytes", params[0].memref.size);
+    OCALL_LOG("Test value received: %u", params[1].value.a);
+    
+    // Flush logs
+    if (params[2].memref.buffer && params[2].memref.size > 0) {
+        ocall_log_flush_to_params(params[2].memref.buffer, &params[2].memref.size);
+    }
+    
+    DMSG("test_simple_shm returning TEE_SUCCESS");
+    return TEE_SUCCESS;
+}
 
 // =====================================================================
 // SIMPLE BUFFER ACCUMULATION - Similar to OCALL Pattern
@@ -398,43 +499,60 @@ static TEE_Result simple_buffer_delete(uint32_t param_types, TEE_Param params[4]
     }
 }
 
-// =====================================================================
-// COMMENTED OUT: LevelDB with Ring Buffer (causes 0xFFFF3024)
-// =====================================================================
 /*
-// LevelDB headers - COMMENTED OUT
-// #include <leveldb/db.h>
-// #include <leveldb/write_batch.h>
-// #include <leveldb/options.h>
+ * Test writing a string to shared memory
+ * 
+ * params[0] = MEMREF_INOUT - Shared memory buffer
+ * params[1] = MEMREF_OUTPUT - OCALL logs (optional)
+ */
+static TEE_Result test_shm_string(uint32_t param_types, TEE_Param params[4])
+{
+    OCALL_LOG("=== test_shm_string CALLED ===");
+    
+    uint32_t p0 = TEE_PARAM_TYPE_GET(param_types, 0);
+    uint32_t p1 = TEE_PARAM_TYPE_GET(param_types, 1);
+    
+    OCALL_LOG("p0=0x%X, p1=0x%X", p0, p1);
 
-// Ring buffer headers - COMMENTED OUT
-// #include "secure_ring_buffer_producer.hpp"
-// #include "leveldb_ring_buffer_env_complete.hpp"
-
-// Global variables - COMMENTED OUT
-// static std::unique_ptr<leveldb::DB> g_db;
-// static std::unique_ptr<SecureRingBufferProducer> g_producer;
-// static std::unique_ptr<RingBufferEnv> g_env;
-// static void* g_shared_mem = nullptr;
-
-// REASON FOR COMMENTING OUT:
-// Using persistent shared memory with ring buffer causes TEE_ERROR_TARGET_DEAD (0xFFFF3024)
-// This is the same issue encountered in OCALL implementation.
-// 
-// ROOT CAUSE:
-// - OP-TEE unmaps shared memory after command returns
-// - Attempting to access it from another command or thread causes crash
-// - Ring buffer requires persistent memory mapping across commands
-// 
-// SOLUTION:
-// Use Simple Buffer Accumulation pattern instead:
-// 1. Accumulate operations in TA-local buffer during command
-// 2. Return buffer to host at command completion
-// 3. Host saves to LevelDB in normal world
-// 
-// This matches the successful OCALL logging pattern from OCALL_IMPLEMENTATION.md
-*/
-
+    if (p0 != TEE_PARAM_TYPE_MEMREF_INOUT && p0 != TEE_PARAM_TYPE_MEMREF_OUTPUT) {
+        OCALL_LOG("ERROR: Invalid param 0 type: 0x%X", p0);
+        if (p1 == TEE_PARAM_TYPE_MEMREF_OUTPUT && params[1].memref.buffer) {
+            ocall_log_flush_to_params(params[1].memref.buffer, &params[1].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+    
+    if (!params[0].memref.buffer) {
+        OCALL_LOG("ERROR: Invalid shared memory buffer");
+        if (p1 == TEE_PARAM_TYPE_MEMREF_OUTPUT && params[1].memref.buffer) {
+            ocall_log_flush_to_params(params[1].memref.buffer, &params[1].memref.size);
+        }
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+    
+    const char* msg = "Hello from Secure World via Shared Memory!";
+    size_t msg_len = strlen(msg) + 1; // Include null terminator
+    
+    if (params[0].memref.size < msg_len) {
+        OCALL_LOG("ERROR: Shared memory too small! Need %zu, got %u", msg_len, params[0].memref.size);
+        if (p1 == TEE_PARAM_TYPE_MEMREF_OUTPUT && params[1].memref.buffer) {
+            ocall_log_flush_to_params(params[1].memref.buffer, &params[1].memref.size);
+        }
+        return TEE_ERROR_SHORT_BUFFER;
+    }
+    
+    memcpy(params[0].memref.buffer, msg, msg_len);
+    params[0].memref.size = msg_len;
+    
+    OCALL_LOG("Wrote message to shared memory: %s", msg);
+    
+    // Flush logs if requested
+    if (p1 == TEE_PARAM_TYPE_MEMREF_OUTPUT && params[1].memref.buffer) {
+        ocall_log_flush_to_params(params[1].memref.buffer, &params[1].memref.size);
+    }
+    
+    return TEE_SUCCESS;
+}
 // =====================================================================
 // TA Entry Points
 // =====================================================================
@@ -481,6 +599,10 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 {
     switch (cmd_id)
     {
+    case TA_EEVM_CMD_TEST_SIMPLE_SHM:
+        DMSG("Dispatching to test_simple_shm");
+        return test_simple_shm(param_types, params);
+        
     case TA_EEVM_CMD_INIT_LEVELDB:
         return simple_buffer_init(param_types, params);
         
@@ -493,7 +615,11 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
     case TA_EEVM_CMD_LEVELDB_DELETE:
         return simple_buffer_delete(param_types, params);
 
+    case TA_EEVM_CMD_TEST_SHM_STRING:
+        return test_shm_string(param_types, params);
+
     default:
+        DMSG("ERROR: Unknown command: %u", cmd_id);
         return TEE_ERROR_BAD_PARAMETERS;
     }
 }
