@@ -1,0 +1,11 @@
+In file included from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/charconv:80,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/charconv.cpp:9:
+/home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/musl/include/string.h:11: warning: "NULL" redefined
+   11 | #define NULL 0L
+      | 
+In file included from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/cstddef:44,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/type_traits:417,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/charconv:77:
+/usr/lib/gcc/aarch64-linux-gnu/12/include/stddef.h:401: note: this is the location of the previous definition
+  401 | #define NULL __null
+      | 

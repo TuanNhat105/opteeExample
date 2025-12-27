@@ -1,4 +1,4 @@
-external/openenclave/3rdparty/libunwind/libunwind/src/mi/backtrace.c:28:9: warning: "UNW_LOCAL_ONLY" redefined
+external/openenclave/3rdparty/libunwind/libunwind/src/mi/backtrace.c:28: warning: "UNW_LOCAL_ONLY" redefined
    28 | #define UNW_LOCAL_ONLY
-      |         ^~~~~~~~~~~~~~
+      | 
 <command-line>: note: this is the location of the previous definition

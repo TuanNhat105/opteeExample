@@ -14,11 +14,11 @@ echo -e "${GREEN}Custom Vector & Map Implementation${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 
-# Configuration
-export TA_DEV_KIT_DIR="/home/abc/nhat/pi6_build/bsp/tee/out/arm-plat-cix/export-ta_arm64"
-export CROSS_COMPILE="aarch64-none-linux-gnu-"
-export TEEC_EXPORT="/home/abc/optee_client/out/export/usr"
-export PATH="/home/abc/arm-toolchain/bin:$PATH"
+# Fix OpenSSL library path for cryptography (use Debian OpenSSL instead of cix-openssl)
+export LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH"
+export TA_DEV_KIT_DIR="/home/orangepi/tee-core/export-ta_arm64"
+export TEEC_EXPORT="/home/orangepi/tee-core/usr"
+CROSS_COMPILE="${CROSS_COMPILE:-}"
 echo "Configuration:"
 echo "  TA_DEV_KIT_DIR = $TA_DEV_KIT_DIR"
 echo "  CROSS_COMPILE  = $CROSS_COMPILE"
@@ -83,10 +83,43 @@ echo ""
 echo "Files built:"
 ls -lh ta/*.ta host/minimal_evm_host
 echo ""
-echo "Deploy to Pi 5:"
-echo "  scp -O ta/*.ta root@192.168.1.203:/lib/optee_armtz/"
-echo "  scp -O host/minimal_evm_host root@192.168.1.203:/usr/bin/"
+
+# Copy files to system directories
+echo -e "${GREEN}Copying files to system directories...${NC}"
+
+# Copy TA files to /lib/optee_armtz/
+TA_FILES=ta/*.ta
+TA_COUNT=0
+for TA_FILE in $TA_FILES; do
+    if [ -f "$TA_FILE" ]; then
+        TA_NAME=$(basename "$TA_FILE")
+        echo -e "${YELLOW}Copying TA to /lib/optee_armtz/: $TA_NAME${NC}"
+        sudo cp "$TA_FILE" /lib/optee_armtz/
+        sudo chmod 755 /lib/optee_armtz/"$TA_NAME"
+        echo -e "${GREEN}✓ $TA_NAME copied successfully${NC}"
+        TA_COUNT=$((TA_COUNT + 1))
+    fi
+done
+
+if [ $TA_COUNT -eq 0 ]; then
+    echo -e "${RED}Error: No TA files found in ta/ directory${NC}"
+    exit 1
+fi
+
+# Copy host binary to /usr/bin/
+HOST_BINARY="host/minimal_evm_host"
+if [ -f "$HOST_BINARY" ]; then
+    echo -e "${YELLOW}Copying host binary to /usr/bin/...${NC}"
+    sudo cp "$HOST_BINARY" /usr/bin/
+    sudo chmod 755 /usr/bin/minimal_evm_host
+    echo -e "${GREEN}✓ Host binary copied successfully${NC}"
+else
+    echo -e "${RED}Error: Host binary not found: $HOST_BINARY${NC}"
+    exit 1
+fi
+
 echo ""
-echo "Run on Pi 5:"
-echo "  minimal_evm_host"
+echo -e "${GREEN}=== Files installed successfully ===${NC}"
+minimal_evm_host
+
 

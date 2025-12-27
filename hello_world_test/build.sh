@@ -15,15 +15,14 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Default paths - adjust these if needed
-OPTEED_CLIENT_DIR="${OPTEED_CLIENT_DIR:-/home/abc/optee_client}"
 
 # TA_DEV_KIT_DIR from OP-TEE OS build
-TA_DEV_KIT_DIR="${TA_DEV_KIT_DIR:-/home/abc/nhat/pi6_build/bsp/tee/out/arm-plat-cix/export-ta_arm64}"
+TA_DEV_KIT_DIR="${TA_DEV_KIT_DIR:-/home/orangepi/tee-core/export-ta_arm64}"
 
 # TEEC_EXPORT from optee_client build
-TEEC_EXPORT="${TEEC_EXPORT:-${OPTEED_CLIENT_DIR}/out/export/usr}"
-
+TEEC_EXPORT="${TEEC_EXPORT:-/home/orangepi/tee-core/usr}"
+# Fix OpenSSL library path for cryptography (use Debian OpenSSL instead of cix-openssl)
+export LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH"
 # Cross compiler - use aarch64-none-linux-gnu- if available, otherwise aarch64-linux-gnu-
 if command -v aarch64-none-linux-gnu-gcc >/dev/null 2>&1; then
     CROSS_COMPILE="${CROSS_COMPILE:-aarch64-none-linux-gnu-}"
@@ -100,11 +99,39 @@ else
     echo -e "${YELLOW}(Dynamic build - requires libteec.so.2 on device)${NC}"
 fi
 echo ""
-echo "To test on device:"
-echo "  1. Copy TA: scp ta/8aaaf200-2450-11e4-abe2-0002a5d5c51b.ta root@<device>:/lib/optee_armtz/"
-echo "  2. Copy host: scp host/optee_example_hello_world root@<device>:/usr/bin/"
-if [ "$STATIC_BUILD" != "1" ]; then
-    echo "  3. Copy library: scp ${TEEC_EXPORT}/lib/libteec.so.2.0.0 root@<device>:/usr/lib/"
-    echo "  4. On device: cd /usr/lib && ln -sf libteec.so.2.0.0 libteec.so.2 && ldconfig"
+
+# Copy files to system directories
+TA_FILE="ta/8aaaf200-2450-11e4-abe2-0002a5d5c51b.ta"
+HOST_BINARY="host/optee_example_hello_world"
+
+echo -e "${GREEN}Copying files to system directories...${NC}"
+
+# Check if TA file exists
+if [ ! -f "$TA_FILE" ]; then
+    echo -e "${RED}Error: TA file not found: $TA_FILE${NC}"
+    exit 1
 fi
+
+# Check if host binary exists
+if [ ! -f "$HOST_BINARY" ]; then
+    echo -e "${RED}Error: Host binary not found: $HOST_BINARY${NC}"
+    exit 1
+fi
+
+# Copy TA to /lib/optee_armtz/
+echo -e "${YELLOW}Copying TA to /lib/optee_armtz/...${NC}"
+sudo cp "$TA_FILE" /lib/optee_armtz/
+sudo chmod 755 /lib/optee_armtz/$(basename "$TA_FILE")
+echo -e "${GREEN}✓ TA copied successfully${NC}"
+
+# Copy host binary to /usr/bin/
+echo -e "${YELLOW}Copying host binary to /usr/bin/...${NC}"
+sudo cp "$HOST_BINARY" /usr/bin/
+sudo chmod 755 /usr/bin/$(basename "$HOST_BINARY")
+echo -e "${GREEN}✓ Host binary copied successfully${NC}"
+
+echo ""
+echo -e "${GREEN}=== Files installed successfully ===${NC}"
+echo "TA installed: /lib/optee_armtz/$(basename "$TA_FILE")"
+echo "Host binary installed: /usr/bin/$(basename "$HOST_BINARY")"
 

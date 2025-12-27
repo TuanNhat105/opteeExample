@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CROSS_COMPILE=aarch64-none-linux-gnu-
+CROSS_COMPILE="${CROSS_COMPILE:-}"
 LIBCXXRT_SRC=external/openenclave/3rdparty/libcxxrt/libcxxrt/src
 LIBCXX_INC=build_oe_libs/libcxx/include
 LIBCXXRT_INC=build_oe_libs/libcxxrt/include
@@ -9,7 +9,6 @@ MUSL_INC=build_oe_libs/musl/include
 OE_STUB=openenclave_stub
 OUTPUT_DIR=build_oe_libs/libcxxrt
 OUTPUT_LIB=build_oe_libs/libcxxrt/libcxxrt.a  # Keep in libcxxrt directory
-export PATH=/home/abc/arm-toolchain/bin:$PATH
 echo "===== Building Complete libcxxrt for OP-TEE TA ====="
 echo "Following OpenEnclave's CMakeLists.txt specification"
 

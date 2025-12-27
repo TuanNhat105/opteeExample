@@ -1,0 +1,15 @@
+In file included from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/cstring:60,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/algorithm:641,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/__string:57,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/string_view:175,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/string:504,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/locale.cpp:15:
+/home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/musl/include/string.h:11: warning: "NULL" redefined
+   11 | #define NULL 0L
+      | 
+In file included from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/cstddef:44,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/initializer_list:46,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/algorithm:639:
+/usr/lib/gcc/aarch64-linux-gnu/12/include/stddef.h:401: note: this is the location of the previous definition
+  401 | #define NULL __null
+      | 

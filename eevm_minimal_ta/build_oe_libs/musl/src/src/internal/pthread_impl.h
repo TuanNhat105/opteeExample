@@ -115,14 +115,29 @@ struct __timer {
 
 #ifndef CANARY
 #define CANARY canary
+
+// OP-TEE single-threaded pthread implementation
+// Declaration for __pthread_self() provided by pthread_optee.c
+hidden struct pthread *__pthread_self(void);
+
 #endif
 
 #ifndef DTP_OFFSET
 #define DTP_OFFSET 0
+
+// OP-TEE single-threaded pthread implementation
+// Declaration for __pthread_self() provided by pthread_optee.c
+hidden struct pthread *__pthread_self(void);
+
 #endif
 
 #ifndef tls_mod_off_t
 #define tls_mod_off_t size_t
+
+// OP-TEE single-threaded pthread implementation
+// Declaration for __pthread_self() provided by pthread_optee.c
+hidden struct pthread *__pthread_self(void);
+
 #endif
 
 #define SIGTIMER 32
@@ -194,5 +209,10 @@ extern hidden unsigned __default_guardsize;
 #define DEFAULT_GUARD_MAX (1<<20)
 
 #define __ATTRP_C11_THREAD ((void*)(uintptr_t)-1)
+
+
+// OP-TEE single-threaded pthread implementation
+// Declaration for __pthread_self() provided by pthread_optee.c
+hidden struct pthread *__pthread_self(void);
 
 #endif

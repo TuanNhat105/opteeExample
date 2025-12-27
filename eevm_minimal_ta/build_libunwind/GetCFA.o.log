@@ -1,5 +1,5 @@
 In file included from external/openenclave/3rdparty/libunwind/libunwind/src/unwind/GetCFA.c:26:
-external/openenclave/3rdparty/libunwind/libunwind/src/unwind/unwind-internal.h:29:9: warning: "UNW_LOCAL_ONLY" redefined
+external/openenclave/3rdparty/libunwind/libunwind/src/unwind/unwind-internal.h:29: warning: "UNW_LOCAL_ONLY" redefined
    29 | #define UNW_LOCAL_ONLY
-      |         ^~~~~~~~~~~~~~
+      | 
 <command-line>: note: this is the location of the previous definition

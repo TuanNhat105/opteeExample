@@ -1,0 +1,17 @@
+In file included from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/cstdlib:85,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/exception:81,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/stdexcept:45,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/system_error:147,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/__mutex_base:15,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/mutex:190,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/mutex.cpp:9:
+/home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/musl/include/stdlib.h:11: warning: "NULL" redefined
+   11 | #define NULL 0L
+      | 
+In file included from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/cstddef:44,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/type_traits:417,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/chrono:828,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/__mutex_base:14:
+/usr/lib/gcc/aarch64-linux-gnu/12/include/stddef.h:401: note: this is the location of the previous definition
+  401 | #define NULL __null
+      | 

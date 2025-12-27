@@ -1,0 +1,14 @@
+In file included from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/cstdlib:85,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/exception:81,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/typeinfo:60,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/functional:502,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/bind.cpp:9:
+/home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/musl/include/stdlib.h:11: warning: "NULL" redefined
+   11 | #define NULL 0L
+      | 
+In file included from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/cstddef:44,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/type_traits:417,
+                 from /home/orangepi/opteeExample/eevm_minimal_ta/build_oe_libs/libcxx/include/functional:501:
+/usr/lib/gcc/aarch64-linux-gnu/12/include/stddef.h:401: note: this is the location of the previous definition
+  401 | #define NULL __null
+      | 
