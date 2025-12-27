@@ -51,41 +51,41 @@ global-incdirs-y += $(EEVM_MINIMAL_TA)/build_libunwind
 
 # LevelDB sources (using symlinks .cpp -> .cc for OP-TEE compatibility)
 # Run create_leveldb_symlinks.sh first to generate these
-# srcs-y += leveldb_cpp/db/builder.cpp
-# srcs-y += leveldb_cpp/db/db_impl.cpp
-# srcs-y += leveldb_cpp/db/db_iter.cpp
-# srcs-y += leveldb_cpp/db/dbformat.cpp
-# srcs-y += leveldb_cpp/db/filename.cpp
-# srcs-y += leveldb_cpp/db/log_reader.cpp
-# srcs-y += leveldb_cpp/db/log_writer.cpp
-# srcs-y += leveldb_cpp/db/memtable.cpp
-# srcs-y += leveldb_cpp/db/repair.cpp
-# srcs-y += leveldb_cpp/db/table_cache.cpp
-# srcs-y += leveldb_cpp/db/version_edit.cpp
-# srcs-y += leveldb_cpp/db/version_set.cpp
-# srcs-y += leveldb_cpp/db/write_batch.cpp
-# srcs-y += leveldb_cpp/table/block.cpp
-# srcs-y += leveldb_cpp/table/block_builder.cpp
-# srcs-y += leveldb_cpp/table/filter_block.cpp
-# srcs-y += leveldb_cpp/table/format.cpp
-# srcs-y += leveldb_cpp/table/iterator.cpp
-# srcs-y += leveldb_cpp/table/merger.cpp
-# srcs-y += leveldb_cpp/table/table.cpp
-# srcs-y += leveldb_cpp/table/table_builder.cpp
-# srcs-y += leveldb_cpp/table/two_level_iterator.cpp
-# srcs-y += leveldb_cpp/util/arena.cpp
-# srcs-y += leveldb_cpp/util/bloom.cpp
-# srcs-y += leveldb_cpp/util/cache.cpp
-# srcs-y += leveldb_cpp/util/coding.cpp
-# srcs-y += leveldb_cpp/util/comparator.cpp
-# srcs-y += leveldb_cpp/util/crc32c.cpp
-# srcs-y += leveldb_cpp/util/env.cpp
-# srcs-y += leveldb_cpp/util/filter_policy.cpp
-# srcs-y += leveldb_cpp/util/hash.cpp
-# srcs-y += leveldb_cpp/util/histogram.cpp
-# srcs-y += leveldb_cpp/util/logging.cpp
-# srcs-y += leveldb_cpp/util/options.cpp
-# srcs-y += leveldb_cpp/util/status.cpp
+srcs-y += leveldb_cpp/db/builder.cpp
+srcs-y += leveldb_cpp/db/db_impl.cpp
+srcs-y += leveldb_cpp/db/db_iter.cpp
+srcs-y += leveldb_cpp/db/dbformat.cpp
+srcs-y += leveldb_cpp/db/filename.cpp
+srcs-y += leveldb_cpp/db/log_reader.cpp
+srcs-y += leveldb_cpp/db/log_writer.cpp
+srcs-y += leveldb_cpp/db/memtable.cpp
+srcs-y += leveldb_cpp/db/repair.cpp
+srcs-y += leveldb_cpp/db/table_cache.cpp
+srcs-y += leveldb_cpp/db/version_edit.cpp
+srcs-y += leveldb_cpp/db/version_set.cpp
+srcs-y += leveldb_cpp/db/write_batch.cpp
+srcs-y += leveldb_cpp/table/block.cpp
+srcs-y += leveldb_cpp/table/block_builder.cpp
+srcs-y += leveldb_cpp/table/filter_block.cpp
+srcs-y += leveldb_cpp/table/format.cpp
+srcs-y += leveldb_cpp/table/iterator.cpp
+srcs-y += leveldb_cpp/table/merger.cpp
+srcs-y += leveldb_cpp/table/table.cpp
+srcs-y += leveldb_cpp/table/table_builder.cpp
+srcs-y += leveldb_cpp/table/two_level_iterator.cpp
+srcs-y += leveldb_cpp/util/arena.cpp
+srcs-y += leveldb_cpp/util/bloom.cpp
+srcs-y += leveldb_cpp/util/cache.cpp
+srcs-y += leveldb_cpp/util/coding.cpp
+srcs-y += leveldb_cpp/util/comparator.cpp
+srcs-y += leveldb_cpp/util/crc32c.cpp
+srcs-y += leveldb_cpp/util/env.cpp
+srcs-y += leveldb_cpp/util/filter_policy.cpp
+srcs-y += leveldb_cpp/util/hash.cpp
+srcs-y += leveldb_cpp/util/histogram.cpp
+srcs-y += leveldb_cpp/util/logging.cpp
+srcs-y += leveldb_cpp/util/options.cpp
+srcs-y += leveldb_cpp/util/status.cpp
 
 # # Keccak C sources
 # srcs-y += ../../3rdparty/keccak/KeccakHash.c
@@ -102,16 +102,34 @@ srcs-y += env_default_stub.cpp
 
 # C++ compilation flags (use cppflags-y for OP-TEE build system)
 cppflags-y += -std=c++17
-cppflags-y += -fno-rtti
+cppflags-y += -fno-rtti  # Disable RTTI but keep virtual functions/vtable
 cppflags-y += -fexceptions
 cppflags-y += -nostdinc++
 cppflags-y += -funwind-tables
 cppflags-y += -fpermissive
 
+# CRITICAL: Ensure virtual function tables are properly generated
+# Note: Virtual functions should work even with -fno-rtti
+# -fno-rtti only disables RTTI (typeid, dynamic_cast), not virtual functions
+# Virtual function calls and vtable are still fully supported
+
+# Additional flags to ensure proper vtable handling:
+# -fstrict-vtable-pointers: Ensure vtable pointers are properly initialized
+# (This flag may not be available in all GCC versions, so we'll try without it first)
+# cppflags-y += -fstrict-vtable-pointers  # Commented out - may not be available
+
+# Ensure all virtual functions are emitted (not optimized away)
+cppflags-y += -fno-devirtualize
+
 # libcxx configuration (Enable threads support for std::atomic)
 cppflags-y += -U__STDCPP_THREADS__
 # cppflags-y += -D_LIBCPP_HAS_NO_THREADS  # REMOVED: We need atomic support
 cppflags-y += -DLIBCXXRT
+
+# Exception handling support (libunwind + libcxxrt)
+cppflags-y += -DHAVE_UNWIND_H
+cppflags-y += -D__ARM_EABI_UNWINDER__=1
+cppflags-y += -D_LIBUNWIND_IS_BAREMETAL
 
 # LevelDB configuration for OP-TEE
 cppflags-y += -DLEVELDB_PLATFORM_TEE

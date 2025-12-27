@@ -1,0 +1,18 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-I../ta/include",
+      "-I./include",
+      "-I/include",
+      "-c",
+      "-o",
+      "main.o",
+      "main.c"
+    ],
+    "directory": "/home/abc/nhat/optee_examples/acipher/host",
+    "file": "/home/abc/nhat/optee_examples/acipher/host/main.c",
+    "output": "/home/abc/nhat/optee_examples/acipher/host/main.o"
+  }
+]

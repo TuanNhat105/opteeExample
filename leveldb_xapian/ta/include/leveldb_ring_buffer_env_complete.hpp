@@ -1,5 +1,6 @@
 #pragma once
 #include "secure_ring_buffer_producer.hpp"
+#include "ocall_logger.h"
 #include <leveldb/env.h>
 #include <leveldb/slice.h>
 #include <leveldb/status.h>
@@ -37,31 +38,68 @@ class SimpleSequentialFile;
 class SimpleRandomAccessFile;
 
 // Complete RingBufferEnv without dependency on POSIX
+// Custom leveldb::Env implementation that redirects file I/O to in-memory storage
+// and sends data to Normal World via ring buffer
 class RingBufferEnv : public leveldb::Env {
 private:
     SecureRingBufferProducer* producer_;
-    // CRITICAL: Use plain uint32_t instead of std::atomic for TEE compatibility
-    // This is a local variable (not shared memory), but std::atomic can cause issues in TEE
     uint32_t next_virtual_fd_;
-    std::map<std::string, uint32_t> file_fd_map_;
-    std::map<std::string, std::shared_ptr<MemoryFile>> memory_files_;
-    std::map<std::string, std::vector<std::string>> directories_;
+    // Use raw pointers to delay std::map initialization until first use
+    // This avoids crash during constructor if exception handling is incomplete
+    // Raw pointers are initialized to nullptr (no constructor call needed)
+    std::map<std::string, uint32_t>* file_fd_map_;
+    std::map<std::string, std::shared_ptr<MemoryFile>>* memory_files_;
+    std::map<std::string, std::vector<std::string>>* directories_;
     uint64_t start_micros_;
+    
+    // Lazy initialization helpers
+    std::map<std::string, uint32_t>& get_file_fd_map() {
+        if (!file_fd_map_) {
+            file_fd_map_ = new std::map<std::string, uint32_t>();
+        }
+        return *file_fd_map_;
+    }
+    
+    std::map<std::string, std::shared_ptr<MemoryFile>>& get_memory_files() {
+        if (!memory_files_) {
+            memory_files_ = new std::map<std::string, std::shared_ptr<MemoryFile>>();
+        }
+        return *memory_files_;
+    }
+    
+    std::map<std::string, std::vector<std::string>>& get_directories() {
+        if (!directories_) {
+            directories_ = new std::map<std::string, std::vector<std::string>>();
+        }
+        return *directories_;
+    }
 
 public:
     explicit RingBufferEnv(SecureRingBufferProducer* producer)
-        : producer_(producer), next_virtual_fd_(1000), start_micros_(0) {
-        // CRITICAL: std::map initialization may hang in TEE
-        // Initialize root directory - this may be the hang point
-        try {
-            // directories_[""] = std::vector<std::string>(); // Root directory
-        } catch (...) {
-            // If std::map fails, we can't continue
-            // This will cause DB::Open to fail, but at least we'll know the issue
-        }
+        : producer_(producer), next_virtual_fd_(1000), 
+          file_fd_map_(nullptr), memory_files_(nullptr), directories_(nullptr),
+          start_micros_(0) {
+        // CRITICAL FIX: Use raw pointers initialized to nullptr
+        // This avoids any constructor calls during member initialization.
+        // std::map will be created lazily on first access via get_*() helpers.
+        // This way, if std::map creation fails, it happens in a controlled context
+        // where we can catch exceptions properly.
+        
+        // Log to confirm constructor body executes
+        extern void ocall_log_init(void);
+        extern void OCALL_LOG(const char* fmt, ...);
+        ocall_log_init();
+        OCALL_LOG("[RingBufferEnv] Constructor body entered");
+        OCALL_LOG("[RingBufferEnv] Producer: %p", producer_);
+        OCALL_LOG("[RingBufferEnv] Constructor body completed");
     }
 
-    virtual ~RingBufferEnv() {}
+    virtual ~RingBufferEnv() {
+        // Manual cleanup of raw pointers
+        delete file_fd_map_;
+        delete memory_files_;
+        delete directories_;
+    }
 
     // File operations
     virtual leveldb::Status NewWritableFile(const std::string& fname, leveldb::WritableFile** result) override;
@@ -70,49 +108,74 @@ public:
     virtual leveldb::Status NewRandomAccessFile(const std::string& fname, leveldb::RandomAccessFile** result) override;
 
     virtual bool FileExists(const std::string& fname) override {
-        return memory_files_.find(fname) != memory_files_.end();
+        if (!memory_files_) return false;
+        return get_memory_files().find(fname) != get_memory_files().end();
     }
 
     virtual leveldb::Status GetChildren(const std::string& dir, std::vector<std::string>* result) override {
         // CRITICAL: LevelDB calls GetChildren("/tmp/leveldb_secure") during Recover()
-        // If directory doesn't exist, create it first
-        if (directories_.find(dir) == directories_.end()) {
-            directories_[dir] = std::vector<std::string>();
+        // If directory doesn't exist, create it first (lazy initialization)
+        try {
+            auto& dirs = get_directories();
+            auto it = dirs.find(dir);
+            if (it == dirs.end()) {
+                // Lazy initialization - create directory entry if not exists
+                dirs[dir] = std::vector<std::string>();
+                it = dirs.find(dir);
+            }
+            
+            if (it != dirs.end()) {
+                *result = it->second;
+                return leveldb::Status::OK();
+            }
+            return leveldb::Status::IOError("Directory not found");
+        } catch (const std::bad_alloc&) {
+            return leveldb::Status::IOError("Out of memory");
+        } catch (...) {
+            return leveldb::Status::IOError("Failed to create directory");
         }
-        
-        auto it = directories_.find(dir);
-        if (it != directories_.end()) {
-            *result = it->second;
-            return leveldb::Status::OK();
-        }
-        return leveldb::Status::IOError("Directory not found");
     }
 
     virtual leveldb::Status DeleteFile(const std::string& fname) override {
-        memory_files_.erase(fname);
-        file_fd_map_.erase(fname);
+        if (memory_files_) {
+            get_memory_files().erase(fname);
+        }
+        if (file_fd_map_) {
+            get_file_fd_map().erase(fname);
+        }
         // Remove from parent directory listing
         size_t last_slash = fname.find_last_of('/');
         std::string dir = (last_slash == std::string::npos) ? "" : fname.substr(0, last_slash);
         std::string basename = (last_slash == std::string::npos) ? fname : fname.substr(last_slash + 1);
         
-        auto dir_it = directories_.find(dir);
-        if (dir_it != directories_.end()) {
-            auto& files = dir_it->second;
-            files.erase(std::remove(files.begin(), files.end(), basename), files.end());
+        if (directories_) {
+            auto& dirs = get_directories();
+            auto dir_it = dirs.find(dir);
+            if (dir_it != dirs.end()) {
+                auto& files = dir_it->second;
+                files.erase(std::remove(files.begin(), files.end(), basename), files.end());
+            }
         }
         return leveldb::Status::OK();
     }
 
     virtual leveldb::Status CreateDir(const std::string& dirname) override {
-        directories_[dirname] = std::vector<std::string>();
-        return leveldb::Status::OK();
+        try {
+            get_directories()[dirname] = std::vector<std::string>();
+            return leveldb::Status::OK();
+        } catch (const std::bad_alloc&) {
+            return leveldb::Status::IOError("Out of memory");
+        } catch (...) {
+            return leveldb::Status::IOError("Failed to create directory");
+        }
     }
 
     virtual leveldb::Status DeleteDir(const std::string& dirname) override {
-        auto it = directories_.find(dirname);
-        if (it != directories_.end() && it->second.empty()) {
-            directories_.erase(it);
+        if (!directories_) return leveldb::Status::IOError("Directory not found");
+        auto& dirs = get_directories();
+        auto it = dirs.find(dirname);
+        if (it != dirs.end() && it->second.empty()) {
+            dirs.erase(it);
             return leveldb::Status::OK();
         }
         return leveldb::Status::IOError("Directory not empty or not found");
@@ -121,28 +184,36 @@ public:
     virtual leveldb::Status GetFileSize(const std::string& fname, uint64_t* file_size) override {
         // CRITICAL: LevelDB may call GetFileSize during recovery for files that don't exist yet
         // Return 0 size instead of IOError to avoid recovery failures
-        auto it = memory_files_.find(fname);
-        if (it != memory_files_.end()) {
-            *file_size = it->second->Size();
-        } else {
-            // File doesn't exist yet - return 0 size (not an error)
-            *file_size = 0;
+        if (memory_files_) {
+            auto& files = get_memory_files();
+            auto it = files.find(fname);
+            if (it != files.end()) {
+                *file_size = it->second->Size();
+                return leveldb::Status::OK();
+            }
         }
+        // File doesn't exist yet - return 0 size (not an error)
+        *file_size = 0;
         return leveldb::Status::OK();
     }
 
     virtual leveldb::Status RenameFile(const std::string& src, const std::string& target) override {
-        auto it = memory_files_.find(src);
-        if (it != memory_files_.end()) {
-            memory_files_[target] = it->second;
-            memory_files_.erase(it);
+        if (!memory_files_) return leveldb::Status::IOError("Source file not found");
+        auto& files = get_memory_files();
+        auto it = files.find(src);
+        if (it != files.end()) {
+            files[target] = it->second;
+            files.erase(it);
             
             // Update file_fd_map
-            auto fd_it = file_fd_map_.find(src);
-            if (fd_it != file_fd_map_.end()) {
-                uint32_t fd = fd_it->second;
-                file_fd_map_.erase(fd_it);
-                file_fd_map_[target] = fd;
+            if (file_fd_map_) {
+                auto& fd_map = get_file_fd_map();
+                auto fd_it = fd_map.find(src);
+                if (fd_it != fd_map.end()) {
+                    uint32_t fd = fd_it->second;
+                    fd_map.erase(fd_it);
+                    fd_map[target] = fd;
+                }
             }
             return leveldb::Status::OK();
         }
@@ -203,31 +274,33 @@ public:
 
     // Helper functions
     uint32_t GetOrCreateVirtualFD(const std::string& fname) {
-        auto it = file_fd_map_.find(fname);
-        if (it != file_fd_map_.end()) {
+        auto& fd_map = get_file_fd_map();
+        auto it = fd_map.find(fname);
+        if (it != fd_map.end()) {
             return it->second;
         }
         // CRITICAL: Use plain increment instead of std::atomic::fetch_add
         // In single-threaded TEE, this is safe
         uint32_t vfd = next_virtual_fd_++;
-        file_fd_map_[fname] = vfd;
+        fd_map[fname] = vfd;
         
         // Add to directory listing
         size_t last_slash = fname.find_last_of('/');
         std::string dir = (last_slash == std::string::npos) ? "" : fname.substr(0, last_slash);
         std::string basename = (last_slash == std::string::npos) ? fname : fname.substr(last_slash + 1);
-        directories_[dir].push_back(basename);
+        get_directories()[dir].push_back(basename);
         
         return vfd;
     }
 
     std::shared_ptr<MemoryFile> GetOrCreateMemoryFile(const std::string& fname) {
-        auto it = memory_files_.find(fname);
-        if (it != memory_files_.end()) {
+        auto& files = get_memory_files();
+        auto it = files.find(fname);
+        if (it != files.end()) {
             return it->second;
         }
         auto file = std::make_shared<MemoryFile>();
-        memory_files_[fname] = file;
+        files[fname] = file;
         return file;
     }
 
@@ -323,6 +396,7 @@ public:
 // RandomAccessFile implementation  
 class SimpleRandomAccessFile : public leveldb::RandomAccessFile {
 private:
+    std::vector<char> file_data_;
     std::shared_ptr<MemoryFile> file_;
 
 public:

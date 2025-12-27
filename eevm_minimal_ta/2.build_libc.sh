@@ -286,6 +286,7 @@ MUSL_SRCS=(
     "env/putenv.c"
     "env/setenv.c"
     "env/unsetenv.c"
+    "env/__stack_chk_fail.c"
     # exit
     "exit/assert.c"
     "exit/_Exit.c"

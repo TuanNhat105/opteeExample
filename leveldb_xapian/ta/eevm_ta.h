@@ -19,6 +19,8 @@
 #define TA_EEVM_CMD_TEST_SHM_STRING 8  // Test string return via shared memory
 #define TA_EEVM_CMD_INIT_LOG_RING_BUFFER 9  // Initialize log ring buffer in shared memory
 #define TA_EEVM_CMD_TEST_SHM_RING_BUFFER 10  // Test with ring buffer logging
+#define TA_EEVM_CMD_TEST_EXCEPTION 11  // Test exception handling and std::map
+#define TA_EEVM_CMD_TEST_VIRTUAL 12  // Test virtual functions and inheritance
 
 
 #endif /* EEVM_TA_H */

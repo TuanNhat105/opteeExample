@@ -15,7 +15,7 @@ echo -e "${GREEN}========================================${NC}"
 echo ""
 
 # Configuration
-export TA_DEV_KIT_DIR="/home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64"
+export TA_DEV_KIT_DIR="/home/abc/nhat/pi6_build/bsp/tee/out/arm-plat-cix/export-ta_arm64"
 export CROSS_COMPILE="aarch64-none-linux-gnu-"
 export TEEC_EXPORT="/home/abc/optee_client/out/export/usr"
 export PATH="/home/abc/arm-toolchain/bin:$PATH"
@@ -24,18 +24,6 @@ echo "  TA_DEV_KIT_DIR = $TA_DEV_KIT_DIR"
 echo "  CROSS_COMPILE  = $CROSS_COMPILE"
 echo "  TEEC_EXPORT    = $TEEC_EXPORT"
 echo ""
-
-# # Build OpenEnclave libraries first (if needed)
-# if [ ! -f "build_oe_libs/combined/libcxx_runtime.a" ]; then
-#     echo -e "${YELLOW}[0/3] Building OpenEnclave libcxx + musl runtime...${NC}"
-#     if [ -x "./build_openenclave_libs.sh" ]; then
-#         ./build_openenclave_libs.sh
-#     else
-#         echo -e "${RED}Error: build_openenclave_libs.sh not found!${NC}"
-#         exit 1
-#     fi
-#     echo ""
-# fieevm_minimal_ta/build_oe_libs/openenclave_stub
 
 # Build TA
 echo -e "${YELLOW}[1/3] Building Trusted Application...${NC}"
@@ -48,12 +36,22 @@ make clean 2>/dev/null || true
 # Build TA and filter out harmless warnings
 # - "overriding recipe": intentional override to fix libstdc++ linking
 # - "NULL redefined": harmless conflict between musl and gcc headers
-if make CROSS_COMPILE="$CROSS_COMPILE" TA_DEV_KIT_DIR="$TA_DEV_KIT_DIR" 2>&1 | \
+BUILD_OUTPUT=$(mktemp)
+if make CROSS_COMPILE="$CROSS_COMPILE" TA_DEV_KIT_DIR="$TA_DEV_KIT_DIR" 2>&1 | tee "$BUILD_OUTPUT" | \
     grep -vE "warning: (overriding recipe|ignoring old recipe|.*NULL.*redefined|MALLOC_INITIAL_POOL_MIN_SIZE.*not defined|unrecognized command-line option)"; then
+    true
+fi
+
+# Check if make actually succeeded by checking for .ta file
+if [ -f *.ta ]; then
     echo -e "${GREEN}✓ TA build successful!${NC}"
     ls -lh *.ta
+    rm -f "$BUILD_OUTPUT"
 else
     echo -e "${RED}✗ TA build failed${NC}"
+    echo "Last 20 lines of build output:"
+    tail -20 "$BUILD_OUTPUT"
+    rm -f "$BUILD_OUTPUT"
     exit 1
 fi
 

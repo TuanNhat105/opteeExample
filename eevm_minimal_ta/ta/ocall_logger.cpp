@@ -38,18 +38,19 @@ void ocall_log_print(const char* fmt, ...) {
     }
 }
 
-void ocall_log_flush_to_params(void* dest_buffer, size_t* dest_size) {
+void ocall_log_flush_to_params(void* dest_buffer, uint32_t* dest_size) {
     if (!dest_buffer || !dest_size || *dest_size == 0) return;
 
     size_t copy_size = g_ocall_pos;
+    uint32_t max_size = *dest_size;
     // Nếu log dài hơn buffer phía Host cung cấp, thực hiện cắt bớt
-    if (copy_size >= *dest_size) {
-        copy_size = *dest_size - 1;
+    if (copy_size >= max_size) {
+        copy_size = max_size - 1;
     }
     
     memcpy(dest_buffer, g_ocall_buffer, copy_size);
     ((char*)dest_buffer)[copy_size] = '\0';
-    *dest_size = copy_size + 1; // Cập nhật lại kích thước thực tế đã copy
+    *dest_size = (uint32_t)(copy_size + 1); // Cập nhật lại kích thước thực tế đã copy
 }
 
 } // extern "C"

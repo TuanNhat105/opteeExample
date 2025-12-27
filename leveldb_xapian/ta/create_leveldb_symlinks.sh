@@ -26,6 +26,7 @@ for file in block block_builder filter_block format iterator merger table table_
 done
 
 # Util files
+# Note: env_posix is created but NOT included in sub.mk (we use custom RingBufferEnv instead)
 for file in arena bloom cache coding comparator crc32c env env_posix filter_policy hash histogram logging options status; do
     ln -sf "../../${LEVELDB_ROOT}/util/${file}.cc" "${LINK_DIR}/util/${file}.cpp"
 done

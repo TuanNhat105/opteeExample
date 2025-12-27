@@ -28,8 +28,16 @@ LIBOELIBC := $(EEVM_MINIMAL_TA)/libc/liboelibc.a
 LIBCXXRT := $(EEVM_MINIMAL_TA)/build_oe_libs/libcxxrt/libcxxrt.a
 LIBGCC := $(shell $(CROSS_COMPILE)gcc -print-file-name=libgcc.a)
 LIBUNWIND := $(EEVM_MINIMAL_TA)/build_libunwind/libunwind.a
-# CRITICAL: libutee provides TEE_Malloc, TEE_Free, TEE_Panic, etc.
+# CRITICAL: libutee provides TEE_Malloc, TEE_Free, etc.
+# libutils may provide TEE_Panic
+# Use absolute path if TA_DEV_KIT_DIR is not set
+ifeq ($(TA_DEV_KIT_DIR),)
+LIBUTEE := /home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/lib/libutee.a
+LIBUTILS := /home/abc/optee_os/out/arm-plat-rpi5/export-ta_arm64/lib/libutils.a
+else
 LIBUTEE := $(TA_DEV_KIT_DIR)/lib/libutee.a
+LIBUTILS := $(TA_DEV_KIT_DIR)/lib/libutils.a
+endif
 # LIBDLMALLOC := $(EEVM_MINIMAL_TA)/build_dlmalloc/libdlmalloc.a
 
 # Add custom libraries to link dependencies
@@ -39,12 +47,14 @@ LIBUTEE := $(TA_DEV_KIT_DIR)/lib/libutee.a
 # 	@$(cmd-echo-silent) '  LD      $@'
 # 	$(q)$(LDta_arm64) --allow-multiple-definition $(filter-out %libstdc++.a %libgcc_eh.a,$(ldargs-$(BINARY).elf)) $(LIBCXX) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(LIBOELIBC) $(LIBGCC) -o $@
 
-$(BINARY).elf: $(objs) $(LIBCXX) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(LIBUTEE)
+$(BINARY).elf: $(objs) $(LIBCXX) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(LIBUTEE) $(LIBUTILS)
 	@$(cmd-echo-silent) '  LD      $@'
+	@echo 'Linking with exception support: libunwind + libcxxrt'
+	@echo 'Link order: libc++ → libcxxrt → libunwind → libc → OP-TEE libs'
 	$(q)$(LDta_arm64) --allow-multiple-definition \
 		$(filter-out %libstdc++.a %libgcc_eh.a,$(ldargs-$(BINARY).elf)) \
 		--start-group \
-		 $(LIBCXX) $(LIBCXXRT) $(LIBOELIBC) $(LIBUNWIND) $(LIBUTEE) $(LIBGCC) \
+		 $(LIBCXX) $(LIBCXXRT) $(LIBUNWIND) $(LIBOELIBC) $(LIBUTEE) $(LIBUTILS) $(LIBGCC) \
 		--end-group \
 		-o $@
 

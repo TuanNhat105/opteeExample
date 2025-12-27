@@ -10,8 +10,23 @@
 #include <sys/types.h>
 #include <tee_api.h>
 
+// Forward declare std::nothrow_t to avoid including <new> which conflicts with fallthrough macro
+namespace std {
+    struct nothrow_t {};
+    extern const nothrow_t nothrow;
+}
+
 // C++ ABI functions
 extern "C" {
+
+// __cxa_pure_virtual: Called when a pure virtual function is invoked
+// This is CRITICAL for virtual function tables with pure virtual functions
+// If this is not implemented, calling a pure virtual function will cause undefined behavior
+void __cxa_pure_virtual(void) {
+    // In OP-TEE, we can't really abort properly, but we should try
+    // This should never be called if all virtual functions are properly implemented
+    abort();
+}
 
 // __cxa_atexit: Register function to be called at exit
 // In OP-TEE TA, we don't have proper exit, so just ignore
@@ -141,8 +156,77 @@ int pthread_mutexattr_destroy(pthread_mutexattr_t* attr) {
     return 0;
 }
 
+// pthread_attr functions (for thread creation - not used in single-threaded)
+int pthread_attr_init(pthread_attr_t* attr) {
+    if (!attr) return 22; // EINVAL
+    memset(attr, 0, sizeof(*attr));
+    return 0;
+}
+
+int pthread_attr_destroy(pthread_attr_t* attr) {
+    if (!attr) return 22; // EINVAL
+    return 0;
+}
+
+int pthread_attr_setdetachstate(pthread_attr_t* attr, int detachstate) {
+    if (!attr) return 22; // EINVAL
+    (void)detachstate;
+    return 0;
+}
+
+int pthread_attr_setstacksize(pthread_attr_t* attr, size_t stacksize) {
+    if (!attr) return 22; // EINVAL
+    (void)stacksize;
+    return 0;
+}
+
+// pthread_condattr functions
+int pthread_condattr_init(pthread_condattr_t* attr) {
+    if (!attr) return 22; // EINVAL
+    memset(attr, 0, sizeof(*attr));
+    return 0;
+}
+
+int pthread_condattr_destroy(pthread_condattr_t* attr) {
+    if (!attr) return 22; // EINVAL
+    return 0;
+}
+
+// pthread thread functions (not used in single-threaded, but may be referenced)
+int pthread_create(pthread_t* thread, const pthread_attr_t* attr,
+                   void* (*start_routine)(void*), void* arg) {
+    (void)thread; (void)attr; (void)start_routine; (void)arg;
+    // Thread creation not supported in single-threaded OP-TEE
+    return 22; // EINVAL
+}
+
+int pthread_join(pthread_t thread, void** retval) {
+    (void)thread; (void)retval;
+    return 22; // EINVAL
+}
+
+pthread_t pthread_self(void) {
+    return 0; // Single thread ID
+}
+
+// pthread_cond functions
+int pthread_cond_init(pthread_cond_t* cond, const pthread_condattr_t* attr) {
+    if (!cond) return 22; // EINVAL
+    (void)attr;
+    // Initialize condition variable (no-op in single-threaded)
+    memset(cond, 0, sizeof(*cond));
+    return 0;
+}
+
 int pthread_cond_destroy(pthread_cond_t* cond) {
     if (!cond) return 22; // EINVAL
+    return 0;
+}
+
+int pthread_cond_wait(pthread_cond_t* cond, pthread_mutex_t* mutex) {
+    if (!cond || !mutex) return 22; // EINVAL
+    // In single-threaded environment, waiting would be deadlock
+    // Return immediately (no-op)
     return 0;
 }
 
@@ -153,6 +237,18 @@ int pthread_cond_timedwait(pthread_cond_t* cond, pthread_mutex_t* mutex, const v
     // In single-threaded environment, waiting forever would be deadlock
     // Return timeout immediately
     return 110; // ETIMEDOUT
+}
+
+int pthread_cond_signal(pthread_cond_t* cond) {
+    if (!cond) return 22; // EINVAL
+    // No-op in single-threaded environment
+    return 0;
+}
+
+int pthread_cond_broadcast(pthread_cond_t* cond) {
+    if (!cond) return 22; // EINVAL
+    // No-op in single-threaded environment
+    return 0;
 }
 
 int pthread_equal(pthread_t t1, pthread_t t2) {
@@ -323,4 +419,16 @@ const char* gettext(const char* msgid) {
 }
 
 } // extern "C"
+
+// NOTE: We don't override operator new/delete globally because:
+// 1. TEE_Free and TEE_Panic have C++ linkage in headers but C linkage in libs (linker mismatch)
+// 2. We use placement new with TEE_Malloc/TEE_Free directly in leveldb_ta_main.cpp
+// 3. This avoids linker issues with name mangling
+//
+// If you need operator new/delete, use placement new pattern:
+//   void* mem = TEE_Malloc(size, 0);
+//   MyClass* obj = new (mem) MyClass();
+//   ...
+//   obj->~MyClass();
+//   TEE_Free(mem);
 

@@ -7,6 +7,8 @@ LD      = $(CROSS_COMPILE)ld
 
 # BINARY = leveldb_host
 TEST_BINARY = test_simple_shm
+TEST_EXCEPTION = test_exception
+TEST_VIRTUAL = test_virtual
 
 # Đường dẫn đến OP-TEE Client Export (chứa libteec.so và các header)
 TEEC_EXPORT ?= /usr
@@ -18,7 +20,7 @@ LDADD += -L$(TEEC_EXPORT)/lib -lteec -pthread
 
 .PHONY: all clean
 
-all: $(TEST_BINARY)
+all: $(TEST_BINARY) $(TEST_EXCEPTION) $(TEST_VIRTUAL)
 
 # Khi link các file object C++ thành file thực thi, nên dùng $(CXX)
 # $(BINARY): main_ringbuffer.o
@@ -34,5 +36,19 @@ $(TEST_BINARY): test_simple_shm.o
 test_simple_shm.o: test_simple_shm.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Exception test binary
+$(TEST_EXCEPTION): test_exception.o
+	$(CXX) -o $@ $< $(LDADD)
+
+test_exception.o: test_exception.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Virtual functions test binary
+$(TEST_VIRTUAL): test_virtual.o
+	$(CXX) -o $@ $< $(LDADD)
+
+test_virtual.o: test_virtual.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 clean:
-	rm -f $(BINARY) $(TEST_BINARY) *.o
+	rm -f $(BINARY) $(TEST_BINARY) $(TEST_EXCEPTION) $(TEST_VIRTUAL) *.o
