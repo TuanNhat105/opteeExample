@@ -55,14 +55,14 @@ int main(void)
 	 */
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE,
 					 TEEC_NONE, TEEC_NONE);
-	op.params[0].value.a = 100;
+	op.params[0].value.a = 102;
 
 	/*
 	 * TA_HELLO_WORLD_CMD_INC_VALUE is the actual function in the TA to be
 	 * called.
 	 */
 	printf("Invoking TA to increment %d\n", op.params[0].value.a);
-	printf("Hello ", 2+3);
+	printf("Hello ");
 
 	res = TEEC_InvokeCommand(&sess, TA_HELLO_WORLD_CMD_INC_VALUE, &op,
 				 &err_origin);
