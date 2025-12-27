@@ -31,6 +31,11 @@ extern "C"
 #include "ocall_logger.h"
 #include "simple_shared_ring_buffer.h"
 
+// LevelDB headers
+#include <leveldb/db.h>
+#include <leveldb/write_batch.h>
+#include "env_tee_ram.h"
+
 // Helper function to write to ring buffer (TA side - Producer)
 static void write_to_ring_buffer(struct SharedRingBuffer* rb, const char* data, size_t len) {
     if (!rb || !data || len == 0) return;
@@ -70,6 +75,186 @@ static void write_to_ring_buffer(struct SharedRingBuffer* rb, const char* data, 
     }
 }
 
+
+// =====================================================================
+// TEST LEVELDB WITH RAM STORAGE
+// =====================================================================
+
+/*
+ * Test LevelDB with custom RAM-based Env
+ * All data stored in RAM only, all operations logged via ocall_logger
+ * 
+ * params[0] = MEMREF_OUTPUT - OCALL logs
+ * params[1] = VALUE_OUTPUT  - Result status
+ */
+static TEE_Result test_leveldb_ram(uint32_t param_types, TEE_Param params[4])
+{
+    DMSG("=== test_leveldb_ram CALLED ===");
+    
+    // Initialize logging
+    ocall_log_init();
+    OCALL_LOG("=== Starting LevelDB RAM Test ===");
+    
+    // Check parameter types
+    uint32_t exp_param_types = TEE_PARAM_TYPES(
+        TEE_PARAM_TYPE_MEMREF_OUTPUT,  // OCALL logs
+        TEE_PARAM_TYPE_VALUE_OUTPUT,    // Result status
+        TEE_PARAM_TYPE_NONE,
+        TEE_PARAM_TYPE_NONE);
+    
+    if (param_types != exp_param_types) {
+        DMSG("ERROR: Bad parameters");
+        return TEE_ERROR_BAD_PARAMETERS;
+    }
+    
+    try {
+        // Create custom RAM-based environment
+        OCALL_LOG("[1] Creating EnvTeeRam...");
+        leveldb::EnvTeeRam* env = new leveldb::EnvTeeRam();
+        
+        // Configure LevelDB options
+        OCALL_LOG("[2] Configuring LevelDB options...");
+        leveldb::Options options;
+        options.env = env;
+        options.create_if_missing = true;
+        options.error_if_exists = false;
+        
+        // Open database
+        OCALL_LOG("[3] Opening LevelDB database...");
+        leveldb::DB* db = nullptr;
+        leveldb::Status status = leveldb::DB::Open(options, "/test_db", &db);
+        
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] Failed to open database: %s", status.ToString().c_str());
+            delete env;
+            params[1].value.a = 1; // Error code
+            goto cleanup;
+        }
+        
+        OCALL_LOG("[4] Database opened successfully!");
+        
+        // Test 1: Put some key-value pairs
+        OCALL_LOG("[5] Testing PUT operations...");
+        
+        status = db->Put(leveldb::WriteOptions(), "key1", "value1");
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] PUT key1 failed: %s", status.ToString().c_str());
+        } else {
+            OCALL_LOG("[OK] PUT key1=value1");
+        }
+        
+        status = db->Put(leveldb::WriteOptions(), "key2", "value2");
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] PUT key2 failed: %s", status.ToString().c_str());
+        } else {
+            OCALL_LOG("[OK] PUT key2=value2");
+        }
+        
+        status = db->Put(leveldb::WriteOptions(), "hello", "world");
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] PUT hello failed: %s", status.ToString().c_str());
+        } else {
+            OCALL_LOG("[OK] PUT hello=world");
+        }
+        
+        // Test 2: Get values
+        OCALL_LOG("[6] Testing GET operations...");
+        
+        std::string value;
+        status = db->Get(leveldb::ReadOptions(), "key1", &value);
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] GET key1 failed: %s", status.ToString().c_str());
+        } else {
+            OCALL_LOG("[OK] GET key1=%s", value.c_str());
+        }
+        
+        status = db->Get(leveldb::ReadOptions(), "key2", &value);
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] GET key2 failed: %s", status.ToString().c_str());
+        } else {
+            OCALL_LOG("[OK] GET key2=%s", value.c_str());
+        }
+        
+        status = db->Get(leveldb::ReadOptions(), "hello", &value);
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] GET hello failed: %s", status.ToString().c_str());
+        } else {
+            OCALL_LOG("[OK] GET hello=%s", value.c_str());
+        }
+        
+        // Test 3: Delete a key
+        OCALL_LOG("[7] Testing DELETE operation...");
+        status = db->Delete(leveldb::WriteOptions(), "key1");
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] DELETE key1 failed: %s", status.ToString().c_str());
+        } else {
+            OCALL_LOG("[OK] DELETE key1");
+        }
+        
+        // Test 4: Verify deletion
+        OCALL_LOG("[8] Verifying deletion...");
+        status = db->Get(leveldb::ReadOptions(), "key1", &value);
+        if (status.IsNotFound()) {
+            OCALL_LOG("[OK] key1 not found (as expected after delete)");
+        } else if (status.ok()) {
+            OCALL_LOG("[ERROR] key1 still exists: %s", value.c_str());
+        } else {
+            OCALL_LOG("[ERROR] GET key1 failed: %s", status.ToString().c_str());
+        }
+        
+        // Test 5: Write batch
+        OCALL_LOG("[9] Testing WriteBatch...");
+        leveldb::WriteBatch batch;
+        batch.Put("batch_key1", "batch_value1");
+        batch.Put("batch_key2", "batch_value2");
+        batch.Delete("key2"); // Delete key2
+        
+        status = db->Write(leveldb::WriteOptions(), &batch);
+        if (!status.ok()) {
+            OCALL_LOG("[ERROR] WriteBatch failed: %s", status.ToString().c_str());
+        } else {
+            OCALL_LOG("[OK] WriteBatch executed");
+        }
+        
+        // Verify batch operations
+        status = db->Get(leveldb::ReadOptions(), "batch_key1", &value);
+        if (status.ok()) {
+            OCALL_LOG("[OK] GET batch_key1=%s", value.c_str());
+        }
+        
+        status = db->Get(leveldb::ReadOptions(), "key2", &value);
+        if (status.IsNotFound()) {
+            OCALL_LOG("[OK] key2 deleted by batch (as expected)");
+        } else if (status.ok()) {
+            OCALL_LOG("[ERROR] key2 still exists: %s", value.c_str());
+        }
+        
+        OCALL_LOG("[10] All tests completed!");
+        
+        // Cleanup
+        delete db;
+        delete env;
+        
+        params[1].value.a = 0; // Success
+        
+    } catch (const std::exception& e) {
+        OCALL_LOG("[EXCEPTION] std::exception: %s", e.what());
+        params[1].value.a = 2; // Exception
+    } catch (...) {
+        OCALL_LOG("[EXCEPTION] Unknown exception");
+        params[1].value.a = 3; // Unknown exception
+    }
+    
+cleanup:
+    OCALL_LOG("=== LevelDB RAM Test Completed ===");
+    
+    // Flush logs to output buffer
+    if (params[0].memref.buffer && params[0].memref.size > 0) {
+        ocall_log_flush_to_params(params[0].memref.buffer, &params[0].memref.size);
+    }
+    
+    return TEE_SUCCESS;
+}
 
 // =====================================================================
 // SIMPLE TEST: Test TEEC_InvokeCommand with Shared Memory (NO LevelDB)
@@ -739,6 +924,9 @@ TEE_Result TA_InvokeCommandEntryPoint(void __maybe_unused *sess_ctx,
 
     case TA_EEVM_CMD_TEST_SHM_STRING:
         return test_shm_string(param_types, params);
+    
+    case TA_EEVM_CMD_TEST_LEVELDB_RAM:
+        return test_leveldb_ram(param_types, params);
 
         default:
             DMSG("ERROR: Unknown command: %u", cmd_id);

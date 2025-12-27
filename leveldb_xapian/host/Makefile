@@ -6,7 +6,7 @@ CXX     = $(CROSS_COMPILE)g++
 LD      = $(CROSS_COMPILE)ld
 
 # BINARY = leveldb_host
-TEST_BINARY = test_simple_shm
+LEVELDB_TEST_BINARY = test_leveldb_ram
 
 # Đường dẫn đến OP-TEE Client Export (chứa libteec.so và các header)
 TEEC_EXPORT ?= /usr
@@ -18,21 +18,14 @@ LDADD += -L$(TEEC_EXPORT)/lib -lteec -pthread
 
 .PHONY: all clean
 
-all: $(TEST_BINARY)
+all: $(LEVELDB_TEST_BINARY)
 
-# Khi link các file object C++ thành file thực thi, nên dùng $(CXX)
-# $(BINARY): main_ringbuffer.o
-# 	$(CXX) -o $@ $< $(LDADD)
-
-# main_ringbuffer.o: main_ringbuffer.cpp
-# 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# Simple test binary (NO LevelDB)
-$(TEST_BINARY): test_simple_shm.o
+# LevelDB test binary
+$(LEVELDB_TEST_BINARY): test_leveldb_ram.o
 	$(CXX) -o $@ $< $(LDADD)
 
-test_simple_shm.o: test_simple_shm.cpp
+test_leveldb_ram.o: test_leveldb_ram.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(BINARY) $(TEST_BINARY) *.o
+	rm -f $(LEVELDB_TEST_BINARY) *.o

@@ -97,7 +97,6 @@ if [ $? -eq 0 ]; then
     echo -e "${GREEN}Host application built successfully!${NC}"
     echo -e "${GREEN}Binaries:" 
     echo -e "  - leveldb_host (main application)"
-    echo -e "  - test_simple_shm (simple shared memory test - NO LevelDB)${NC}"
     ls -lh leveldb_host test_simple_shm 2>/dev/null || true
 else
     echo -e "${RED}Host build failed!${NC}"
@@ -106,7 +105,6 @@ fi
 cd ..
 # scp -O ta/*.ta root@192.168.1.74:/lib/optee_armtz/
 # scp -O host/leveldb_host root@192.168.1.74:/usr/bin/
-
 echo -e "\n${GREEN}========================================${NC}"
 echo -e "${GREEN}Build completed successfully!${NC}"
 echo -e "${GREEN}========================================${NC}"
@@ -114,6 +112,8 @@ echo ""
 echo "TA binary: ta/8aaaf200-2450-11e4-abe2-0002a5d5c53d.ta"
 echo "Host binaries:"
 
+# Khai báo mật khẩu
+PASS="orangepi"
 # Copy TA files to /lib/optee_armtz/
 TA_FILES=ta/*.ta
 TA_COUNT=0
@@ -121,8 +121,11 @@ for TA_FILE in $TA_FILES; do
     if [ -f "$TA_FILE" ]; then
         TA_NAME=$(basename "$TA_FILE")
         echo -e "${YELLOW}Copying TA to /lib/optee_armtz/: $TA_NAME${NC}"
-        sudo cp "$TA_FILE" /lib/optee_armtz/
-        sudo chmod 755 /lib/optee_armtz/"$TA_NAME"
+        
+        # Sử dụng echo để truyền mật khẩu vào sudo
+        echo "$PASS" | sudo -S mkdir -p /lib/optee_armtz/
+        echo "$PASS" | sudo -S cp "$TA_FILE" /lib/optee_armtz/
+        echo "$PASS" | sudo -S chmod 755 /lib/optee_armtz/"$TA_NAME"
         echo -e "${GREEN}✓ $TA_NAME copied successfully${NC}"
         TA_COUNT=$((TA_COUNT + 1))
     fi
@@ -133,18 +136,21 @@ if [ $TA_COUNT -eq 0 ]; then
     exit 1
 fi
 
-# Copy host binary to /usr/bin/
-HOST_BINARY="host/test_simple_shm"
-if [ -f "$HOST_BINARY" ]; then
-    echo -e "${YELLOW}Copying host binary to /usr/bin/...${NC}"
-    sudo cp "$HOST_BINARY" /usr/bin/
-    sudo chmod 755 /usr/bin/test_simple_shm
-    echo -e "${GREEN}✓ Host binary copied successfully${NC}"
+# Copy host binaries to /usr/bin/
+HOST_BINARY2="host/test_leveldb_ram"
+
+if [ -f "$HOST_BINARY2" ]; then
+    echo -e "${YELLOW}Copying test_leveldb_ram to /usr/bin/...${NC}"
+    
+    # Sử dụng echo để truyền mật khẩu vào sudo
+    echo "$PASS" | sudo -S cp "$HOST_BINARY2" /usr/bin/
+    echo "$PASS" | sudo -S chmod 755 /usr/bin/test_leveldb_ram
+    
+    echo -e "${GREEN}✓ test_leveldb_ram copied successfully${NC}"
 else
-    echo -e "${RED}Error: Host binary not found: $HOST_BINARY${NC}"
-    exit 1
+    echo -e "${RED}Error: Host binary not found: $HOST_BINARY2${NC}"
 fi
 
-echo ""
-echo -e "${GREEN}=== Files installed successfully ===${NC}"
-test_simple_shm
+# Chạy ứng dụng sau khi copy (Nếu cần sudo thì cũng thêm tương tự)
+echo -e "${YELLOW}Running test_leveldb_ram...${NC}"
+test_leveldb_ram

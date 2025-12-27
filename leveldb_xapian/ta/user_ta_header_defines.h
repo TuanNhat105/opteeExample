@@ -19,9 +19,9 @@
 
 #define TA_FLAGS            0
 
-/* Stack and heap sizes for eEVM execution */
-#define TA_STACK_SIZE       (2 * 1024 * 1024)  // 2MB stack
-#define TA_DATA_SIZE        (6 * 1024 * 1024)  // 6MB heap (reduced for shared memory)
+/* Stack and heap sizes for LevelDB + eEVM execution */
+#define TA_STACK_SIZE       (32 * 1024 * 1024)  // 2MB stack
+#define TA_DATA_SIZE        (32 * 1024 * 1024) // 16MB heap (increased for LevelDB)
 
 /* Minimum malloc pool size */
 #ifndef MALLOC_INITIAL_POOL_MIN_SIZE
