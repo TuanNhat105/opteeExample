@@ -504,7 +504,7 @@ static TEE_Result simple_buffer_get(uint32_t param_types, TEE_Param params[4])
             if (kv.key == key) {
                 OCALL_LOG("[INFO] Key found! Value size=%zu", kv.value.size());
                 
-                size_t copy_size = std::min(kv.value.size(), params[1].memref.size);
+                size_t copy_size = std::min(kv.value.size(), static_cast<size_t>(params[1].memref.size));
                 memcpy(params[1].memref.buffer, kv.value.data(), copy_size);
                 params[1].memref.size = copy_size;
                 params[2].value.a = 0;  // Found

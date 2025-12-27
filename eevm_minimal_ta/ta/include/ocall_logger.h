@@ -15,7 +15,8 @@ void ocall_log_init(void);
 void ocall_log_print(const char* fmt, ...);
 
 // Copy dữ liệu từ buffer nội bộ sang buffer trả về cho Host (Normal World)
-void ocall_log_flush_to_params(void* dest_buffer, size_t* dest_size);
+// Note: dest_size is uint32_t* to match TEE_Param.memref.size type
+void ocall_log_flush_to_params(void* dest_buffer, uint32_t* dest_size);
 
 #ifdef __cplusplus
 }

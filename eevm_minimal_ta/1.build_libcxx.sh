@@ -11,9 +11,7 @@ NC='\033[0m'
 PROJECT_ROOT=$(pwd)
 OE_ROOT="$PROJECT_ROOT/external/openenclave"
 BUILD_DIR="$PROJECT_ROOT/build_oe_libs"
-CROSS_COMPILE="${CROSS_COMPILE:-aarch64-none-linux-gnu-}"
-export PATH=/home/abc/arm-toolchain/bin:$PATH
-
+CROSS_COMPILE="${CROSS_COMPILE:-}"
 echo -e "${GREEN}============================================${NC}"
 echo -e "${GREEN}Build OpenEnclave libc++ for OP-TEE${NC}"
 echo -e "${GREEN}(Skipping libcxxrt library build)${NC}"

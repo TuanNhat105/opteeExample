@@ -10,12 +10,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-# Find toolchain
-if [ -d "/home/abc/arm-toolchain/bin" ]; then
-    export PATH="/home/abc/arm-toolchain/bin:$PATH"
-fi
-export PATH=/home/abc/arm-toolchain/bin:$PATH
-CROSS_COMPILE="${CROSS_COMPILE:-aarch64-none-linux-gnu-}"
+CROSS_COMPILE="${CROSS_COMPILE:-}"
 BUILD_DIR="libc"
 MUSLSRC="build_oe_libs/musl/src/src"
 MUSL_INCLUDE="build_oe_libs/musl/include"
@@ -286,6 +281,7 @@ MUSL_SRCS=(
     "env/putenv.c"
     "env/setenv.c"
     "env/unsetenv.c"
+    "env/__stack_chk_fail.c"
     # exit
     "exit/assert.c"
     "exit/_Exit.c"

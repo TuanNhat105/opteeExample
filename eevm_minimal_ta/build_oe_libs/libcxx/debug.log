@@ -1,14 +1,14 @@
-In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/cstring:60,
-                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/utility:203,
-                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/memory:657,
-                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/functional:504,
-                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/debug.cpp:11:
-/home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/musl/include/string.h:11:9: warning: "NULL" redefined
+In file included from /home/orangepi/opteeExample-n1/eevm_minimal_ta/build_oe_libs/libcxx/include/cstring:60,
+                 from /home/orangepi/opteeExample-n1/eevm_minimal_ta/build_oe_libs/libcxx/include/utility:203,
+                 from /home/orangepi/opteeExample-n1/eevm_minimal_ta/build_oe_libs/libcxx/include/memory:657,
+                 from /home/orangepi/opteeExample-n1/eevm_minimal_ta/build_oe_libs/libcxx/include/functional:504,
+                 from /home/orangepi/opteeExample-n1/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/debug.cpp:11:
+/home/orangepi/opteeExample-n1/eevm_minimal_ta/build_oe_libs/musl/include/string.h:11: warning: "NULL" redefined
    11 | #define NULL 0L
-      |         ^~~~
-In file included from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/cstddef:44,
-                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/build_oe_libs/libcxx/include/__debug:27,
-                 from /home/abc/nhat/optee_examples/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/debug.cpp:10:
-/home/abc/arm-toolchain/lib/gcc/aarch64-none-linux-gnu/14.3.1/include/stddef.h:416:9: note: this is the location of the previous definition
-  416 | #define NULL __null
-      |         ^~~~
+      | 
+In file included from /home/orangepi/opteeExample-n1/eevm_minimal_ta/build_oe_libs/libcxx/include/cstddef:44,
+                 from /home/orangepi/opteeExample-n1/eevm_minimal_ta/build_oe_libs/libcxx/include/__debug:27,
+                 from /home/orangepi/opteeExample-n1/eevm_minimal_ta/external/openenclave/3rdparty/libcxx/libcxx/src/debug.cpp:10:
+/usr/lib/gcc/aarch64-linux-gnu/12/include/stddef.h:401: note: this is the location of the previous definition
+  401 | #define NULL __null
+      | 

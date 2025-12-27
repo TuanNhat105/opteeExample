@@ -1,4 +1,4 @@
-external/openenclave/3rdparty/libunwind/libunwind/src/aarch64/Lget_proc_info.c:1:9: warning: "UNW_LOCAL_ONLY" redefined
+external/openenclave/3rdparty/libunwind/libunwind/src/aarch64/Lget_proc_info.c:1: warning: "UNW_LOCAL_ONLY" redefined
     1 | #define UNW_LOCAL_ONLY
-      |         ^~~~~~~~~~~~~~
+      | 
 <command-line>: note: this is the location of the previous definition
